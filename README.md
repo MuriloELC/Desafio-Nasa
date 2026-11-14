@@ -18,6 +18,8 @@ O [rascunho CEREJÁ](CEREJA_MVP_COBERTURAS_FINAL.html) usa valores demonstrativo
 
 Resultados do teste de ingestão no Supabase em 14/11/2026: [verificação de ingestão](docs/verificacao_2026-11-14.md).
 
+O inventário das fontes, métricas, tabelas e views está no [dicionário de dados](docs/dicionario_dados.md).
+
 ## Preparação
 
 1. Criar banco Supabase PostgreSQL com uma role que possa executar as migrações e escrever no schema `agro`.
