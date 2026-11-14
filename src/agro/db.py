@@ -17,7 +17,7 @@ def migrate():
             with conn.cursor() as cur:
                 cur.execute('SELECT 1 FROM agro.schema_migrations WHERE filename=%s',(path.name,))
                 if cur.fetchone(): continue
-                cur.execute(path.read_text())
+                cur.execute(path.read_text(encoding='utf-8'))
                 cur.execute('INSERT INTO agro.schema_migrations(filename) VALUES(%s)',(path.name,))
             conn.commit()
             print(f'Applied migration {path.name}')

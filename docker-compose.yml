@@ -6,3 +6,12 @@ services:
       - ./data:/app/data
     restart: "no"
     # docker compose run --rm etl init-grid
+  web:
+    build: .
+    env_file: .env
+    entrypoint: ["python", "-m", "agro.web"]
+    environment:
+      WEB_HOST: 0.0.0.0
+      WEB_PORT: 8000
+    ports:
+      - "127.0.0.1:8000:8000"

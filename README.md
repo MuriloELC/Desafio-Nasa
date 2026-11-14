@@ -21,6 +21,24 @@ O [relatório de Cacoal](docs/verificacao_cacoal_2026-11-14.md) registra a migra
 
 O inventário das fontes, métricas, tabelas e views está no [dicionário de dados](docs/dicionario_dados.md).
 
+## Site CEREJÁ
+
+O piloto oferece diagnóstico por coordenadas ou mapa, calendário técnico de outubro a setembro e avaliação de coberturas. A consulta mostra o último valor por fonte e métrica realmente carregado no banco, com data, resolução e lacunas. O calendário e o diagnóstico não exigem conta. O conteúdo de estratégias é educativo.
+
+```bash
+docker compose build
+docker compose run --rm etl migrate
+docker compose run --rm --entrypoint python etl -m agro.catalog
+docker compose run --rm --entrypoint python etl -m agro.catalog --apply
+docker compose up --build web
+```
+
+Use primeiro um banco de teste. Em banco novo, execute também `docker compose run --rm etl init-grid` e carregue as séries desejadas. Sem `--apply`, a importação só mostra o diff. Abra **http://localhost:8000**; o processo web usa `DATABASE_URL` somente no servidor. Sem Docker, instale `psycopg[binary]`, `psycopg-pool`, `python-dotenv` e `requests`, configure `PYTHONPATH=src` e execute `python -m agro.web`.
+
+**Minha lavoura:** configure `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY` (ou `SUPABASE_ANON_KEY`) no servidor e habilite login por e-mail no Supabase Auth. Se o projeto exigir confirmação de e-mail, configure o endereço do site permitido no Supabase. O caderno de campo guarda talhões, ciclos, tarefas criadas pelo produtor e avaliações salvas explicitamente. A sessão do navegador é mantida em memória até sair ou fechar/recarregar a página. A conexão web precisa ler os dados CEREJÁ no schema `agro` e poder assumir `authenticated` para executar operações privadas sujeitas às políticas de acesso.
+
+As rotas públicas são `GET /api/consulta?lat=...&lon=...&raio=20`, `GET /api/calendario` e `POST /api/recomendacoes`. O formato, o fluxo de revisão e os testes estão na [documentação do calendário](docs/calendario/plano_codex_calendario.md) e no [guia de validação do site](docs/validacao_cereja.md).
+
 ## Preparação
 
 1. Criar banco Supabase PostgreSQL com uma role que possa executar as migrações e escrever no schema `agro`.
@@ -97,7 +115,7 @@ A malha não aumenta a resolução nativa da fonte. A abordagem POWER usa coorde
 ## Segurança e execução
 
 - As tabelas estão em schema `agro` com permissão revogada de `anon` e `authenticated`.
-- A aplicação frontend precisará de views/RPCs com segurança e permissões controladas, criadas em etapa separada.
+- O navegador usa a API CEREJÁ. O schema `agro` continua privado e as tabelas de Minha lavoura usam políticas de isolamento por usuário.
 - Banco gerenciado Supabase não fica dentro do Docker Compose; o container executa apenas ETL.
 - Não expor `DATABASE_URL` nem `SUPABASE_SERVICE_ROLE_KEY` no cliente.
 - Evitar executar GPM a cada minuto: o produto Final é liberado com latência; para dados recentes implementar Early/Late com lógica de substituição/versão.
