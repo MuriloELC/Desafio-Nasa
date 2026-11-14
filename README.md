@@ -41,12 +41,19 @@ Para a primeira execução, sugerimos **POWER primeiro**: sem autenticação, pe
 ## Carga histórica desde 2020
 
 ```bash
-docker compose run --rm etl backfill --source power --start 2020-01-01 --end 2026-11-01
-# Com GPM: execução longa, ~2.500 downloads diários; não começar sem verificar quotas e disco.
-docker compose run --rm etl backfill --source imerg --start 2020-01-01 --end 2020-01-07
+docker compose run --rm etl backfill --source power --start 2020-01-01 --end 2026-11-14
 ```
 
 As cargas POWER são divididas por ano e aproveitam amostras deduplicadas; as do IMERG baixam diariamente. `ON CONFLICT DO UPDATE` torna a carga repetível. Execuções e erros são registrados em `agro.etl_runs`.
+
+Para uma carga IMERG longa, use o [inventário diário de disponibilidade](docs/imerg_availability_2020_2026-11-14.csv) e o script retomável. Ele lê apenas a banda `total.accum.tif` via HTTP Range, exclui o valor ausente `29999`, grava as médias no banco e remove o TIFF temporário. Por padrão, não envia milhares de ZIPs globais ao Storage; o dia piloto de 01/01/2024 permanece arquivado. Os dias concluídos em `agro.etl_runs` são pulados ao reiniciar.
+
+```bash
+docker compose run --rm --entrypoint python etl /app/scripts/backfill_imerg.py \
+  --manifest /app/docs/imerg_availability_2020_2026-11-14.csv --workers 6
+```
+
+O inventário encontrou 2.100 dias de IMERG Final GIS: todos os dias de 2020 a 2024 e 01/01 a 30/09/2025. De 01/10/2025 a 14/11/2026, os diretórios consultados não tinham o produto GIS Final. Para precipitação recente, o POWER segue como fonte separada; não o misture com IMERG na mesma série sem regra explícita. O [manual GIS da NASA](https://gpm.nasa.gov/sites/default/files/2023-12/IMERG_GIS-GeoTIFF_ReadMe_6_27_23.pdf) documenta o valor ausente e a banda de acumulação.
 
 ## Rasters de propriedades estáticas
 

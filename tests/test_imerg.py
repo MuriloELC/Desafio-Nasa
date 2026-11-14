@@ -25,7 +25,7 @@ def test_download_replaces_corrupt_cached_zip(tmp_path, monkeypatch):
         z.writestr('test.total.accum.tif',b'data')
 
     class Response:
-        text='<a href="3B-DAY-GIS.V07.zip">zip</a>'
+        text='<a href="3B-DAY-GIS.MS.MRG.3IMERG.20261101-S000000-E235959.0000.V07B.zip">zip</a>'
         def __enter__(self): return self
         def __exit__(self,*args): pass
         def raise_for_status(self): pass
@@ -48,3 +48,16 @@ def test_cell_means_scales_daily_accumulation(tmp_path):
     rows=list(imerg.cell_means(path))
     assert len(rows)==400
     assert all(value==1.0 and fraction==1.0 for _,value,fraction in rows)
+
+
+def test_cell_means_excludes_pps_missing_value(tmp_path):
+    path=tmp_path/'missing.total.accum.tif'
+    values=np.full((20,20),10,dtype='uint16')
+    values[10,10]=29999
+    with rasterio.open(path,'w',driver='GTiff',height=20,width=20,count=1,
+                       dtype='uint16',crs='EPSG:32720',
+                       transform=from_origin(E-125000,N+125000,12500,12500)) as ds:
+        ds.write(values,1)
+    rows=list(imerg.cell_means(path))
+    assert len(rows)==399
+    assert all(value==1.0 for _,value,_ in rows)
