@@ -55,6 +55,11 @@ docker compose run --rm --entrypoint python etl /app/scripts/backfill_imerg.py \
 
 O inventário encontrou 2.100 dias de IMERG Final GIS: todos os dias de 2020 a 2024 e 01/01 a 30/09/2025. De 01/10/2025 a 14/11/2026, os diretórios consultados não tinham o produto GIS Final. Para precipitação recente, o POWER segue como fonte separada; não o misture com IMERG na mesma série sem regra explícita. O [manual GIS da NASA](https://gpm.nasa.gov/sites/default/files/2023-12/IMERG_GIS-GeoTIFF_ReadMe_6_27_23.pdf) documenta o valor ausente e a banda de acumulação.
 
+```bash
+docker compose run --rm --entrypoint python etl /app/scripts/verify_history.py \
+  --manifest /app/docs/imerg_availability_2020_2026-11-14.csv
+```
+
 ## Rasters de propriedades estáticas
 
 Arquivos são obtidos diretamente dos distribuidores oficiais, conforme termos e formatos específicos. Use GeoTIFF já recortado para a região (para evitar baixar rasters globais inteiros). O importador grava a média espacial por subcélula; a conversão de unidade **não é inferida**.
