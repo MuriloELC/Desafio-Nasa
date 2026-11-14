@@ -1,9 +1,13 @@
 from datetime import date
 from io import BytesIO
 import zipfile
+import numpy as np
+import rasterio
+from rasterio.transform import from_origin
 
 from agro.extractors import imerg
 from agro.extractors.imerg import select_daily_zip
+from agro.grid import E,N
 
 def test_select_daily_zip():
     html='<a href="3B-DAY-GIS.MS.MRG.3IMERG.20261101-S000000-E235959.0000.V07.zip">zip</a>'
@@ -33,3 +37,14 @@ def test_download_replaces_corrupt_cached_zip(tmp_path, monkeypatch):
     assert imerg.download(Session(),day)==cached
     assert zipfile.is_zipfile(cached)
     assert not cached.with_suffix('.zip.part').exists()
+
+
+def test_cell_means_scales_daily_accumulation(tmp_path):
+    path=tmp_path/'daily.total.accum.tif'
+    with rasterio.open(path,'w',driver='GTiff',height=20,width=20,count=1,
+                       dtype='uint16',crs='EPSG:32720',
+                       transform=from_origin(E-125000,N+125000,12500,12500)) as ds:
+        ds.write(np.full((20,20),10,dtype='uint16'),1)
+    rows=list(imerg.cell_means(path))
+    assert len(rows)==400
+    assert all(value==1.0 and fraction==1.0 for _,value,fraction in rows)
