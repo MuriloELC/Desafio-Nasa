@@ -35,11 +35,18 @@ def sample_map():
 def register_power_samples(conn):
     samples,mapping=sample_map()
     with conn.cursor() as cur:
-        for key,(lon,lat) in samples.items():
-            cur.execute('INSERT INTO agro.source_samples(source_id,native_key,lon,lat) VALUES(%s,%s,%s,%s) ON CONFLICT(source_id,native_key) DO UPDATE SET lon=excluded.lon,lat=excluded.lat',('POWER',key,lon,lat))
-        for cell_id,key in mapping.items():
-            cur.execute('''INSERT INTO agro.cell_sample_map(cell_id,sample_id,weight)
-                SELECT %s,sample_id,1 FROM agro.source_samples WHERE source_id='POWER' AND native_key=%s
-                ON CONFLICT(cell_id,sample_id) DO NOTHING''',(cell_id,key))
+        cur.execute('''INSERT INTO agro.source_samples(source_id,native_key,lon,lat)
+            SELECT 'POWER',v.native_key,v.lon,v.lat
+            FROM unnest(%s::text[],%s::double precision[],%s::double precision[])
+                AS v(native_key,lon,lat)
+            ON CONFLICT(source_id,native_key) DO UPDATE
+            SET lon=excluded.lon,lat=excluded.lat''',
+            (list(samples),[p[0] for p in samples.values()],[p[1] for p in samples.values()]))
+        cur.execute('''INSERT INTO agro.cell_sample_map(cell_id,sample_id,weight)
+            SELECT v.cell_id,s.sample_id,1
+            FROM unnest(%s::text[],%s::text[]) AS v(cell_id,native_key)
+            JOIN agro.source_samples s ON s.source_id='POWER' AND s.native_key=v.native_key
+            ON CONFLICT(cell_id,sample_id) DO NOTHING''',
+            (list(mapping),list(mapping.values())))
     conn.commit()
     return len(samples),len(mapping)

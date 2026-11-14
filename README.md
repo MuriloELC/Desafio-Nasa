@@ -16,6 +16,8 @@ Não há dados de P, K, Ca, Mg, drenagem de campo ou déficit hídrico calculado
 
 O [rascunho CEREJÁ](CEREJA_MVP_COBERTURAS_FINAL.html) usa valores demonstrativos. A matriz de dados necessários e a pesquisa inicial das espécies estão em [critérios de recomendação](docs/criterios_recomendacao.md). As sugestões para uma propriedade só poderão usar dados reais quando também houver informação local suficiente sobre solo e manejo.
 
+Resultados do teste de ingestão no Supabase em 14/11/2026: [verificação de ingestão](docs/verificacao_2026-11-14.md).
+
 ## Preparação
 
 1. Criar banco Supabase PostgreSQL com uma role que possa executar as migrações e escrever no schema `agro`.
