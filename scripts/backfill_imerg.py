@@ -24,17 +24,26 @@ def main():
     parser.add_argument('--manifest', type=Path, required=True)
     parser.add_argument('--limit', type=int, default=0, help='Maximum new days; 0 means all')
     parser.add_argument('--workers', type=int, default=6)
+    parser.add_argument('--start', type=date.fromisoformat,
+                        help='First date to load from the manifest')
+    parser.add_argument('--end', type=date.fromisoformat,
+                        help='Last date to load from the manifest')
+    parser.add_argument('--failures-output', type=Path,
+                        default=Path('/app/data/imerg_backfill_failures.csv'))
     parser.add_argument('--archive-raw', action='store_true',
                         help='Store every global ZIP in Supabase Storage')
     args = parser.parse_args()
-    if not 1 <= args.workers <= 12 or args.limit < 0:
-        parser.error('Require 1 <= workers <= 12 and limit >= 0')
+    if (not 1 <= args.workers <= 12 or args.limit < 0
+            or args.start and args.end and args.start > args.end):
+        parser.error('Require 1 <= workers <= 12, limit >= 0 and start <= end')
     with args.manifest.open(newline='', encoding='utf-8') as file:
         manifest = list(csv.DictReader(file))
     if any(row['status'] == 'error' for row in manifest):
         parser.error('Manifest has request errors; map it again before backfill')
     available = [(date.fromisoformat(row['date']), row['filename'])
-                 for row in manifest if row['status'] == 'available']
+                 for row in manifest if row['status'] == 'available'
+                 and (args.start is None or date.fromisoformat(row['date']) >= args.start)
+                 and (args.end is None or date.fromisoformat(row['date']) <= args.end)]
     failures = []
     loaded = 0
     consecutive_failures = 0
@@ -86,7 +95,8 @@ def main():
                     if consecutive_failures >= 10:
                         print('Stopping after 10 consecutive failures', flush=True)
                         break
-    output = Path('/app/data/imerg_backfill_failures.csv')
+    output = args.failures_output
+    output.parent.mkdir(parents=True, exist_ok=True)
     with output.open('w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerow(('date', 'error_type', 'message'))

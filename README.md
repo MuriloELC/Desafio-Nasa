@@ -57,14 +57,16 @@ docker compose run --rm --entrypoint python etl /app/scripts/map_imerg.py \
   --seed /app/docs/imerg_availability_2020_2026-11-14.csv \
   --output /app/data/imerg_availability_2000_2026-11-14.csv
 docker compose run --rm --entrypoint python etl /app/scripts/backfill_imerg.py \
-  --manifest /app/docs/imerg_availability_2000_2026-11-14.csv --workers 6
+  --manifest /app/data/imerg_availability_2000_2026-11-14.csv --workers 6
 ```
+
+Para reduzir o tempo da primeira carga, o mesmo script aceita `--start` e `--end`; execute faixas de datas sem sobreposição em processos separados. Use `--failures-output` diferente para cada processo. A retomada consulta apenas execuções concluídas da região `CACOAL_R20`.
 
 O inventário encontrou todos os dias de 01/06/2000 a 30/09/2025; de 01/10/2025 a 14/11/2026, os diretórios consultados não tinham GIS Final. Para precipitação recente, o POWER segue como fonte separada. O [manual GIS da NASA](https://gpm.nasa.gov/sites/default/files/2023-12/IMERG_GIS-GeoTIFF_ReadMe_6_27_23.pdf) documenta o valor ausente e a banda de acumulação.
 
 ```bash
 docker compose run --rm --entrypoint python etl /app/scripts/verify_history.py \
-  --manifest /app/docs/imerg_availability_2000_2026-11-14.csv
+  --manifest /app/data/imerg_availability_2000_2026-11-14.csv
 ```
 
 ## Rasters de propriedades estáticas

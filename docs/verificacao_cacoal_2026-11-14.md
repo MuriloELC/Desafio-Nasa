@@ -13,7 +13,7 @@ Projeto Supabase: `desafio nasa` (`mzjdsbubxyrxcgnbylgs`). Região ativa: `CACOA
 
 - NASA [POWER Daily API](https://power.larc.nasa.gov/docs/services/api/temporal/daily/): carga anual de 01/01/2000 a 14/11/2026 concluída sem falha. A consulta verificou **274.472 linhas** em `agro.sample_daily`; seis métricas têm 39.252 linhas cada de 01/01/2000 a 12/11/2026. A radiação solar tem 38.960 linhas, até 31/08/2026. Os dias finais sem valor são ausência na resposta da fonte, não zeros.
 - NASA [IMERG V07 Final](https://gpm.nasa.gov/data/news/imerg-v07-final-run-retrospective-processing-completed): começa em junho de 2000. O [inventário PPS](imerg_availability_2000_2026-11-14.csv) mapeou **9.663 datas** de 01/06/2000 a 14/11/2026: **9.253 disponíveis** (até 30/09/2025) e **410 diretórios ausentes** (01/10/2025 a 14/11/2026). Não houve respostas classificadas como erro no mapeamento.
-- O piloto IMERG de **01/06/2000** gravou **60 linhas** em `agro.cell_daily` e arquivou o ZIP bruto no bucket privado `agro-rasters`. A carga histórica restante foi iniciada em container destacado `nasa-imerg-cacoal`, com retomada baseada em `agro.etl_runs.region_id = 'CACOAL_R20'`. Ela não estava concluída ao fechar este registro.
+- O piloto IMERG de **01/06/2000** gravou **60 linhas** em `agro.cell_daily` e arquivou o ZIP bruto no bucket privado `agro-rasters`. Um teste do filtro de período gravou também 01/01/2010. A carga histórica restante foi iniciada em quatro containers destacados, com faixas exclusivas 2000–2006, 2007–2012, 2013–2018 e 2019–2025. A retomada usa `agro.etl_runs.region_id = 'CACOAL_R20'`. Ela não estava concluída ao fechar este registro.
 
 ## Testes e limites
 
