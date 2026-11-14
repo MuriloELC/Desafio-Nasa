@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CEREJÁ — Adaptação do solo com dados da NASA</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    :root{
+      --bg:#07151a;
+      --panel:#0d1f26;
+      --panel-2:#112a33;
+      --line:#23424d;
+      --text:#e8efe9;
+      --muted:#9bb3bb;
+      --green:#7bd18b;
+      --green-2:#45b36a;
+      --red:#c54643;
+      --red-2:#ea6761;
+      --gold:#e8c46b;
+      --cyan:#60d1e3;
+      --soft:#dce8e3;
+      --card:#10242c;
+      --beige:#eae6dd;
+      --dark-text:#16303b;
+      --shadow:0 18px 40px rgba(0,0,0,.22);
+      --radius:20px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background: radial-gradient(circle at top right, #16303b 0%, #07151a 42%, #061116 100%);
+    }
+    h1,h2,h3,h4{
+      margin:0;
+      font-family: "Space Grotesk", Inter, ui-sans-serif, system-ui, sans-serif;
+      letter-spacing:-.02em;
+    }
+    p{margin:0}
+    .wrap{width:min(1240px, calc(100% - 40px)); margin:0 auto}
+    .nav{position:sticky; top:0; z-index:50; backdrop-filter: blur(10px); background:rgba(7,21,26,.72); border-bottom:1px solid rgba(255,255,255,.07)}
+    .nav-inner{display:flex; justify-content:space-between; align-items:center; padding:18px 0}
+    .logo{font-size:1.35rem; font-weight:800; letter-spacing:.06em}
+    .logo .cere{color:#d7efe3}
+    .logo .ja{color:var(--red-2)}
+    .nav-note{font-size:.92rem; color:var(--muted)}
+    .hero{padding:64px 0 28px}
+    .hero-grid{display:grid; grid-template-columns:1.2fr .95fr; gap:28px; align-items:stretch}
+    .tag{display:inline-flex; align-items:center; gap:8px; border:1px solid rgba(123,209,139,.25); color:#bcebc7; padding:8px 14px; border-radius:999px; background:rgba(69,179,106,.08); font-size:.82rem; text-transform:uppercase; letter-spacing:.12em; font-weight:700}
+    .hero-copy{padding:18px 0 0}
+    .hero-copy h1{font-size: clamp(2.6rem, 5vw, 4.9rem); line-height:.98; max-width:13ch; margin:18px 0 18px}
+    .hero-copy .lead{font-size:1.12rem; line-height:1.7; color:#d2e0dc; max-width:60ch}
+    .cta-row{display:flex; gap:14px; margin-top:26px; flex-wrap:wrap}
+    .btn{border:none; border-radius:16px; padding:15px 18px; font-size:1rem; font-weight:700; cursor:pointer; transition:.2s ease; text-decoration:none; display:inline-flex; align-items:center; gap:10px}
+    .btn-primary{background:linear-gradient(135deg, var(--green-2), var(--green)); color:#0b181d; box-shadow:var(--shadow)}
+    .btn-secondary{background:rgba(255,255,255,.05); color:var(--text); border:1px solid rgba(255,255,255,.08)}
+    .btn:hover{transform:translateY(-2px)}
+    .hero-panel{background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01)); border:1px solid rgba(255,255,255,.08); border-radius:28px; padding:22px; box-shadow:var(--shadow); display:grid; grid-template-rows:auto 1fr; min-height:420px}
+    .source-strip{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:18px}
+    .source-pill{background:rgba(96,209,227,.07); border:1px solid rgba(96,209,227,.18); border-radius:16px; padding:12px 12px}
+    .source-pill strong{display:block; font-size:.8rem; color:#cceef3; text-transform:uppercase; letter-spacing:.1em}
+    .source-pill span{display:block; margin-top:6px; font-size:.85rem; color:#b4c8cf}
+    .signal-box{display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:end}
+    .signal-main{background:linear-gradient(180deg, rgba(232,196,107,.08), rgba(232,196,107,.03)); border:1px solid rgba(232,196,107,.18); border-radius:24px; padding:22px}
+    .signal-main .mini{font-size:.82rem; letter-spacing:.14em; text-transform:uppercase; color:var(--gold)}
+    .signal-main h3{font-size:1.65rem; margin-top:12px; line-height:1.15}
+    .signal-main p{color:#c7d8dc; margin-top:12px; line-height:1.6}
+    .signal-stack{display:grid; gap:12px}
+    .mini-card{background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:16px}
+    .mini-card .small{font-size:.78rem; text-transform:uppercase; letter-spacing:.12em; color:#9cd4dd}
+    .mini-card strong{display:block; font-size:1.4rem; margin-top:10px}
+    .mini-card p{margin-top:8px; color:#b9ccd1; font-size:.95rem; line-height:1.45}
+
+    .section{padding:18px 0 36px}
+    .section-head{display:flex; justify-content:space-between; align-items:end; gap:20px; margin-bottom:18px; flex-wrap:wrap}
+    .kicker{font-size:.84rem; color:#95aeb4; letter-spacing:.15em; text-transform:uppercase}
+    .section-head h2{font-size:2.1rem; line-height:1.05}
+    .section-head .desc{max-width:58ch; color:#baced4; line-height:1.6}
+
+    .selector{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+    .farm-btn{position:relative; overflow:hidden; background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); color:var(--text); border-radius:22px; padding:18px; text-align:left; cursor:pointer; transition:.2s ease}
+    .farm-btn:hover{transform:translateY(-3px); border-color:rgba(123,209,139,.3)}
+    .farm-btn.active{border-color:rgba(123,209,139,.65); box-shadow:0 0 0 1px rgba(123,209,139,.25) inset, var(--shadow); background:linear-gradient(180deg, rgba(69,179,106,.16), rgba(255,255,255,.03))}
+    .farm-btn .pill{display:inline-block; padding:5px 9px; background:rgba(234,103,97,.11); color:#f2b5b1; border:1px solid rgba(234,103,97,.25); font-size:.73rem; border-radius:999px; letter-spacing:.08em; text-transform:uppercase; font-weight:700}
+    .farm-btn h3{margin-top:12px; font-size:1.25rem}
+    .farm-btn p{color:#bbced2; margin-top:8px; line-height:1.5}
+
+    .analysis-grid{display:grid; grid-template-columns:1.25fr .95fr; gap:18px; align-items:start; margin-top:18px}
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius:24px; padding:22px; box-shadow:var(--shadow)}
+    .panel.light{background:linear-gradient(180deg, #edf1ef, #e1e8e4); color:var(--dark-text); border:none}
+
+    .timeline-band{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px}
+    .timeline-node{padding:14px; border-radius:18px; background:rgba(96,209,227,.06); border:1px solid rgba(96,209,227,.18)}
+    .timeline-node .nasa{font-size:.72rem; color:#9ddfea; letter-spacing:.14em; text-transform:uppercase}
+    .timeline-node strong{display:block; margin-top:10px; font-size:1rem}
+    .timeline-node span{display:block; margin-top:8px; color:#b6ccd1; line-height:1.45; font-size:.92rem}
+
+    .cards{display:grid; grid-template-columns:repeat(2,1fr); gap:14px}
+    .source-card{position:relative; min-height:176px; padding:18px; border-radius:22px; background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); overflow:hidden}
+    .source-card h3{font-size:1.15rem; margin-top:10px}
+    .source-card .value{font-size:2.1rem; margin-top:12px; font-weight:800}
+    .source-card .context{margin-top:8px; color:#c3d6d9; line-height:1.45}
+    .badge{display:inline-flex; align-items:center; gap:8px; padding:6px 10px; font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.1em; border-radius:999px; border:1px solid rgba(255,255,255,.1)}
+    .badge.nasa{background:rgba(96,209,227,.08); color:#c6f3fa; border-color:rgba(96,209,227,.18)}
+    .badge.output{background:rgba(123,209,139,.08); color:#d2f8da; border-color:rgba(123,209,139,.18)}
+    .tooltip{position:absolute; left:18px; right:18px; bottom:18px; transform:translateY(20px); opacity:0; pointer-events:none; transition:.2s ease; padding:14px 15px; border-radius:16px; background:rgba(6,17,22,.95); border:1px solid rgba(255,255,255,.08); font-size:.86rem; line-height:1.5; color:#dce8e3; box-shadow:var(--shadow)}
+    .source-card:hover .tooltip{opacity:1; transform:translateY(0)}
+    .hint{margin-top:12px; color:#8fb2ba; font-size:.88rem}
+
+    .decision-box{display:grid; gap:16px}
+    .decision-call{padding:20px; border-radius:24px; background:linear-gradient(180deg, rgba(197,70,67,.15), rgba(197,70,67,.05)); border:1px solid rgba(234,103,97,.22)}
+    .decision-call .label{font-size:.78rem; color:#efb0ac; letter-spacing:.14em; text-transform:uppercase}
+    .decision-call h3{font-size:1.6rem; margin-top:10px}
+    .decision-call p{color:#d7dfe2; line-height:1.6; margin-top:10px}
+
+    .strategy-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+    .strategy{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015)); border:1px solid rgba(255,255,255,.08); border-radius:24px; padding:20px; cursor:pointer; transition:.2s ease; position:relative; overflow:hidden}
+    .strategy.active{border-color:rgba(123,209,139,.6); box-shadow:0 0 0 1px rgba(123,209,139,.22) inset, var(--shadow); transform:translateY(-2px)}
+    .strategy .top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px}
+    .strategy .score{font-size:2rem; font-weight:800; color:#dff4e4}
+    .strategy h3{font-size:1.18rem; margin-top:12px}
+    .strategy .species{color:#d9eadf; margin-top:8px; font-weight:700}
+    .strategy .sub{margin-top:8px; color:#b7cbd0; line-height:1.5}
+    .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px}
+    .chip{padding:7px 10px; border-radius:999px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); color:#d4e4e7; font-size:.78rem}
+    .strategy .tooltip{left:16px; right:16px; bottom:16px}
+
+    .impact-grid{display:grid; grid-template-columns:1.05fr 1fr; gap:18px; margin-top:18px}
+    .soil-scene{position:relative; min-height:420px; border-radius:26px; overflow:hidden; background:linear-gradient(180deg, #bfe2f1 0 35%, #4e9262 35% 44%, #6d4b33 44% 100%)}
+    .sun{position:absolute; right:28px; top:30px; width:62px; height:62px; border-radius:50%; background:#ffd166; box-shadow:0 0 0 12px rgba(255,209,102,.15)}
+    .cloud{position:absolute; top:50px; left:34px; width:110px; height:34px; border-radius:30px; background:rgba(255,255,255,.85)}
+    .cloud::before,.cloud::after{content:""; position:absolute; background:rgba(255,255,255,.85); border-radius:50%}
+    .cloud::before{width:46px; height:46px; left:14px; top:-19px}
+    .cloud::after{width:34px; height:34px; left:52px; top:-14px}
+    .surface-strip{position:absolute; top:35%; left:0; right:0; height:9%; display:flex; align-items:flex-end; justify-content:space-around; padding:0 18px}
+    .plant{position:relative; width:58px; height:92px}
+    .stem{position:absolute; left:28px; bottom:22px; width:4px; height:44px; background:#2f7348; border-radius:8px}
+    .leaf{position:absolute; width:24px; height:12px; background:#4bb26d; border-radius:50px 50px 0 50px}
+    .leaf.l1{left:9px; bottom:49px; transform:rotate(-28deg)}
+    .leaf.l2{right:8px; bottom:58px; transform:rotate(22deg)}
+    .leaf.l3{left:17px; bottom:66px; width:22px; height:10px; transform:rotate(-4deg)}
+    .mulch{position:absolute; top:42%; left:0; right:0; height:12px; background:repeating-linear-gradient(90deg,#a7784f 0 18px,#8e6441 18px 36px,#b08255 36px 52px)}
+    .roots{position:absolute; left:0; right:0; top:46%; bottom:0; display:flex; justify-content:space-around; padding:0 26px 20px}
+    .root-bundle{position:relative; width:90px}
+    .root-bundle::before, .root-bundle::after{content:""; position:absolute; left:42px; top:0; width:4px; height:96px; background:#d6b179; border-radius:8px}
+    .root-bundle::after{transform:rotate(18deg); transform-origin:top center; height:92px}
+    .root-bundle .r{position:absolute; width:3px; background:#e9c486; border-radius:8px; transform-origin:top center}
+    .root-bundle .r1{left:26px; top:12px; height:98px; transform:rotate(-20deg)}
+    .root-bundle .r2{left:58px; top:14px; height:106px; transform:rotate(22deg)}
+    .root-bundle .r3{left:36px; top:28px; height:82px; transform:rotate(-36deg)}
+    .soil-labels{position:absolute; left:20px; right:20px; bottom:20px; display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+    .soil-label{padding:10px 12px; border-radius:16px; background:rgba(7,21,26,.55); color:#ebf5ef; border:1px solid rgba(255,255,255,.08); backdrop-filter: blur(8px); font-size:.88rem}
+
+    .matrix{display:grid; gap:10px}
+    .matrix-head,.matrix-row{display:grid; grid-template-columns:1.2fr repeat(3,1fr); gap:10px}
+    .matrix-head div,.matrix-row div{padding:12px 14px; border-radius:16px}
+    .matrix-head div{background:rgba(255,255,255,.04); color:#b8cbd0; font-size:.82rem; letter-spacing:.08em; text-transform:uppercase; font-weight:700}
+    .matrix-row .metric{background:rgba(255,255,255,.04); color:#eef5f2; font-weight:700}
+    .grade{font-weight:800; text-align:center; border:1px solid rgba(255,255,255,.08)}
+    .g-strong{background:rgba(69,179,106,.22); color:#d7ffe0}
+    .g-mod{background:rgba(232,196,107,.18); color:#fff1c4}
+    .g-risk{background:rgba(197,70,67,.22); color:#ffd1ce}
+    .g-uncertain{background:rgba(255,255,255,.06); color:#dae3e5}
+
+    .plan-grid{display:grid; grid-template-columns:.95fr 1.1fr; gap:18px; margin-top:18px}
+    .plan-card{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius:24px; padding:20px}
+    .timeline{display:grid; grid-template-columns:repeat(12,1fr); gap:8px; margin-top:18px}
+    .month{padding:12px 8px; border-radius:16px; min-height:120px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08)}
+    .month .m{font-size:.74rem; text-transform:uppercase; color:#99b3ba; letter-spacing:.08em}
+    .month strong{display:block; margin-top:10px; font-size:.9rem; line-height:1.2}
+    .month span{display:block; margin-top:8px; color:#c7d7db; font-size:.82rem; line-height:1.35}
+
+    .compare{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:12px}
+    .compare .box{padding:16px; border-radius:18px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08)}
+    .compare .box .cap{font-size:.74rem; text-transform:uppercase; color:#9fd8e2; letter-spacing:.1em}
+    .compare .box strong{display:block; margin-top:10px; font-size:1.04rem}
+    .compare .box p{margin-top:8px; color:#c6d6da; line-height:1.45}
+
+    .footer-note{margin:26px 0 40px; padding:18px 20px; border:1px solid rgba(255,255,255,.08); border-radius:18px; background:rgba(255,255,255,.03); color:#b8ccd0; line-height:1.6}
+    .tiny{font-size:.82rem; color:#8da8af}
+
+    @media (max-width: 1020px){
+      .hero-grid,.analysis-grid,.impact-grid,.plan-grid{grid-template-columns:1fr}
+      .strategy-grid,.selector,.timeline-band,.source-strip{grid-template-columns:1fr}
+      .cards{grid-template-columns:1fr}
+      .hero-panel{min-height:auto}
+      .soil-scene{min-height:360px}
+      .timeline{grid-template-columns:repeat(3,1fr)}
+    }
+    @media (max-width: 720px){
+      .wrap{width:min(100% - 24px, 1240px)}
+      .hero{padding-top:34px}
+      .hero-copy h1{font-size:2.5rem}
+      .section-head h2{font-size:1.7rem}
+      .signal-box,.compare,.matrix-head,.matrix-row{grid-template-columns:1fr}
+      .matrix-head{display:none}
+      .matrix-row{background:rgba(255,255,255,.03); border-radius:16px; padding:8px}
+      .matrix-row div{padding:10px 12px}
+      .matrix-row .metric{text-align:left}
+      .soil-labels{grid-template-columns:1fr}
+      .timeline{grid-template-columns:repeat(2,1fr)}
+    }
+
+    [hidden]{display:none!important}
+    html{scroll-behavior:smooth}
+    body.onboarding-open{overflow:hidden}
+    .nav-actions{display:flex;align-items:center;gap:12px}
+    .nav-action{border:1px solid rgba(123,209,139,.26);color:#c5f4d2;background:rgba(123,209,139,.06);padding:9px 13px;border-radius:12px;cursor:pointer;font-weight:700}
+    .intro-notice{margin-top:20px;display:inline-flex;gap:8px;align-items:center;font-size:.83rem;color:#a7bbc2;border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:8px 12px;background:rgba(255,255,255,.03)}
+    .onboarding{position:fixed;inset:0;z-index:150;background:linear-gradient(135deg,#07151a 0%,#0d2931 55%,#09191f 100%);overflow-y:auto;padding:26px max(20px,calc((100vw - 1180px)/2));}
+    .bot-layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px;margin-top:32px;align-items:stretch;min-height:min(720px,calc(100vh - 120px))}
+    .bot-sidebar{padding:28px;background:linear-gradient(180deg,rgba(123,209,139,.09),rgba(255,255,255,.02));border:1px solid rgba(123,209,139,.15);border-radius:27px;display:flex;flex-direction:column;gap:18px}
+    .bot-sidebar h2{font-size:2rem;line-height:1.05}
+    .bot-sidebar p{color:#bacdd2;line-height:1.55}
+    .bot-sidebar .orb{width:90px;height:90px;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle at 30% 30%,#f18068,#a82631 66%,#5d1420);box-shadow:inset -12px -8px 30px #5b192c,0 18px 35px #0005;font-size:44px;margin-top:10px}
+    .bot-sidebar .side-tag{display:inline-flex;font-size:.76rem;letter-spacing:.14em;font-weight:800;color:#83d8a0;text-transform:uppercase}
+    .bot-sidebar .source-mini{border-top:1px solid #ffffff18;padding-top:20px;margin-top:auto;color:#a9bdc2;font-size:.87rem;line-height:1.65}
+    .bot-main{border:1px solid rgba(255,255,255,.09);background:rgba(14,34,42,.72);border-radius:27px;box-shadow:var(--shadow);padding:26px;display:flex;flex-direction:column;min-width:0}
+    .bot-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}
+    .bot-progress-label{color:#bad1d5;font-size:.85rem}
+    .bot-progress{height:7px;border-radius:99px;background:#ffffff16;overflow:hidden;margin-bottom:24px}
+    .bot-progress div{height:100%;width:0;background:linear-gradient(90deg,#45b36a,#9de4b2);transition:width .25s ease}
+    .bot-thread{flex:1;display:flex;flex-direction:column;gap:14px;max-height:360px;overflow-y:auto;padding:4px 8px 12px 0;scrollbar-color:#3f6872 transparent}
+    .chat-line{color:#e9f4f1;max-width:86%;border-radius:18px;padding:14px 16px;line-height:1.55;font-size:.96rem;white-space:pre-line;animation:appear .25s ease}
+    .chat-line.assistant{align-self:flex-start;background:#193843;border:1px solid #2e515c;border-bottom-left-radius:4px}
+    .chat-line.user{align-self:flex-end;background:#245943;border:1px solid #39835d;border-bottom-right-radius:4px}
+    @keyframes appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .bot-answer{padding:22px 0 6px;border-top:1px solid rgba(255,255,255,.09);margin-top:18px}
+    .bot-answer .prompt-tag{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:#94d0ab;margin-bottom:10px;font-weight:800}
+    .bot-question{font-size:1.3rem;line-height:1.35;margin-bottom:18px}
+    .bot-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .bot-option{border:1px solid #385663;border-radius:15px;background:#122b35;color:#eaf4f0;padding:15px;text-align:left;cursor:pointer;font-weight:700;font-size:.93rem;min-height:53px;transition:.2s}
+    .bot-option:hover,.bot-option:focus{background:#1f4652;border-color:#6bc78c;outline:none;transform:translateY(-1px)}
+    .bot-input-wrap{display:flex;gap:10px}
+    .bot-input{flex:1;min-width:0;border:1px solid #385663;border-radius:14px;background:#081c23;padding:14px 16px;color:#fff;font-size:1.05rem;outline:none}
+    .bot-input:focus{border-color:var(--green)}
+    .bot-submit{border:none;color:#081c23;background:#7bd18b;border-radius:14px;padding:13px 17px;font-weight:800;cursor:pointer}
+    .bot-error{font-size:.9rem;color:#ffb3a8;min-height:20px;margin-top:8px}
+    .bot-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}
+    .bot-back,.bot-quit{background:transparent;border:0;color:#b9d0d3;cursor:pointer;padding:7px 0;font-size:.93rem}
+    .bot-back:hover,.bot-quit:hover{text-decoration:underline;color:#fff}
+    .bot-location-panel{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+    .bot-location-panel button{padding:11px;border:1px solid #2f5360;border-radius:12px;background:#142f3a;color:#dcefeb;cursor:pointer;text-align:left}
+    .bot-location-panel button:hover{border-color:#7bd18b}
+    .bot-location-panel b{display:block;font-size:.9rem;margin-bottom:4px}
+    .bot-location-panel small{color:#a6bdc3}
+    .map-wrap{margin-top:13px;border-radius:15px;overflow:hidden;border:1px solid #2e525f;position:relative}
+    #botMap{height:250px;background:#153541}
+    .map-fallback{position:absolute;inset:0;background:linear-gradient(145deg,#1b4451,#0e2933);display:grid;place-items:center;text-align:center;z-index:2;padding:15px;color:#d4e7e7;line-height:1.5}
+    .map-coords{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}
+    .map-coords label{display:flex;flex-direction:column;gap:5px;color:#bed1d5;font-size:.85rem}
+    .map-coords input{width:100%;background:#081c23;border:1px solid #31515d;border-radius:12px;padding:12px;color:#fff;font-size:1rem}
+    .map-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:12px}
+    .map-instruction{color:#b1c8cd;font-size:.87rem;line-height:1.5;margin:10px 0}
+    .onboarding-loading{display:grid;place-items:center;gap:14px;min-height:300px;text-align:center}
+    .spinner{width:58px;height:58px;border:5px solid #ffffff20;border-top-color:#7bd18b;border-radius:50%;animation:spin .9s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .profile-ribbon{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+    .profile-ribbon span{padding:10px 13px;border-radius:12px;border:1px solid #ffffff1c;background:#ffffff07;color:#d1e7df;font-size:.87rem}
+    .demo-banner{border:1px solid #d7ad6180;background:#d7ad6124;border-radius:16px;color:#f9e3ba;padding:13px 16px;margin-bottom:20px;line-height:1.5;font-size:.91rem}
+    .source-card:focus-within .tooltip{opacity:1;transform:translateY(0)}
+    .source-card .badge{cursor:help}
+    .exit-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:15px}
+    @media(max-width:930px){.bot-layout{grid-template-columns:1fr}.bot-sidebar{display:none}.onboarding{padding:13px}.bot-main{min-height:calc(100vh - 85px)}}
+    @media(max-width:650px){.bot-main{padding:16px;border-radius:20px}.bot-thread{max-height:240px}.bot-options{grid-template-columns:1fr}.bot-location-panel{grid-template-columns:1fr}.bot-location-panel button{display:flex;justify-content:space-between;align-items:center}.nav-note{display:none}.map-coords{grid-template-columns:1fr}.bot-question{font-size:1.12rem}.bot-input-wrap{flex-wrap:wrap}.bot-submit{width:100%}}
+
+
+    /* CEREJÁ — calendário explicável: cards de mês + fonte NASA com contexto */
+    .plan-grid{grid-template-columns:1fr}
+    .plan-card{min-width:0}
+    .plan-card:first-child{background:linear-gradient(110deg,rgba(69,179,106,.10),rgba(255,255,255,.025));}
+    .calendar-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:12px 0 4px}
+    .calendar-caption{color:#b4cbd0;font-size:.91rem;line-height:1.5}
+    .calendar-demo{font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#f7d6a3;border:1px solid #f2bd754d;border-radius:99px;padding:7px 11px;background:#e8b86b17}
+    .timeline{grid-template-columns:repeat(12,minmax(0,1fr));gap:8px}
+    .month{appearance:none;cursor:pointer;text-align:left;color:var(--text);font:inherit;display:flex;flex-direction:column;gap:8px;transition:background .18s,border-color .18s,transform .18s;min-width:0;overflow-wrap:anywhere;}
+    .month .m,.month strong,.month span{margin-top:0}
+    .month strong{font-size:.83rem;line-height:1.25}
+    .month span{font-size:.74rem;line-height:1.4}
+    .month-more{margin-top:auto;color:#99e6b0;font-size:.73rem;font-weight:800;padding-top:8px}
+    .month:hover,.month:focus-visible{background:#1c4245;border-color:#80d5a0;transform:translateY(-2px);outline:none}
+    .month[aria-pressed="true"]{background:linear-gradient(180deg,#234e4b,#173a3b);border-color:#86dfa3;box-shadow:0 0 0 1px #7ddd9960 inset, 0 10px 28px #0004}
+    .month[aria-pressed="true"] .m{color:#c9f8db}
+    .month-detail{margin-top:18px;border-radius:24px;background:linear-gradient(145deg,#142f34,#0a222a 66%);border:1px solid #42726b;box-shadow:0 15px 40px #0004;padding:23px;animation:monthIn .22s ease;scroll-margin-top:94px}
+    @keyframes monthIn{from{opacity:.65;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+    .cal-detail-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;flex-wrap:wrap;border-bottom:1px solid #ffffff1a;padding-bottom:17px;margin-bottom:18px}
+    .cal-detail-overline{color:#a5ded9;letter-spacing:.15em;text-transform:uppercase;font-size:.74rem;font-weight:800}
+    .cal-detail-head h4{font-size:1.65rem;line-height:1.18;margin:8px 0}
+    .cal-detail-head p{color:#bbd0d2;max-width:75ch;line-height:1.55}
+    .cal-risk-tag{max-width:310px;color:#f5dfaf;background:#e4bb7515;border:1px solid #ecc67b4d;border-radius:15px;padding:12px 15px;line-height:1.45;font-size:.87rem}
+    .cal-risk-tag strong{display:block;color:#fee4ad;margin-bottom:4px}
+    .cal-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .cal-feature{background:#ffffff09;border:1px solid #ffffff15;border-radius:18px;padding:17px;min-width:0}
+    .cal-feature .cal-icon{font-size:1.2rem}
+    .cal-feature h5{font-size:.77rem;color:#97dec5;letter-spacing:.11em;text-transform:uppercase;margin:9px 0}
+    .cal-feature p{font-size:.96rem;line-height:1.65;color:#e0efea}
+    .cal-source-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:21px 0 11px;font-weight:800;font-size:.94rem}
+    .cal-source-title small{color:#f9ddaa;font-weight:600;font-size:.75rem}
+    .cal-source-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    .cal-source{position:relative;outline:none;border-radius:16px;background:#09212b;border:1px solid #275063;padding:13px 15px;min-width:0}
+    .cal-source:focus-visible,.cal-source:hover{border-color:#6bd3e6;background:#102f38}
+    .cal-source-name{font-size:.77rem;font-weight:800;letter-spacing:.08em;color:#9de7f2;text-transform:uppercase}
+    .cal-source-use{margin-top:7px;line-height:1.45;color:#c5d9dd;font-size:.85rem}
+    .cal-source-tip{display:none;position:absolute;left:8px;right:8px;top:calc(100% + 7px);padding:12px;border-radius:12px;background:#07171d;border:1px solid #65b7c7;color:#eaf4f4;line-height:1.48;font-size:.8rem;box-shadow:0 12px 24px #0007;z-index:4}
+    .cal-source:hover .cal-source-tip,.cal-source:focus .cal-source-tip{display:block}
+    .cal-detail-footer{margin-top:17px;padding:12px 14px;border-radius:13px;background:#e4bd7a10;border:1px solid #d8b67636;color:#e1ceab;font-size:.84rem;line-height:1.6}
+    @media(max-width:1100px){.timeline{grid-template-columns:repeat(6,minmax(0,1fr))}}
+    @media(max-width:760px){.timeline{grid-template-columns:repeat(3,minmax(0,1fr))}.cal-detail-grid,.cal-source-grid{grid-template-columns:1fr}.month{min-height:112px}.month-detail{padding:15px}.cal-detail-head h4{font-size:1.35rem}}
+    @media(max-width:425px){.timeline{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+    /* CEREJÁ | Aprender é uma área opcional e independente do painel principal */
+    body.learn-open{overflow:hidden}
+    .plan-grid{grid-template-columns:1fr}
+    .learn-entry{margin-top:22px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:22px 24px;border:1px solid rgba(123,209,139,.22);border-radius:20px;background:linear-gradient(105deg,rgba(69,179,106,.14),rgba(96,209,227,.04));}
+    .learn-entry .learn-eyebrow{font-size:.75rem;text-transform:uppercase;letter-spacing:.14em;color:#99e3b2;font-weight:800}
+    .learn-entry h4{font-size:1.35rem;margin:8px 0 7px}
+    .learn-entry p{font-size:.94rem;line-height:1.6;color:#c1d6d6;max-width:59ch}
+    .learn-button{border:1px solid #80dba1;background:linear-gradient(135deg,#8ee4a0,#56bd85);color:#09241d;border-radius:15px;padding:14px 22px;font:inherit;font-weight:900;cursor:pointer;box-shadow:0 10px 25px #0005;transition:transform .2s}
+    .learn-button:hover,.learn-button:focus-visible{transform:translateY(-2px);outline:2px solid #c9ffd5;outline-offset:2px}
+    .learn-window{position:fixed;inset:0;z-index:180;background:rgba(3,12,17,.84);backdrop-filter:blur(11px);overflow:auto;padding:22px max(14px,calc((100vw - 1300px)/2)) 44px;animation:monthIn .22s ease}
+    .learn-page{border:1px solid #315b64;background:radial-gradient(circle at top right,#173941,#0b1c24 58%);border-radius:28px;padding:clamp(16px,2.8vw,32px);box-shadow:0 28px 100px #0009;min-height:calc(100vh - 66px)}
+    .learn-top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding-bottom:18px;border-bottom:1px solid #ffffff20}
+    .learn-back{background:rgba(255,255,255,.07);border:1px solid #ffffff2c;border-radius:13px;color:#e8f9ee;font-size:.94rem;padding:11px 15px;font-weight:800;cursor:pointer}
+    .learn-back:hover,.learn-back:focus-visible{background:#25484b;border-color:#8be3ad;outline:none}
+    .learn-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:center;padding:28px 0 18px}
+    .learn-hero h2{font-size:clamp(1.85rem,3vw,2.7rem);max-width:25ch;line-height:1.08;margin:8px 0}
+    .learn-hero p{color:#bad1d7;line-height:1.65;max-width:72ch}
+    .learn-icon{height:84px;width:84px;display:grid;place-items:center;font-size:2.45rem;border-radius:25px;background:linear-gradient(135deg,#23614c,#194553);border:1px solid #478c7f;box-shadow:0 14px 30px #0004}
+    .learn-property{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+    .learn-property span{background:#ffffff0b;border:1px solid #ffffff1c;border-radius:100px;padding:8px 12px;font-size:.84rem;color:#d1e2e1}
+    .learn-focus{margin:16px 0 20px;border:1px solid #70c5a340;background:linear-gradient(115deg,#2046376b,#12313a77);padding:15px 18px;border-radius:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+    .learn-focus strong{font-weight:800;color:#d4f6da}
+    .learn-focus p{font-size:.9rem;line-height:1.5;color:#b7d2d6;margin-top:5px}
+    .learn-calendar{padding:20px;border:1px solid #ffffff1e;background:#091b23ab;border-radius:22px}
+    .learn-calendar h3{font-size:1.25rem;margin:5px 0 3px}
+    .learn-calendar .timeline{margin-top:16px}
+    .learn-window .month-detail{margin-top:19px}
+    .learn-footer{margin-top:20px;line-height:1.55;color:#99b7ba;font-size:.84rem}
+    @media(max-width:760px){.learn-window{padding:0}.learn-page{border-radius:0;min-height:100vh;padding:16px}.learn-hero{grid-template-columns:1fr;gap:12px}.learn-icon{display:none}.learn-calendar{padding:12px}.learn-entry{padding:17px}.learn-button{width:100%;justify-content:center}.learn-top .nav-note{display:none}}
+
+
+    /* CEREJÁ — interface do produtor: objetiva, sem exposição de catálogo técnico */
+    .hero{padding:56px 0 32px}
+    .hero-grid{grid-template-columns:1.12fr .88fr;gap:clamp(22px,3vw,45px);align-items:center}
+    .hero-copy h1{max-width:13ch;font-size:clamp(3rem,5.25vw,5.05rem);line-height:1.04;letter-spacing:-.045em;margin:23px 0}
+    .hero-copy .lead{max-width:55ch;font-size:1.08rem;line-height:1.73;color:#d7e5df}
+    .tag{background:rgba(123,209,139,.08);border-color:rgba(123,209,139,.17);letter-spacing:.07em;font-weight:700;text-transform:none;font-size:.79rem}
+    .hero-picture{height:490px;border-radius:30px;border:1px solid #2a5052;position:relative;overflow:hidden;background:radial-gradient(circle at 70% 18%,#1a4242 0%,#0a2429 63%,#092027 100%);box-shadow:0 28px 72px #0006;padding:18px}
+    .hero-halo{position:absolute;width:400px;height:400px;border:1px solid #ffffff0a;border-radius:50%;right:-110px;top:-130px;box-shadow:0 0 0 50px #ffffff04,0 0 0 100px #ffffff03;pointer-events:none}
+    .hero-landscape{display:block;width:100%;height:78%;filter:drop-shadow(0 18px 24px #0006)}
+    .hero-visual-title{position:absolute;left:35px;bottom:110px;display:grid;gap:7px;max-width:310px;text-shadow:0 4px 12px #071b1be0}
+    .hero-visual-title strong{font-family:'Space Grotesk',Inter,sans-serif;font-size:clamp(1.12rem,2vw,1.55rem);line-height:1.19}
+    .visual-eyebrow{letter-spacing:.12em;color:#bce5ce;font-size:.68rem;font-weight:800}
+    .hero-promise{position:absolute;left:20px;right:20px;bottom:18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .hero-promise span{background:#0d242be0;border:1px solid #ffffff22;border-radius:14px;padding:12px 10px;font-size:.77rem;color:#d7e9de;line-height:1.35}
+    .analysis-grid{grid-template-columns:1.15fr .85fr}
+    .cards{gap:12px}
+    .source-card{min-height:195px;overflow:visible;padding:20px;border-radius:19px;transition:border-color .2s,transform .2s;isolation:isolate}
+    .source-card:hover,.source-card:focus-within,.source-card:focus{border-color:#5fa88f;z-index:9;outline:none;transform:translateY(-2px)}
+    .source-card h3{margin-top:8px;color:#c6d9d4;font-size:.96rem;font-weight:600}
+    .source-card .value{font-size:clamp(1.65rem,3vw,2.14rem);margin-top:10px;letter-spacing:-.02em}
+    .source-card .context{font-size:.89rem;line-height:1.5;margin-top:8px}
+    .source-card-top{display:flex;justify-content:space-between;align-items:center}
+    .card-icon{display:grid;place-items:center;width:40px;height:40px;background:#1c3b3c;color:#b7edd0;border-radius:12px;font-size:1.25rem}
+    .source-help{border:1px solid #3e5e60;background:#163039;color:#a7d7d9;border-radius:999px;width:30px;height:30px;font-size:1rem;cursor:pointer}
+    .source-help:hover,.source-help:focus-visible{background:#276061;color:white;outline:2px solid #78c7a6}
+    .source-card .tooltip{z-index:20;left:8px;right:8px;bottom:12px;border:1px solid #49777a;background:#092229;padding:16px;transform:translateY(10px);pointer-events:none;box-shadow:0 24px 36px #000a;font-size:.83rem}
+    .source-card:hover .tooltip,.source-card:focus-within .tooltip,.source-card:focus .tooltip,.source-card.source-open .tooltip{opacity:1;transform:translateY(0);pointer-events:none}
+    .hint{font-size:.82rem;margin-top:13px}
+    .decision-box{gap:12px}
+    .decision-call{padding:24px;background:linear-gradient(145deg,#15383a,#152a2f 68%);border-color:#377363}
+    .decision-call .label{color:#a8e4c2}
+    .decision-call h3{font-size:1.55rem}
+    .farmer-action-panel{padding:23px}
+    .farmer-action-panel h3{font-size:1.32rem;margin-top:10px}
+    .farmer-action-panel p{color:#c8dcdb;line-height:1.6;margin-top:12px}
+    .farmer-link{margin-top:22px;font-size:.92rem;padding:12px 15px}
+    .strategy-status{font-size:.73rem;border-radius:999px;background:#1e3a34;color:#aedac1;padding:8px 10px;border:1px solid #2c5948;line-height:1.25;text-align:right}
+    .plan-source-help{background:#17383c;color:#d4eae3;border:1px solid #4c706d;border-radius:12px;padding:10px 12px;cursor:pointer;text-align:left;font-size:.93rem;font-weight:700;margin-top:10px}
+    .plan-source-help:hover,.plan-source-help:focus-visible{border-color:#80dfaa;outline:none}
+    .compare .box:has(.plan-tooltip){position:relative;overflow:visible}
+    .plan-tooltip{position:absolute;top:calc(100% + 8px);left:0;right:0;padding:16px;background:#09232b;border:1px solid #58a2a4;border-radius:15px;z-index:15;box-shadow:0 18px 35px #0009;opacity:0;visibility:hidden;transform:translateY(-5px);transition:.15s}
+    .plan-tooltip strong{font-size:.95rem;margin:0}
+    .plan-tooltip p{margin:7px 0;color:#d5e7e7}
+    .plan-tooltip small{color:#abc7c8}
+    .compare .box:has(.plan-tooltip):hover .plan-tooltip,.compare .box:has(.plan-tooltip):focus-within .plan-tooltip{opacity:1;visibility:visible;transform:translateY(0)}
+    .cal-source-name{letter-spacing:0;text-transform:none;font-size:.87rem;line-height:1.5}
+    .cal-source-tip{z-index:20}
+    .footer-note.tiny{font-size:.79rem;color:#a4b8b9}
+    @media(max-width:1020px){.hero-grid{grid-template-columns:1fr}.hero-picture{height:440px;max-width:720px;width:100%;margin-inline:auto}.analysis-grid{grid-template-columns:1fr}}
+    @media(max-width:720px){.hero{padding:32px 0 22px}.hero-copy h1{font-size:clamp(2.45rem,9.6vw,3.7rem)}.hero-picture{height:350px;padding:6px;border-radius:22px}.hero-landscape{height:76%}.hero-visual-title{bottom:99px;left:18px}.hero-promise{left:10px;right:10px;bottom:10px;gap:5px}.hero-promise span{font-size:.66rem;padding:9px 7px}.source-card{min-height:168px}.source-card .tooltip{left:5px;right:5px;bottom:5px;font-size:.8rem}.strategy-status{font-size:.68rem}}
+
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <div class="wrap nav-inner">
+      <div class="logo"><span class="cere">CERE</span><span class="ja">JÁ</span></div>
+      <div class="nav-actions"><div class="nav-note">Inteligência climática para o solo do café</div><button id="learnNav" class="nav-action" type="button" hidden>✦ Aprender</button><button id="editProperty" class="nav-action" type="button" hidden>✎ Editar propriedade</button></div>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <div class="tag">Adaptando o café às mudanças do clima</div>
+        <h1>Seu cafezal mais preparado para o clima que vem.</h1>
+        <p class="lead">O <strong>CEREJÁ</strong> analisa o clima da sua região com dados da NASA e ajuda você a <strong>escolher a cobertura certa</strong>, proteger a água no solo e planejar o manejo das entrelinhas.</p>
+        <div class="cta-row">
+          <button class="btn btn-primary" type="button" id="startAnalysis">Começar minha análise →</button>
+          <button class="btn btn-secondary" type="button" id="resumeAnalysis" hidden>Continuar análise anterior</button>
+        </div>
+        <div class="intro-notice">Prévia interativa · Indicadores de exemplo, sem consulta ao vivo.</div>
+      </div>
+      <div class="hero-picture" aria-label="Ilustração do solo do cafezal protegido por plantas de cobertura">
+        <div class="hero-halo"></div>
+        <svg class="hero-landscape" viewBox="0 0 640 480" role="img" aria-labelledby="soilDrawingTitle">
+          <title id="soilDrawingTitle">Solo protegido por plantas, com raízes e diferentes camadas</title>
+          <defs>
+            <linearGradient id="skyGlow" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#244d57"/><stop offset="1" stop-color="#0d262a"/></linearGradient>
+            <linearGradient id="soilDeep" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#765138"/><stop offset="1" stop-color="#382b29"/></linearGradient>
+            <linearGradient id="greenPlant" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a7db9f"/><stop offset="1" stop-color="#399b6a"/></linearGradient>
+            <clipPath id="roundScene"><rect x="24" y="28" width="592" height="414" rx="34"/></clipPath>
+          </defs>
+          <g clip-path="url(#roundScene)">
+          <rect x="24" y="28" width="592" height="414" fill="url(#skyGlow)"/>
+          <circle cx="507" cy="114" r="47" fill="#F1CE83" opacity=".92"/>
+          <circle cx="507" cy="114" r="70" fill="#f1ce83" opacity=".065"/>
+          <path d="M24 220 Q130 181 219 204 T418 194 T616 209 L616 442 L24 442Z" fill="#276247"/>
+          <path d="M24 255 Q160 238 270 249 T616 245 L616 442 L24 442Z" fill="url(#soilDeep)"/>
+          <path d="M24 251 Q190 246 338 251 T616 247" fill="none" stroke="#D6AC77" stroke-width="11" stroke-linecap="round" stroke-dasharray="25 6 34 9"/>
+          <path d="M24 333 Q160 303 315 334 T616 330" fill="none" stroke="#C09064" stroke-width="2" opacity=".28"/>
+          <path d="M24 389 Q160 362 315 390 T616 387" fill="none" stroke="#C09064" stroke-width="2" opacity=".2"/>
+          <!-- coffee plants -->
+          <g stroke="#8bc79d" stroke-width="5" stroke-linecap="round">
+            <path d="M155 249V151 M326 251V135 M495 248V153"/>
+          </g>
+          <g fill="url(#greenPlant)">
+            <ellipse cx="118" cy="187" rx="41" ry="18" transform="rotate(-29 118 187)"/>
+            <ellipse cx="183" cy="176" rx="43" ry="18" transform="rotate(25 183 176)"/>
+            <ellipse cx="139" cy="149" rx="31" ry="14" transform="rotate(-22 139 149)"/>
+            <ellipse cx="184" cy="139" rx="31" ry="15" transform="rotate(30 184 139)"/>
+            <ellipse cx="293" cy="170" rx="50" ry="20" transform="rotate(-29 293 170)"/>
+            <ellipse cx="365" cy="170" rx="49" ry="20" transform="rotate(30 365 170)"/>
+            <ellipse cx="311" cy="133" rx="33" ry="15" transform="rotate(-22 311 133)"/>
+            <ellipse cx="350" cy="121" rx="31" ry="15" transform="rotate(31 350 121)"/>
+            <ellipse cx="459" cy="187" rx="42" ry="19" transform="rotate(-28 459 187)"/>
+            <ellipse cx="526" cy="181" rx="42" ry="18" transform="rotate(29 526 181)"/>
+            <ellipse cx="477" cy="150" rx="34" ry="15" transform="rotate(-17 477 150)"/>
+          </g>
+          <g fill="#cb6651"><circle cx="147" cy="195" r="6"/><circle cx="163" cy="206" r="6"/><circle cx="327" cy="203" r="6"/><circle cx="340" cy="196" r="6"/><circle cx="484" cy="200" r="6"/></g>
+          <!-- cover crops -->
+          <g stroke="#a4d59d" stroke-width="3" stroke-linecap="round" fill="none">
+            <path d="M226 250 l-8 -35 m8 35 l10 -29 m-10 18 l-17 -9 m17 2 l18 -12"/>
+            <path d="M405 250 l-9 -39 m9 39 l13 -34 m-12 18 l-18 -9 m16 2 l18 -11"/>
+            <path d="M565 248 l-8 -28 m8 28 l10 -28"/>
+            <path d="M83 249 l-8 -27 m8 27 l10 -27"/>
+          </g>
+          <g fill="#5fc48b"><ellipse cx="208" cy="225" rx="13" ry="6" transform="rotate(25 208 225)"/><ellipse cx="246" cy="219" rx="13" ry="6" transform="rotate(-25 246 219)"/><ellipse cx="387" cy="222" rx="14" ry="6" transform="rotate(24 387 222)"/><ellipse cx="422" cy="217" rx="14" ry="6" transform="rotate(-24 422 217)"/></g>
+          <!-- root network -->
+          <g stroke="#dcb084" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".95">
+            <path d="M155 250q-14 32-14 69t-30 53 M155 250q20 45 11 71t25 50 M155 250q-1 47 8 103 M326 252q-23 36-12 82t-23 65 M326 252q26 45 23 91t24 49 M326 252q-2 65 1 140 M495 250q-27 33-21 81t-21 60 M495 250q25 34 15 78t23 58 M495 250q-2 64-1 120"/>
+            <path d="M223 249q-14 21-17 50 M223 249q15 23 17 47 M404 249q-19 17-19 55 M404 249q17 18 20 48 M83 249q-10 19-8 42 M565 249q14 18 14 43"/>
+          </g>
+          <g fill="#f0d59b" opacity=".68"><circle cx="99" cy="296" r="2"/><circle cx="261" cy="311" r="2.5"/><circle cx="395" cy="367" r="2"/><circle cx="559" cy="350" r="2.5"/><circle cx="204" cy="401" r="2"/><circle cx="478" cy="297" r="2"/></g>
+          </g>
+        </svg>
+        <div class="hero-visual-title"><span class="visual-eyebrow">O FUTURO COMEÇA NO SOLO</span><strong>Mais proteção.<br>Mais capacidade de adaptação.</strong></div>
+        <div class="hero-promise"><span>✓ Entenda os riscos da sua lavoura</span><span>✓ Escolha como proteger o solo</span><span>✓ Saiba quando agir</span></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap" id="analysisMain" hidden>
+    <div class="demo-banner" style="margin-top:24px"><strong>Prévia demonstrativa:</strong> os valores exibidos são exemplos e não representam medições atuais da sua propriedade. Toque no símbolo ⓘ de cada indicador para saber qual fonte será utilizada na versão conectada.</div>
+    <section class="section" id="propriedades">
+      <div class="section-head">
+        <div>
+          <div class="kicker">01 / propriedade analisada</div>
+          <h2>Esta é a sua propriedade.</h2>
+        </div>
+        <p class="desc">Veja o que o clima pode significar para sua lavoura. Os detalhes de cada indicador aparecem ao passar o mouse ou tocar em ⓘ.</p>
+      </div>
+      <div class="profile-ribbon" id="currentProfile"></div>
+      <div class="selector" id="farmSelector" hidden></div>
+    </section>
+
+    <section class="section">
+      <div class="analysis-grid">
+        <div class="panel">
+          <div class="section-head" style="margin-bottom:14px">
+            <div>
+              <div class="kicker">02 / leitura da propriedade</div>
+              <h2 style="font-size:1.9rem">Como está o clima da sua região?</h2>
+            </div>
+          </div>
+          <div class="cards" id="sourceCards"></div>
+          <div class="hint">Passe o mouse sobre os indicadores ou toque em ⓘ para conhecer a origem das informações.</div>
+        </div>
+
+        <div class="decision-box">
+          <div class="panel decision-call">
+            <div class="label">Sinal principal da propriedade</div>
+            <h3 id="signalTitle"></h3>
+            <p id="signalText"></p>
+          </div>
+          <div class="panel farmer-action-panel">
+            <div class="kicker">03 / sua próxima decisão</div>
+            <h3>Qual manejo ajuda a proteger sua lavoura?</h3>
+            <p>Compare opções de cobertura, veja os cuidados necessários e escolha a mais adequada para as condições da sua propriedade.</p>
+            <a class="btn btn-primary farmer-link" href="#manejo">Comparar estratégias <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="manejo">
+      <div class="section-head">
+        <div>
+          <div class="kicker">04 / estratégias de adaptação</div>
+          <h2>Três maneiras de cuidar das entrelinhas.</h2>
+        </div>
+        <p class="desc">Compare as plantas de cobertura, os benefícios e os cuidados de cada alternativa para sua lavoura.</p>
+      </div>
+      <div class="strategy-grid" id="strategyGrid"></div>
+    </section>
+
+    <section class="section" id="impacto">
+      <div class="section-head">
+        <div>
+          <div class="kicker">05 / impacto ambiental estimado</div>
+          <h2>Como essa escolha protege o solo.</h2>
+        </div>
+        <p class="desc">Este painel mostra o efeito esperado da estratégia selecionada sobre proteção do solo, conservação de água, erosão, palhada, matéria orgânica e competição hídrica. O objetivo é ajudar o produtor a <strong>preparar o solo para o clima que vem pela frente</strong>.</p>
+      </div>
+      <div class="impact-grid">
+        <div class="panel light">
+          <div class="kicker" style="color:#59757d">visualização do sistema solo + cobertura</div>
+          <h3 style="font-size:1.75rem; margin-top:6px">Sua escolha, vista no perfil do solo.</h3>
+          <div class="soil-scene" aria-hidden="true" style="margin-top:18px">
+            <div class="sun"></div>
+            <div class="cloud"></div>
+            <div class="surface-strip" id="surfacePlants"></div>
+            <div class="mulch"></div>
+            <div class="roots" id="rootsScene"></div>
+            <div class="soil-labels">
+              <div class="soil-label"><strong>Camada superficial</strong><br><span id="sceneTop"></span></div>
+              <div class="soil-label"><strong>Zona radicular</strong><br><span id="sceneRoot"></span></div>
+              <div class="soil-label"><strong>Mensagem-chave</strong><br><span id="sceneKey"></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="kicker">comparação entre estratégias</div>
+          <h3 style="font-size:1.55rem; margin-top:6px">Matriz de adaptação do solo</h3>
+          <div class="matrix" id="matrix"></div>
+          <div class="footer-note" style="margin-bottom:0">
+            <strong id="summaryTitle"></strong><br>
+            <span id="summaryText"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="kicker">06 / plano de adaptação do solo</div>
+          <h2>O que fazer a partir desta leitura.</h2>
+        </div>
+        <p class="desc">O plano final não entrega só uma espécie. Ele mostra a cobertura sugerida, os principais cuidados e o caminho para aprofundar o calendário de manejo.</p>
+      </div>
+      <div class="plan-grid">
+        <div class="plan-card">
+          <div class="kicker">estratégia selecionada</div>
+          <h3 style="font-size:1.7rem; margin-top:6px" id="selectedStrategy"></h3>
+          <p style="margin-top:12px; color:#c5d8db; line-height:1.65" id="selectedDescription"></p>
+          <div class="compare">
+            <div class="box">
+              <div class="cap">Entenda esta orientação</div>
+              <button type="button" id="planSourceHelp" class="plan-source-help" aria-label="Ver a origem da orientação">ⓘ Como avaliamos?</button>
+              <div class="plan-tooltip" id="planSourceTooltip" role="note"><strong id="dominantSource"></strong><p id="dominantUse"></p><small>Fontes previstas; valores desta demonstração são ilustrativos.</small></div>
+            </div>
+            <div class="box">
+              <div class="cap">Próximo cuidado</div>
+              <strong id="nextCareTitle"></strong>
+              <p id="nextCareText"></p>
+            </div>
+          </div>
+          <div class="learn-entry">
+            <div>
+              <div class="learn-eyebrow">Conteúdo opcional · Aprender</div>
+              <h4>Quer entender o manejo mês a mês?</h4>
+              <p>Abra o guia mês a mês e veja o que fazer, quando agir e quais cuidados observar no seu cafezal.</p>
+            </div>
+            <button class="learn-button" id="learnFromPlan" type="button">✦ Aprender <span aria-hidden="true">↗</span></button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="footer-note tiny">
+      <strong>Observação importante:</strong> este é um <strong>protótipo conceitual</strong> focado em experiência, posicionamento e lógica de produto. Os números apresentados simulam a saída processada pelo CEREJÁ a partir de fontes NASA e servem para demonstrar <strong>como os dados se tornam decisão de adaptação do solo</strong>. Na implementação final, cada indicador deverá ser conectado aos conectores reais e exibir sua proveniência completa.
+    </div>
+  </main>
+
+
+  <!-- Área opcional Aprender: nunca aparece no dashboard até o produtor clicar no botão -->
+  <section class="learn-window" id="learnWindow" role="dialog" aria-modal="true" aria-labelledby="learnTitle" hidden>
+    <div class="learn-page">
+      <div class="learn-top">
+        <div class="logo"><span class="cere">CERE</span><span class="ja">JÁ</span><span class="tiny" style="font-size:.7rem;letter-spacing:.14em;margin-left:14px">/ APRENDER</span></div>
+        <button class="learn-back" id="closeLearn" type="button">← Voltar à análise</button>
+      </div>
+      <div class="learn-hero">
+        <div>
+          <div class="kicker">Aprender / Guia de manejo climático</div>
+          <h2 id="learnTitle">Aprenda a preparar o solo ao longo do ano.</h2>
+          <p>Escolha um mês para entender <strong>o que fazer, por que fazer, o risco do período e como os dados da NASA apoiariam essa decisão</strong>. As orientações abaixo são adaptadas ao cenário demonstrativo da propriedade e à estratégia que você selecionou.</p>
+        </div>
+        <div class="learn-icon" aria-hidden="true">🌱</div>
+      </div>
+      <div class="learn-property" id="learnProperty"></div>
+      <div class="learn-focus">
+        <div><strong id="learnFocusTitle">Plano da propriedade</strong><p id="learnFocusDetail">Estratégia selecionada</p></div>
+        <span class="calendar-demo">◉ Demonstração · Sem consulta NASA ao vivo</span>
+      </div>
+      <div class="learn-calendar">
+        <div class="kicker">Seu calendário educativo · 12 meses</div>
+        <h3>Selecione um mês para aprofundar</h3>
+        <div class="timeline" id="timeline" aria-label="Calendário mensal educativo"></div>
+        <section class="month-detail" id="monthDetails" aria-label="Detalhes de manejo do mês selecionado" aria-live="polite"></section>
+      </div>
+      <div class="learn-footer">Este guia faz parte do protótipo CEREJÁ e apresenta exemplos sazonais, não observações de satélite verificadas. A versão conectada deverá utilizar os dados reais da sua localização e indicar seus períodos, parâmetros, resolução e incerteza.</div>
+    </div>
+  </section>
+
+  <section class="onboarding" id="onboarding" role="dialog" aria-label="Diagnóstico guiado do CEREJÁ" aria-modal="true" hidden>
+    <div class="wrap nav-inner" style="padding:4px 0 0">
+      <div class="logo"><span class="cere">CERE</span><span class="ja">JÁ</span><span class="tiny" style="font-size:.72rem; margin-left:14px;letter-spacing:.13em">DIAGNÓSTICO INTELIGENTE</span></div>
+      <button type="button" class="bot-quit" id="closeBot">Fechar ×</button>
+    </div>
+    <div class="bot-layout">
+      <aside class="bot-sidebar">
+        <div class="side-tag">Etapa inicial / propriedade</div>
+        <div class="orb" aria-hidden="true">🍒</div>
+        <h2>Conhecer sua terra é o primeiro passo.</h2>
+        <p>Um diálogo rápido para adaptar a análise ao seu cafezal. Depois, você explora estratégias para proteger seu solo diante das mudanças climáticas.</p>
+        <div class="source-mini">Sua propriedade orienta cada decisão.<br><br><b>Prévia com dados ilustrativos.</b></div>
+      </aside>
+      <div class="bot-main">
+        <div class="bot-head"><span class="tag" style="font-size:.72rem">◉ Assistente CEREJÁ</span><span class="bot-progress-label" id="stepNumber">Pergunta 1 de 11</span></div>
+        <div class="bot-progress"><div id="progressBar"></div></div>
+        <div class="bot-thread" id="botThread" aria-live="polite"></div>
+        <div class="bot-answer" id="botAnswer"></div>
+        <div class="bot-error" id="botError" role="alert"></div>
+        <div class="bot-foot"><button type="button" class="bot-back" id="backStep">← Voltar</button><span class="tiny" id="botFootNote">Uma pergunta por vez · sem login</span></div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const farms = {
+      cacoal: {
+        name: "Cacoal — RO",
+        badge: "Canéfora",
+        intro: "Cenário amazônico com estação seca marcada e prioridade em segurar água no solo.",
+        profile: "Café canéfora · 5 ha · espaçamento 3,0 m · manejo atual com cobertura permanente",
+        signalTitle: "Risco crítico: atravessar a seca sem expor o solo.",
+        signalText: "O histórico de chuva e a projeção futura indicam atenção à manutenção de cobertura e palhada para proteger a umidade durante a estação seca.",
+        flow: [
+          ["NASA POWER", "Histórico de chuva e temperatura da área"],
+          ["NASA GPM/IMERG", "Meses com chuva intensa e distribuição sazonal"],
+          ["NASA SMAP", "Sinal de umidade do solo e sensibilidade hídrica"],
+          ["NASA NEX-GDDP", "Tendência de aquecimento e estresse até 2050"]
+        ],
+        cards: [
+          { title:"Histórico climático", value:"198,7 mm", context:"Acumulado recente de chuva. Janela seca mais sensível: jun–ago.", badge:"NASA POWER", tip:"Fonte: NASA POWER. Variáveis principais: PRECTOTCORR, T2M e RH2M. Uso no CEREJÁ: entender histórico de chuva, temperatura e sazonalidade para decidir o melhor momento de implantar e manejar a cobertura."},
+          { title:"Chuvas intensas", value:"Nov–jan", context:"Período com maior concentração de chuva e risco de enxurrada.", badge:"NASA GPM/IMERG", tip:"Fonte: NASA GPM/IMERG. Uso no CEREJÁ: identificar distribuição da precipitação e períodos de chuva intensa, fundamentais para avaliar risco de erosão e proteção do solo."},
+          { title:"Umidade do solo", value:"0,24 m³/m³", context:"Condição intermediária; solo não deve ficar descoberto na transição para a seca.", badge:"NASA SMAP", tip:"Fonte: NASA SMAP. Variável de referência: umidade superficial do solo. Uso no CEREJÁ: avaliar o contexto hídrico regional e o risco de competição entre cobertura e cafeeiro."},
+          { title:"Clima futuro", value:"+1,8°C", context:"Cenário de aquecimento com redução de chuva na seca até 2050.", badge:"NASA NEX-GDDP", tip:"Fonte: projeções climáticas NASA NEX-GDDP-CMIP6. Uso no CEREJÁ: comparar o clima atual com cenários futuros e orientar decisões de adaptação do solo."}
+        ],
+        strategies:[
+          {id:"conv", title:"Manejo convencional", score:"67", species:"Vegetação espontânea + palhada", sub:"Útil como transição quando já existe cobertura estabelecida. Exige cuidado para não deixar o solo nu após a roçagem.", chips:["Baixo custo","Resposta rápida","Proteção parcial"], tip:"A estratégia usa o histórico NASA para definir quando preservar cobertura existente e reduzir o risco de exposição do solo antes da seca.", selected:false},
+          {id:"perm", title:"Cobertura permanente", score:"88", species:"Braquiária ruziziensis", sub:"Melhor equilíbrio para este cenário: protege o solo, mantém resíduos e ajuda a atravessar a estação seca com maior resiliência.", chips:["Melhor adequação","Conserva água","Forma palhada"], tip:"A recomendação cruza POWER + SMAP + cenário futuro da NASA para priorizar uma cobertura estável em um ambiente com maior risco hídrico sazonal.", selected:true},
+          {id:"rot", title:"Rotação de coberturas", score:"74", species:"Crotalária + milheto + feijão-de-porco", sub:"Traz diversidade, mas exige mais planejamento. Em anos secos, a sequência precisa ser conduzida com cautela.", chips:["Alta diversidade","Manejo complexo","Exige revisão anual"], tip:"A rotação é viável, mas o histórico climático e o risco hídrico exigem escolher bem a janela de implantação."}
+        ],
+        matrix:{
+          rows:[
+            ["Proteção do solo","Moderado","Forte","Forte"],
+            ["Conservação da água","Moderado","Forte","Moderado"],
+            ["Risco de erosão","Moderado","Baixo","Baixo"],
+            ["Formação de palhada","Moderado","Forte","Forte"],
+            ["Matéria orgânica","Moderado","Moderado","Forte"],
+            ["Competição hídrica","Baixo","Moderado","Moderado"]
+          ],
+          summaryTitle:"Melhor adequação ambiental identificada: Cobertura permanente.",
+          summaryText:"Para Cacoal, o CEREJÁ prioriza proteger a umidade do solo e reduzir exposição na seca. Os dados da NASA indicam que a manutenção de cobertura estável é a escolha mais segura para adaptar o solo do cafezal ao clima futuro."
+        },
+        scene:{top:"Cobertura contínua reduz exposição e aquece menos o solo.", root:"Raízes e palhada ajudam a atravessar a transição para a seca.", key:"Meta principal: conservar água e proteger o perfil do solo."},
+        plan:{
+          strategy:"Cobertura permanente — Braquiária ruziziensis",
+          description:"A recomendação para esta propriedade é manter uma cobertura permanente e manejar sua altura para equilibrar proteção do solo e competição hídrica. O plano foi escolhido porque os dados da NASA apontam um cenário em que a estação seca tende a ficar mais sensível.",
+          source:"NASA POWER + SMAP + NEX-GDDP",
+          use:"O histórico climático, a umidade do solo e o cenário futuro sustentam a decisão de reforçar a conservação de água no perfil.",
+          careTitle:"Monitorar a transição seca",
+          careText:"Antes dos meses mais secos, reforçar palhada e reduzir o risco de solo descoberto após a roçagem.",
+          timeline:[
+            ["Jan","Cobertura ativa","Período chuvoso — consolidar biomassa"],["Fev","Cobertura ativa","Manter solo coberto"],["Mar","Roçagem leve","Preservar resíduos"],["Abr","Palhada","Início da transição"],["Mai","Monitorar água","Evitar exposição"],["Jun","Conservar","Mês crítico da seca"],["Jul","Conservar","Reduzir competição"],["Ago","Conservar","Acompanhar umidade"],["Set","Retomar vigor","Preparar retomada das chuvas"],["Out","Revisar cobertura","Janela de reestabelecimento"],["Nov","Expansão","Chuva favorece cobertura"],["Dez","Proteção máxima","Fechar ciclo com solo coberto"]
+          ]
+        }
+      },
+      patrocinio: {
+        name: "Patrocínio — MG",
+        badge: "Arábica",
+        intro: "Cerrado mineiro com inverno seco, espaçamento maior e necessidade de planejar cobertura sem agravar competição hídrica.",
+        profile: "Café arábica · 4 ha · espaçamento 4,0 m · manejo atual por roçagem",
+        signalTitle: "Risco crítico: combinar proteção do solo com seca de inverno.",
+        signalText: "O ponto central aqui é aproveitar melhor as janelas de chuva e evitar que a cobertura aumente a competição por água na estação seca do Cerrado.",
+        flow: [
+          ["NASA POWER", "Climatologia do Cerrado e janela de chuva"],
+          ["NASA GPM/IMERG", "Concentração sazonal da precipitação"],
+          ["NASA SMAP", "Suporte para leitura da água disponível"],
+          ["NASA NEX-GDDP", "Tendência de aquecimento no longo prazo"]
+        ],
+        cards: [
+          { title:"Histórico climático", value:"121,2 mm", context:"Chuva concentrada; inverno mais seco exige planejamento fino do manejo.", badge:"NASA POWER", tip:"Fonte: NASA POWER. Uso: identificar a sazonalidade do Cerrado, temperaturas e janelas mais favoráveis para a implantação da cobertura."},
+          { title:"Distribuição da chuva", value:"Out–mar", context:"Fase mais úmida do ano. Janela mais segura para estabelecimento de cobertura.", badge:"NASA GPM/IMERG", tip:"Fonte: NASA GPM/IMERG. Uso: mostrar quando a chuva se concentra e orientar o calendário da cobertura."},
+          { title:"Umidade do solo", value:"0,18 m³/m³", context:"Condição mais restritiva no período seco; estratégia precisa evitar competição excessiva.", badge:"NASA SMAP", tip:"Fonte: NASA SMAP. Uso: qualificar o risco hídrico e ajustar a compatibilidade das espécies nas fases mais secas."},
+          { title:"Clima futuro", value:"+2,0°C", context:"Aquecimento mais forte e seca de inverno mais pressionada até meados do século.", badge:"NASA NEX-GDDP", tip:"Fonte: NASA NEX-GDDP-CMIP6. Uso: apontar que a adaptação do solo deve ganhar importância crescente no futuro do cafezal."}
+        ],
+        strategies:[
+          {id:"conv", title:"Manejo convencional", score:"72", species:"Vegetação espontânea manejada", sub:"Funciona como base, mas oferece proteção limitada se a cobertura não se mantém estável até a seca.", chips:["Simples","Menor custo","Proteção moderada"], tip:"A leitura climática sugere cautela para não expor o solo antes da estação seca."},
+          {id:"perm", title:"Cobertura permanente", score:"69", species:"Braquiária condicionada", sub:"Pode ajudar, mas o risco hídrico e o inverno seco pedem manejo rigoroso e janela muito bem escolhida.", chips:["Proteção boa","Risco hídrico","Requer manejo"], tip:"Os dados NASA mostram que a cobertura permanente precisa ser bem calibrada para não ampliar a disputa por água."},
+          {id:"rot", title:"Rotação de coberturas", score:"85", species:"Milheto + crotalária + feijão-de-porco", sub:"Melhor ajuste para este cenário: permite adaptar espécies à sazonalidade e distribuir melhor o risco ao longo do tempo.", chips:["Melhor adequação","Diversifica","Planejamento maior"], tip:"A rotação é favorecida porque permite modular a cobertura conforme o regime de chuva e a seca do Cerrado.", selected:true}
+        ],
+        matrix:{
+          rows:[
+            ["Proteção do solo","Moderado","Forte","Forte"],
+            ["Conservação da água","Moderado","Moderado","Forte"],
+            ["Risco de erosão","Moderado","Baixo","Baixo"],
+            ["Formação de palhada","Moderado","Forte","Forte"],
+            ["Matéria orgânica","Moderado","Moderado","Forte"],
+            ["Competição hídrica","Baixo","Alto","Moderado"]
+          ],
+          summaryTitle:"Melhor adequação ambiental identificada: Rotação de coberturas.",
+          summaryText:"Para Patrocínio, o CEREJÁ prioriza uma sequência mais flexível e adaptável ao regime de chuvas do Cerrado. A leitura dos dados da NASA indica que alternar espécies ajuda a proteger o solo sem assumir continuamente o mesmo risco hídrico."
+        },
+        scene:{top:"Cobertura ajustada por época reduz falhas no período seco.", root:"Alternar espécies diversifica raízes e distribui melhor o uso de água.", key:"Meta principal: adaptar o solo sem agravar a seca de inverno."},
+        plan:{
+          strategy:"Rotação de coberturas — milheto, crotalária e feijão-de-porco",
+          description:"A estratégia recomendada para esta lavoura é a rotação planejada de coberturas. O objetivo é usar a sazonalidade do Cerrado a favor do sistema, distribuindo melhor o risco hídrico e aumentando a diversidade funcional nas entrelinhas.",
+          source:"NASA POWER + GPM/IMERG + SMAP + NEX-GDDP",
+          use:"Os dados da NASA sustentam a escolha porque mostram concentração de chuva, seca sazonal mais intensa e cenário futuro de aquecimento.",
+          careTitle:"Sincronizar com a chuva",
+          careText:"Implantar e renovar coberturas dentro da janela úmida, evitando que a estratégia entre no pico da seca sem estabelecimento suficiente.",
+          timeline:[
+            ["Jan","Cobertura ativa","Fase úmida — crescimento vigoroso"],["Fev","Cobertura ativa","Acúmulo de biomassa"],["Mar","Manejo","Planejar transição"],["Abr","Palhada","Fechamento da estação úmida"],["Mai","Atenção hídrica","Início da seca"],["Jun","Solo protegido","Reduzir competição"],["Jul","Monitorar","Evitar solo nu"],["Ago","Planejar próxima espécie","Preparar retomada"],["Set","Janela de decisão","Aguardar primeiras chuvas"],["Out","Implantar","Início ideal da nova cobertura"],["Nov","Estabelecimento","Consolidar cobertura"],["Dez","Expansão","Maximizar proteção"]
+          ]
+        }
+      },
+      boa: {
+        name: "Boa Esperança — ES",
+        badge: "Conilon irrigado",
+        intro: "Cafezal conilon com irrigação; oportunidade de transformar solo exposto em sistema mais resiliente e protegido.",
+        profile: "Café conilon · 6 ha · espaçamento 3,5 m · irrigação por gotejamento",
+        signalTitle: "Risco crítico: solo exposto em ambiente quente e irrigado.",
+        signalText: "A presença de irrigação abre oportunidade para introduzir cobertura com mais segurança. O foco é reduzir exposição e construir matéria orgânica sem perder controle do manejo.",
+        flow: [
+          ["NASA POWER", "Calor e sazonalidade da área"],
+          ["NASA GPM/IMERG", "Distribuição da chuva ao longo do ano"],
+          ["NASA SMAP", "Leitura complementar da disponibilidade hídrica"],
+          ["NASA NEX-GDDP", "Tendência futura de aquecimento"]
+        ],
+        cards: [
+          { title:"Histórico climático", value:"154,4 mm", context:"Condição quente e com oportunidade de aproveitar a irrigação para proteger o solo.", badge:"NASA POWER", tip:"Fonte: NASA POWER. Uso: apoiar a leitura de temperatura e chuva do ambiente conilon."},
+          { title:"Distribuição da chuva", value:"Out–jan", context:"Período mais favorável para implantação e ganho rápido de cobertura.", badge:"NASA GPM/IMERG", tip:"Fonte: NASA GPM/IMERG. Uso: definir janelas com melhor chance de estabelecimento de cobertura."},
+          { title:"Umidade do solo", value:"0,22 m³/m³", context:"Irrigação favorece estratégia mais ambiciosa, desde que a competição seja monitorada.", badge:"NASA SMAP", tip:"Fonte: NASA SMAP. Uso: compor o raciocínio de risco hídrico junto com a informação local de irrigação."},
+          { title:"Clima futuro", value:"+1,6°C", context:"Aquecimento progressivo reforça a necessidade de proteger solo e matéria orgânica.", badge:"NASA NEX-GDDP", tip:"Fonte: NASA NEX-GDDP-CMIP6. Uso: indicar que a resiliência térmica do solo precisará ser fortalecida."}
+        ],
+        strategies:[
+          {id:"conv", title:"Manejo convencional", score:"58", species:"Solo exposto / vegetação eventual", sub:"É a situação mais vulnerável aqui. Mantém o solo desprotegido por muito tempo e perde a chance de usar a irrigação a favor da adaptação.", chips:["Mais vulnerável","Baixa proteção","Pouca resiliência"], tip:"Os dados da NASA mostram que manter o solo exposto não é a melhor resposta para um ambiente em aquecimento."},
+          {id:"perm", title:"Cobertura permanente", score:"83", species:"Amendoim-forrageiro ou braquiária bem manejada", sub:"A combinação com irrigação torna essa alternativa forte para construir cobertura, matéria orgânica e estabilidade do solo.", chips:["Alta proteção","Irrigação favorece","Boa estabilidade"], tip:"A leitura integrada de clima + irrigação torna a cobertura permanente bastante competitiva aqui.", selected:true},
+          {id:"rot", title:"Rotação de coberturas", score:"79", species:"Crotalária + braquiária + leguminosa", sub:"Boa alternativa se a propriedade quiser combinar proteção com diversidade funcional, mas exige mais gestão.", chips:["Diversifica","Bom potencial","Manejo maior"], tip:"A rotação funciona bem, mas a cobertura permanente já atende fortemente o problema central desta área."}
+        ],
+        matrix:{
+          rows:[
+            ["Proteção do solo","Fraco","Forte","Forte"],
+            ["Conservação da água","Fraco","Forte","Moderado"],
+            ["Risco de erosão","Moderado","Baixo","Baixo"],
+            ["Formação de palhada","Fraco","Moderado","Forte"],
+            ["Matéria orgânica","Fraco","Moderado","Forte"],
+            ["Competição hídrica","Baixo","Moderado","Moderado"]
+          ],
+          summaryTitle:"Melhor adequação ambiental identificada: Cobertura permanente.",
+          summaryText:"Para Boa Esperança, o problema central é o solo exposto. O CEREJÁ usa o clima observado pela NASA e a informação local de irrigação para indicar que uma cobertura permanente é a resposta mais objetiva para adaptar o solo à mudança climática."
+        },
+        scene:{top:"Cobertura contínua protege o solo e reduz aquecimento superficial.", root:"Raízes e resíduos ajudam a construir estrutura e matéria orgânica.", key:"Meta principal: sair do solo exposto para um sistema protegido."},
+        plan:{
+          strategy:"Cobertura permanente — amendoim-forrageiro ou braquiária manejada",
+          description:"Para esta propriedade, o CEREJÁ recomenda substituir o solo exposto por uma cobertura estável. A irrigação dá uma vantagem importante para estabelecer a estratégia com mais segurança e acelerar o ganho de proteção ambiental do sistema.",
+          source:"NASA POWER + GPM/IMERG + SMAP + cenário futuro NASA",
+          use:"Os dados sustentam a necessidade de proteger o solo em um contexto de calor e reforçam a oportunidade criada pela irrigação disponível.",
+          careTitle:"Implantar e acompanhar",
+          careText:"A fase mais importante é o estabelecimento inicial da cobertura e o ajuste fino do manejo para evitar competição excessiva.",
+          timeline:[
+            ["Jan","Implantar","Aproveitar chuva + irrigação"],["Fev","Estabelecer","Fechar cobertura"],["Mar","Expandir","Ganhar biomassa"],["Abr","Roçagem leve","Preservar resíduos"],["Mai","Cobertura estável","Conservar umidade"],["Jun","Manter","Acompanhar competição"],["Jul","Manter","Reforçar palhada"],["Ago","Monitorar","Ajustar manejo"],["Set","Preparar reforço","Antecipar calor"],["Out","Revisar vigor","Retomar crescimento"],["Nov","Expansão","Melhor janela hídrica"],["Dez","Proteção total","Fechar solo com cobertura"]
+          ]
+        }
+      }
+    };
+
+    const selector = document.getElementById('farmSelector');
+    const sourceCards = document.getElementById('sourceCards');
+    const dataFlow = document.getElementById('dataFlow');
+    const strategyGrid = document.getElementById('strategyGrid');
+    const matrix = document.getElementById('matrix');
+    const timeline = document.getElementById('timeline');
+    let activeFarm = 'cacoal';
+    let activeStrategy = 'perm';
+    let activeMonth = 5; // Junho, para mostrar inicialmente o cuidado com a estação seca
+
+    const monthNames = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    const nasaRefs = {
+      'NASA POWER': {url:'https://power.larc.nasa.gov/', desc:'Histórico de precipitação e temperatura por localização. Na versão integrada, utilizar climatologia do mês selecionado e anomalias.'},
+      'NASA GPM / IMERG': {url:'https://gpm.nasa.gov/data', desc:'Distribuição e intensidade das chuvas por satélite. Na versão integrada, consultar os acumulados e padrões do período.'},
+      'NASA SMAP': {url:'https://www.earthdata.nasa.gov/data/platforms/space-based-platforms/smap', desc:'Estimativa regional de umidade do solo, não medida exata das entrelinhas. Usar apenas quando o conector devolver dados válidos.'},
+      'NASA NEX-GDDP-CMIP6': {url:'https://www.nasa.gov/', desc:'Projeções climáticas regionais de longo prazo. Representam cenários, não previsão exata para o mês.'}
+    };
+    const climatePhases = {
+      cacoal:['chuva','chuva','chuva','transicao','transicao','seca','seca','seca','retomada','retomada','chuva','chuva'],
+      patrocinio:['chuva','chuva','chuva','transicao','seca','seca','seca','seca','retomada','chuva','chuva','chuva'],
+      boa:['chuva','chuva','transicao','transicao','seca','seca','seca','seca','retomada','retomada','chuva','chuva']
+    };
+    const climateCopy = {
+      chuva: {label:'Período chuvoso (referência sazonal)', why:'A estação chuvosa tende a favorecer o desenvolvimento das coberturas, mas a intensidade da precipitação exige proteção contra o impacto da água.', risk:'Chuva intensa, enxurrada e solo exposto', watch:'Observar escoamento superficial, falhas na cobertura, erosão em sulcos e vigor do cafeeiro.', impact:'Reduzir exposição do solo e aproveitar a umidade disponível com controle da competição.'},
+      transicao: {label:'Transição para período mais seco', why:'A aproximação da estiagem exige preparar a proteção do solo antes que a disponibilidade hídrica diminua.', risk:'Redução de chuva e competição por água', watch:'Observar uniformidade da palhada, umidade na superfície e sinais de competição da cobertura com o cafeeiro.', impact:'Preservar resíduos vegetais e reduzir a exposição que favorece evaporação direta.'},
+      seca: {label:'Período seco (referência sazonal)', why:'A menor frequência de chuva aumenta a importância de manter o solo coberto e controlar plantas que possam competir por água.', risk:'Déficit hídrico e competição da cobertura com o café', watch:'Verificar palhada, rachaduras ou solo exposto, condição do cafeeiro e vigor excessivo de plantas nas entrelinhas.', impact:'Conservar umidade e reduzir o aquecimento do solo, sem prometer quantidade de água economizada.'},
+      retomada: {label:'Retorno gradual das chuvas', why:'O início da estação úmida pode abrir uma janela para reestabelecer a cobertura, mas a decisão precisa confirmar chuva suficiente e previsão favorável.', risk:'Falha de germinação ou chuva inicial irregular', watch:'Monitorar ocorrência de chuva efetiva, umidade superficial e estabelecimento das espécies candidatas.', impact:'Planejar o retorno da cobertura ativa mantendo proteção até sua consolidação.'}
+    };
+    function buildMonthDetail(farm, monthIdx){
+      const month = monthNames[monthIdx];
+      const phase = climatePhases[activeFarm][monthIdx];
+      const climate = climateCopy[phase];
+      const species = farm.strategies.find(x=>x.id===activeStrategy)?.species || 'cobertura presente';
+      const irrigated = answers?.irrigation==='Sim';
+      let action, justification, objective;
+      if(activeStrategy==='conv'){
+        if(phase==='chuva') action='Acompanhar a vegetação espontânea e fazer roçagem seletiva quando necessário, mantendo os resíduos sobre o solo.';
+        else if(phase==='transicao') action='Programar a roçagem sem remover a cobertura morta: distribuir resíduos e evitar deixar faixas extensas de terra exposta.';
+        else if(phase==='seca') action='Evitar roçagens excessivas e manter a palhada existente; controlar plantas que estejam competindo intensamente com o café.';
+        else action='Monitorar rebrota espontânea após as primeiras chuvas e preservar cobertura suficiente até a estação úmida se firmar.';
+        justification='Para '+farm.name+', o manejo convencional precisa responder à sazonalidade local e não à mesma agenda fixa de outras regiões.';
+        objective='Reduzir a exposição desnecessária do solo aproveitando a vegetação já existente.';
+      }else if(activeStrategy==='perm'){
+        if(phase==='chuva') action='Monitorar o desenvolvimento de '+species+' e manejar a altura por roçagem controlada quando necessário, mantendo a palhada no chão.';
+        else if(phase==='transicao') action='Avaliar roçagem de '+species+' antes da seca e distribuir os resíduos para reforçar a proteção superficial.';
+        else if(phase==='seca') action='Preservar a palhada de '+species+', monitorar competição hídrica e evitar estimular crescimento excessivo da cobertura.';
+        else action='Reavaliar o vigor de '+species+' e só realizar reposição ou nova implantação se houver chuva ou irrigação suficiente.';
+        justification='A cobertura permanente depende da relação entre água disponível, crescimento das plantas e necessidade de roçagem.';
+        objective='Manter proteção contínua sem permitir que a cobertura prejudique o cafeeiro.';
+      }else{
+        if(phase==='chuva') action='Avaliar a espécie da sequência de rotação ('+species+') para a janela úmida, monitorando o estabelecimento e o crescimento.';
+        else if(phase==='transicao') action='Planejar o encerramento ou a roçagem da cobertura em rotação antes do período seco, deixando a biomassa sobre a superfície.';
+        else if(phase==='seca') action='Manter a palhada formada pela rotação e evitar implantar uma nova espécie exigente em água durante a estiagem.';
+        else action='Revisar a próxima espécie da rotação ('+species+') e confirmar a janela de semeadura com chuva, solo e previsão.';
+        justification='A rotação permite ajustar espécies e épocas, mas a sequência exata necessita validação agronômica e atualização dos dados de campo.';
+        objective='Diversificar resíduos e raízes sem aumentar indevidamente a competição hídrica.';
+      }
+      if(irrigated){
+        justification+=' Como o produtor informou irrigação, é necessário conferir também a disponibilidade real de água aplicada; o SMAP regional não mede diretamente essa condição nas entrelinhas.';
+      }
+      if(answers?.fertility==='Baixa' || answers?.fertility==='Não sei'){
+        justification+=' Como a fertilidade foi informada como '+String(answers.fertility).toLowerCase()+', a escolha e implantação de novas espécies exigem avaliação do solo antes de definir o manejo.';
+      }
+      if(Number.isFinite(Number(answers?.age)) && Number(answers.age)<3){
+        justification+=' Por se tratar de cafezal jovem, monitorar com atenção a competição da cobertura com o desenvolvimento do café.';
+      }
+      if(answers?.goal && answers.goal!=='Análise completa'){
+        objective+=' Prioridade declarada pelo produtor: '+answers.goal.toLowerCase()+'.';
+      }
+      const sources=[
+        {name:'NASA POWER', use:'Clima histórico do mês: temperatura e precipitação', role:'Em uma versão conectada, compara '+month+' à climatologia e identifica a transição climática da área.'},
+        {name:'NASA GPM / IMERG', use:'Distribuição das chuvas e eventos intensos', role:'Em uma versão conectada, verifica a concentração de chuva e complementa a avaliação de exposição à erosão.'},
+        {name:'NASA SMAP', use:'Umidade regional do solo (quando disponível)', role:'Só deve contribuir para risco hídrico após consulta válida. É dado regional; não mede a entrelinha individualmente.'}
+      ];
+      return {month, phase, climate, species, action, justification, objective, sources};
+    }
+    function renderMonthDetails(farm){
+      const d=buildMonthDetail(farm,activeMonth);
+      const sourceMarkup = d.sources.map(src=>{
+        const ref=nasaRefs[src.name];
+        return `<div class="cal-source" tabindex="0" aria-label="${src.name}: ${src.use}. Fonte ilustrativa, não consultada ao vivo.">
+          <div class="cal-source-name">ⓘ ${src.use}</div>
+          <div class="cal-source-tip"><strong>Fonte prevista: ${src.name}</strong><br>${src.role}<br><strong>Origem:</strong> ${ref.url}<br><strong>Status:</strong> demonstração, sem consulta ao vivo.</div>
+        </div>`;
+      }).join('');
+      document.getElementById('monthDetails').innerHTML=`
+        <div class="cal-detail-head">
+          <div><div class="cal-detail-overline">${d.month} · ${farm.name} · ${farm.strategies.find(x=>x.id===activeStrategy).title}</div>
+          <h4>${d.month}: ${d.climate.label}</h4>
+          <p>Espécie(s) em avaliação: <strong>${d.species}</strong>. Clique em outro mês para comparar o que fazer em cada etapa.</p></div>
+          <div class="cal-risk-tag"><strong>⚠ Risco a acompanhar</strong>${d.climate.risk}</div>
+        </div>
+        <div class="cal-detail-grid">
+          <article class="cal-feature"><div class="cal-icon">🌱</div><h5>O que fazer</h5><p>${d.action}</p></article>
+          <article class="cal-feature"><div class="cal-icon">🛰️</div><h5>Por que agora?</h5><p>${d.climate.why} ${d.justification}</p></article>
+          <article class="cal-feature"><div class="cal-icon">🔎</div><h5>O que observar em campo</h5><p>${d.climate.watch}</p></article>
+          <article class="cal-feature"><div class="cal-icon">💧</div><h5>Objetivo e impacto potencial no solo</h5><p>${d.objective} ${d.climate.impact}</p></article>
+        </div>
+        <div class="cal-source-title">Como esta orientação seria calculada? <small>passe o mouse ou toque para ver as fontes</small></div>
+        <div class="cal-source-grid">${sourceMarkup}</div>
+        <div class="cal-detail-footer">◈ <strong>Simulação educacional:</strong> os padrões sazonais e orientações deste HTML são exemplos regionais. Nenhuma API NASA é consultada por este arquivo. Quando integrado, o CEREJÁ deverá exibir valores, datas, parâmetros e resultados reais e adaptar o calendário a eles. A seleção de espécies depende de avaliação agronômica local.</div>`;
+    }
+
+
+    function normalizeGrade(value){
+      const v = value.toLowerCase();
+      if(v.includes('forte') || v.includes('baixo')) return 'g-strong';
+      if(v.includes('moderado')) return 'g-mod';
+      if(v.includes('fraco') || v.includes('alto')) return 'g-risk';
+      return 'g-uncertain';
+    }
+
+    function renderSelector(){
+      selector.innerHTML = Object.entries(farms).map(([key,f]) => `
+        <button class="farm-btn ${activeFarm===key?'active':''}" data-farm="${key}">
+          <span class="pill">${f.badge}</span>
+          <h3>${f.name}</h3>
+          <p>${f.intro}</p>
+          <p style="font-size:.88rem; color:#87a2aa; margin-top:12px">${f.profile}</p>
+        </button>
+      `).join('');
+      selector.querySelectorAll('.farm-btn').forEach(btn=>btn.addEventListener('click',()=>{
+        activeFarm = btn.dataset.farm;
+        activeStrategy = farms[activeFarm].strategies.find(s=>s.selected)?.id || farms[activeFarm].strategies[0].id;
+        renderAll();
+      }));
+    }
+
+    function renderFlow(farm){
+      // Exposição das fontes somente no contexto dos indicadores, sem quadros técnicos na tela do produtor.
+    }
+
+    function renderCards(farm){
+      sourceCards.innerHTML = farm.cards.map((c,i)=>`
+        <article class="source-card" tabindex="0">
+          <div class="source-card-top"><span class="card-icon">${['☔','◈','💧','↗'][i]}</span><button class="source-help" type="button" aria-label="Exibir a fonte prevista de ${c.title}" aria-expanded="false">ⓘ</button></div>
+          <h3>${c.title}</h3>
+          <div class="value">${c.value}</div>
+          <div class="context">${c.context}</div>
+          <div class="tooltip" role="note"><strong>Origem prevista (sem consulta ao vivo)</strong><br>${c.tip}</div>
+        </article>
+      `).join('');
+      sourceCards.querySelectorAll('.source-help').forEach(btn=>btn.addEventListener('click',e=>{
+        e.stopPropagation();
+        const card=btn.closest('.source-card'), isOpen=card.classList.contains('source-open');
+        sourceCards.querySelectorAll('.source-card').forEach(x=>{x.classList.remove('source-open');x.querySelector('button').setAttribute('aria-expanded','false')});
+        if(!isOpen){card.classList.add('source-open');btn.setAttribute('aria-expanded','true')}
+      }));
+    }
+
+    function renderStrategies(farm){
+      strategyGrid.innerHTML = farm.strategies.map(s=>`
+        <div class="strategy ${activeStrategy===s.id?'active':''}" data-strategy="${s.id}">
+          <div class="top">
+            <span class="badge output">Estratégia</span>
+            <span class="strategy-status">${s.selected?'Mais indicada no exemplo':'Alternativa para comparar'}</span>
+          </div>
+          <h3>${s.title}</h3>
+          <div class="species">${s.species}</div>
+          <div class="sub">${s.sub}</div>
+          <div class="chips">${s.chips.map(c=>`<span class="chip">${c}</span>`).join('')}</div>
+          <div class="tooltip"><strong>Explicação ilustrativa do motor de decisão:</strong><br>${s.tip}</div>
+        </div>
+      `).join('');
+      strategyGrid.querySelectorAll('.strategy').forEach(card=>card.addEventListener('click',()=>{
+        activeStrategy = card.dataset.strategy;
+        renderAll(false);
+      }));
+    }
+
+    function renderMatrix(farm){
+      const stratMap = {
+        conv: farm.strategies[0].title,
+        perm: farm.strategies[1].title,
+        rot: farm.strategies[2].title
+      };
+      matrix.innerHTML = `
+        <div class="matrix-head">
+          <div>Indicador</div>
+          <div>${farm.strategies[0].title}</div>
+          <div>${farm.strategies[1].title}</div>
+          <div>${farm.strategies[2].title}</div>
+        </div>
+        ${farm.matrix.rows.map(r=>`
+          <div class="matrix-row">
+            <div class="metric">${r[0]}</div>
+            <div class="grade ${normalizeGrade(r[1])}">${r[1]}</div>
+            <div class="grade ${normalizeGrade(r[2])}">${r[2]}</div>
+            <div class="grade ${normalizeGrade(r[3])}">${r[3]}</div>
+          </div>
+        `).join('')}`;
+      const chosen = farm.strategies.find(x=>x.id===activeStrategy) || farm.strategies[0];
+      document.getElementById('summaryTitle').textContent = 'Alternativa selecionada: ' + chosen.title + '.';
+      document.getElementById('summaryText').textContent = chosen.sub + ' Comparação qualitativa demonstrativa, não medição ambiental.';
+    }
+
+    function renderScene(farm){
+      const active = farm.strategies.find(s=>s.id===activeStrategy) || farm.strategies[0];
+      const surfacePlants = document.getElementById('surfacePlants');
+      const rootsScene = document.getElementById('rootsScene');
+      let count = activeStrategy==='conv' ? 3 : activeStrategy==='perm' ? 5 : 4;
+      surfacePlants.innerHTML = Array.from({length:count}).map(()=>`
+        <div class="plant"><div class="stem"></div><div class="leaf l1"></div><div class="leaf l2"></div><div class="leaf l3"></div></div>
+      `).join('');
+      rootsScene.innerHTML = Array.from({length:count}).map(()=>`
+        <div class="root-bundle"><div class="r r1"></div><div class="r r2"></div><div class="r r3"></div></div>
+      `).join('');
+      document.getElementById('sceneTop').textContent = farm.scene.top;
+      document.getElementById('sceneRoot').textContent = farm.scene.root;
+      document.getElementById('sceneKey').textContent = active.title + ': ' + farm.scene.key;
+    }
+
+    function renderPlan(farm){
+      const p = farm.plan;
+      const chosen = farm.strategies.find(x=>x.id===activeStrategy) || farm.strategies[0];
+      document.getElementById('selectedStrategy').textContent = chosen.title + ' — ' + chosen.species;
+      document.getElementById('selectedDescription').textContent = chosen.sub + ' Esta é uma avaliação demonstrativa: o plano real dependerá das medições e regras agronômicas conectadas.';
+      document.getElementById('dominantSource').textContent = p.source;
+      document.getElementById('dominantUse').textContent = p.use;
+      document.getElementById('nextCareTitle').textContent = p.careTitle;
+      document.getElementById('nextCareText').textContent = p.careText;
+      if(!document.getElementById('learnWindow').hidden) renderLearnCalendar(farm);
+    }
+
+    function renderLearnCalendar(farm){
+      const p=farm.plan;
+      const chosen=farm.strategies.find(x=>x.id===activeStrategy) || farm.strategies[0];
+      const a=answers||{};
+      document.getElementById('learnProperty').innerHTML = [
+        ['Propriedade',farm.name],
+        ['Café',a.coffee||farm.badge],
+        ['Área',a.area!=null?a.area+' ha':'Exemplo'],
+        ['Cobertura atual',a.cover||'Não informado'],
+        ['Prioridade',a.goal||'Análise completa']
+      ].map(([k,v])=>`<span><b>${safe(k)}:</b> ${safe(v)}</span>`).join('');
+      document.getElementById('learnFocusTitle').textContent='Estratégia em avaliação: '+chosen.title;
+      document.getElementById('learnFocusDetail').textContent='Espécies candidatas: '+chosen.species+'. O guia acompanha a propriedade e a alternativa selecionada na análise.';
+      timeline.innerHTML = p.timeline.map((t,i)=>{
+        const d = buildMonthDetail(farm,i);
+        const actionTitle = activeStrategy==='conv' ?
+          ({chuva:'Roçar e proteger', transicao:'Preparar palhada', seca:'Preservar resíduos', retomada:'Avaliar rebrota'}[d.phase]) :
+          activeStrategy==='perm' ?
+          ({chuva:'Cobertura ativa', transicao:'Manejo / roçagem', seca:'Conservar palhada', retomada:'Retomar cobertura'}[d.phase]) :
+          ({chuva:'Cultivar cobertura', transicao:'Formar palhada', seca:'Proteger o solo', retomada:'Planejar semeadura'}[d.phase]);
+        return `<button type="button" class="month" data-month-index="${i}" aria-pressed="${i===activeMonth}" aria-controls="monthDetails" aria-label="Detalhes do manejo em ${d.month}">
+          <div class="m">${t[0]}</div><strong>${actionTitle}</strong><span>${t[2]}</span><small class="month-more">Detalhes ↗</small></button>`;
+      }).join('');
+      timeline.querySelectorAll('[data-month-index]').forEach(btn=>btn.addEventListener('click',()=>{
+        activeMonth=Number(btn.dataset.monthIndex);
+        timeline.querySelectorAll('[data-month-index]').forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));
+        renderMonthDetails(farm);
+      }));
+      renderMonthDetails(farm);
+    }
+    function renderHeader(farm){
+      document.getElementById('signalTitle').textContent = farm.signalTitle;
+      document.getElementById('signalText').textContent = farm.signalText;
+    }
+
+    function renderAll(full=true){
+      const farm = farms[activeFarm];
+      if(full) renderSelector();
+      renderFlow(farm);
+      renderCards(farm);
+      renderHeader(farm);
+      renderStrategies(farm);
+      renderMatrix(farm);
+      renderScene(farm);
+      renderPlan(farm);
+    }
+
+
+    // CEREJÁ — onboarding conversacional. Todas as avaliações no HTML são exemplos simulados;
+    // não são medições nem projeções consultadas diretamente nos serviços NASA.
+    const examples = {
+      cacoal:{label:'Cacoal — RO',lat:-11.313111,lng:-61.355806},
+      patrocinio:{label:'Patrocínio — MG',lat:-18.987500,lng:-46.946389},
+      boa:{label:'Boa Esperança — ES',lat:-18.522128,lng:-40.343542}
+    };
+    const steps = [
+      {id:'name',q:'Olá! Eu sou o assistente CEREJÁ. Como posso te chamar?',kind:'text',placeholder:'Seu nome ou nome fictício'},
+      {id:'coffee',q:'Qual tipo de café você cultiva?',kind:'choice',options:['Conilon/Robusta','Arábica','Não sei']},
+      {id:'age',q:'Há quantos anos seu cafezal foi plantado?',kind:'number',placeholder:'Ex.: 5',min:0,max:150},
+      {id:'spacing',q:'Qual é a distância entre as linhas do café?',kind:'number',placeholder:'Ex.: 3,5 metros',min:.5,max:20},
+      {id:'area',q:'Quantos hectares de café você cultiva?',kind:'number',placeholder:'Ex.: 5',min:.01,max:100000},
+      {id:'cover',q:'O que existe atualmente nas entrelinhas do seu cafezal?',kind:'choice',options:['Solo exposto','Vegetação espontânea','Braquiária','Leguminosas','Outra cobertura','Não sei']},
+      {id:'management',q:'Como você realiza o manejo das entrelinhas?',kind:'choice',options:['Roçagem','Cobertura permanente','Rotação de plantas de cobertura','Sem manejo específico','Não sei']},
+      {id:'fertility',q:'Você conhece a fertilidade do solo?',kind:'choice',options:['Baixa','Média','Alta','Não sei']},
+      {id:'irrigation',q:'Seu cafezal possui irrigação?',kind:'choice',options:['Sim','Não','Não sei']},
+      {id:'location',q:'Onde fica a propriedade? Selecione no mapa ou informe as coordenadas.',kind:'location'},
+      {id:'goal',q:'Qual é a sua maior prioridade de adaptação climática?',kind:'choice',options:['Conservar água no solo','Reduzir erosão','Melhorar cobertura vegetal','Aumentar matéria orgânica','Enfrentar períodos de seca','Análise completa']},
+    ];
+    let answers={};let currentStep=0;let map=null;let marker=null;let mapReady=false;
+    const bot=document.getElementById('onboarding');
+    const botThread=document.getElementById('botThread');
+    const botAnswer=document.getElementById('botAnswer');
+    const botError=document.getElementById('botError');
+    const editBtn=document.getElementById('editProperty');
+    const startBtn=document.getElementById('startAnalysis');
+    const resumeBtn=document.getElementById('resumeAnalysis');
+    function safe(text){return String(text??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+    function validAnswers(a){return steps.every(s=>a[s.id] !== undefined && a[s.id] !== null && String(a[s.id]).trim()!=='') && a.location && Number.isFinite(a.location.lat) && Number.isFinite(a.location.lng);}
+    function setError(msg){botError.textContent=msg||'';}
+    function startBot(edit=false){
+      closeLearn();
+      learnNav.hidden=true;
+      if(!edit) {answers={};currentStep=0;}
+      else currentStep=0;
+      document.getElementById('analysisMain').hidden=true;
+      bot.hidden=false;document.body.classList.add('onboarding-open');
+      renderBot();
+    }
+    function closeBot(){
+      bot.hidden=true;document.body.classList.remove('onboarding-open');
+      // Fechar não salva edição incompleta; restaurar apenas o último diagnóstico concluído.
+      const saved=loadSaved();
+      if(validAnswers(saved)){answers=saved;showDashboard();}
+      else {document.getElementById('analysisMain').hidden=true;learnNav.hidden=true;}
+    }
+    function loadSaved(){
+      try {return JSON.parse(localStorage.getItem('cereja_profile_v2')||'null')||{};}catch(e){return {};}
+    }
+    function showResume(){resumeBtn.hidden=!validAnswers(loadSaved());}
+    function locationToString(loc){return loc?`${loc.label||'Ponto selecionado'} · ${loc.lat.toFixed(5)}, ${loc.lng.toFixed(5)}`:'';}
+    function addBubble(text,who){const d=document.createElement('div');d.className='chat-line '+who;d.textContent=text;botThread.appendChild(d);}
+    function renderBot(){
+      const s=steps[currentStep];
+      setError(''); botThread.innerHTML='';
+      addBubble('Vamos preparar o diagnóstico da sua lavoura. 🌱','assistant');
+      steps.slice(0,currentStep).forEach(st=>{
+        if(answers[st.id]!==undefined){addBubble(st.q,'assistant');addBubble(st.kind==='location'?locationToString(answers[st.id]):String(answers[st.id]),'user');}
+      });
+      addBubble(s.q,'assistant');
+      botThread.scrollTop=botThread.scrollHeight;
+      document.getElementById('stepNumber').textContent=`Pergunta ${currentStep+1} de ${steps.length}`;
+      document.getElementById('progressBar').style.width=`${(currentStep+1)/steps.length*100}%`;
+      document.getElementById('backStep').disabled=currentStep===0;
+      document.getElementById('backStep').style.opacity=currentStep===0?'.35':'1';
+      document.getElementById('botFootNote').textContent='Uma pergunta por vez · sem login';
+      let html=`<div class="prompt-tag">${s.kind==='location'?'Localização no mapa':'Seu diagnóstico'}</div><h3 class="bot-question">${safe(s.q)}</h3>`;
+      if(s.kind==='choice'){
+        html+='<div class="bot-options">'+s.options.map((o,i)=>`<button type="button" class="bot-option" data-choice="${i}">${safe(o)} →</button>`).join('')+'</div>';
+      } else if(s.kind==='text' || s.kind==='number'){
+        html+=`<form id="botTextForm" class="bot-input-wrap"><input aria-label="${safe(s.q)}" id="answerInput" class="bot-input" type="${s.kind==='number'?'text':'text'}" ${s.kind==='number'?'inputmode="decimal"':''} placeholder="${safe(s.placeholder)}" value="${safe(answers[s.id]??'')}" autocomplete="off" required><button class="bot-submit" type="submit">Continuar →</button></form>`;
+      }else if(s.kind==='location'){
+        html+=`<div class="map-instruction">Escolha uma das áreas de demonstração ou marque um ponto. Neste HTML, as análises simuladas estão disponíveis para três regiões.</div>
+        <div class="bot-location-panel">${Object.entries(examples).map(([k,e])=>`<button type="button" data-location="${k}"><b>${safe(e.label)}</b><small>${e.lat.toFixed(4)}, ${e.lng.toFixed(4)}</small></button>`).join('')}</div>
+        <div class="map-wrap"><div id="botMap"></div><div class="map-fallback" id="mapFallback"><div>Carregando mapa...<br><small>Sem internet? Selecione uma cidade acima ou digite latitude e longitude.</small></div></div></div>
+        <div class="map-coords"><label>Latitude<input id="mapLat" type="text" inputmode="decimal" placeholder="-11.313111" value="${answers.location?answers.location.lat:''}"></label><label>Longitude<input id="mapLng" type="text" inputmode="decimal" placeholder="-61.355806" value="${answers.location?answers.location.lng:''}"></label></div>
+        <div class="map-actions"><button id="confirmMap" type="button" class="bot-submit">Confirmar localização →</button><span class="tiny" id="locInfo">Selecione um ponto</span></div>`;
+      }
+      botAnswer.innerHTML=html;
+      if(s.kind==='choice') botAnswer.querySelectorAll('[data-choice]').forEach(b=>b.onclick=()=>answer(s.options[Number(b.dataset.choice)]));
+      if(s.kind==='text'||s.kind==='number'){
+        botAnswer.querySelector('#botTextForm').addEventListener('submit',e=>{
+          e.preventDefault();let val=botAnswer.querySelector('#answerInput').value.trim();
+          if(s.kind==='number'){
+            const parsed=Number(val.replace(',','.'));
+            if(!val || !Number.isFinite(parsed) || parsed<s.min || parsed>s.max){setError(`Informe um valor numérico entre ${s.min} e ${s.max}.`);return;}
+            answer(parsed);
+          }else{if(val.length<2){setError('Informe pelo menos 2 caracteres.');return;}answer(val);}
+        });
+        botAnswer.querySelector('#answerInput').focus();
+      }
+      if(s.kind==='location') setupLocation();
+    }
+    function answer(value){answers[steps[currentStep].id]=value;if(currentStep<steps.length-1){currentStep++;renderBot();}else completeBot();}
+    function nearbyExample(lat,lng){
+      let found=null,dist=Infinity;
+      for(const [key,e] of Object.entries(examples)){
+        const d=Math.hypot((lat-e.lat)*111,(lng-e.lng)*105);
+        if(d<dist){dist=d;found=key;}
+      }
+      return dist<=30?found:null;
+    }
+    function setupLocation(){
+      const latEl=document.getElementById('mapLat'),lngEl=document.getElementById('mapLng'), info=document.getElementById('locInfo');
+      const select=(lat,lng,label)=>{
+        latEl.value=lat.toFixed(6);lngEl.value=lng.toFixed(6);
+        info.textContent=label||'Ponto selecionado';
+        if(map){if(marker)marker.setLatLng([lat,lng]);else marker=L.marker([lat,lng]).addTo(map);map.setView([lat,lng],10);}
+      };
+      document.querySelectorAll('[data-location]').forEach(b=>b.onclick=()=>{
+        const e=examples[b.dataset.location];select(e.lat,e.lng,e.label);
+      });
+      if(answers.location) {info.textContent=locationToString(answers.location);}
+      else {const e=examples.cacoal;latEl.value=e.lat;lngEl.value=e.lng;info.textContent='Referência inicial: Cacoal — RO';}
+      if(map){map.remove();map=null;marker=null;}
+      const fallback=document.getElementById('mapFallback');
+      if(window.L){
+        try{
+          map=L.map('botMap',{zoomControl:true}).setView([Number(latEl.value),Number(lngEl.value)],9);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:18}).addTo(map);
+          marker=L.marker([Number(latEl.value),Number(lngEl.value)],{draggable:true}).addTo(map);
+          marker.on('dragend',()=>{const p=marker.getLatLng();latEl.value=p.lat.toFixed(6);lngEl.value=p.lng.toFixed(6);info.textContent='Ponto ajustado no mapa';});
+          map.on('click',e=>select(e.latlng.lat,e.latlng.lng,'Ponto selecionado no mapa'));
+          fallback.hidden=true;
+          setTimeout(()=>map&&map.invalidateSize(),150);
+        }catch(e){fallback.innerHTML='<div>Mapa online indisponível.<br>Escolha uma área acima ou informe as coordenadas.</div>';}
+      }else{fallback.innerHTML='<div>Mapa online indisponível.<br>Escolha uma área acima ou informe as coordenadas.</div>';}
+      document.getElementById('confirmMap').onclick=()=>{
+        const lat=Number(latEl.value.replace(',','.')),lng=Number(lngEl.value.replace(',','.'));
+        if(!Number.isFinite(lat)||lat<-90||lat>90||!Number.isFinite(lng)||lng<-180||lng>180){setError('Informe latitude entre -90 e 90 e longitude entre -180 e 180.');return;}
+        const key=nearbyExample(lat,lng);
+        if(!key){setError('Nesta versão demonstrativa, escolha uma localização próxima de Cacoal, Patrocínio ou Boa Esperança. A consulta de qualquer propriedade será habilitada na integração real.');return;}
+        answer({lat,lng,label:examples[key].label,key});
+      };
+    }
+    function completeBot(){
+      if(!validAnswers(answers)){setError('Há informações obrigatórias pendentes.');return;}
+      botThread.innerHTML='';botAnswer.innerHTML='<div class="onboarding-loading"><div class="spinner"></div><h3>Preparando sua análise demonstrativa...</h3><p>Organizando o perfil da propriedade e selecionando o cenário de referência.</p><small>Não são realizadas consultas às APIs NASA nesta versão.</small></div>';
+      document.getElementById('backStep').hidden=true;
+      setTimeout(()=>{
+        try{localStorage.setItem('cereja_profile_v2',JSON.stringify(answers));}catch(e){}
+        document.getElementById('backStep').hidden=false;
+        bot.hidden=true;document.body.classList.remove('onboarding-open');
+        showDashboard();showResume();
+        document.getElementById('analysisMain').scrollIntoView({behavior:'smooth',block:'start'});
+      },450);
+    }
+    function showDashboard(){
+      if(!validAnswers(answers))return;
+      activeFarm=answers.location.key || nearbyExample(answers.location.lat,answers.location.lng) || 'cacoal';
+      activeStrategy=farms[activeFarm].strategies.find(s=>s.selected)?.id||'conv';
+      document.getElementById('analysisMain').hidden=false;
+      editBtn.hidden=false;
+      learnNav.hidden=false;
+      const fields=[['Produtor',answers.name],['Região',answers.location.label],['Tipo',answers.coffee],['Área',answers.area+' ha'],['Espaçamento',answers.spacing+' m'],['Idade',answers.age+' anos'],['Cobertura atual',answers.cover],['Manejo',answers.management],['Fertilidade',answers.fertility],['Irrigação',answers.irrigation],['Prioridade',answers.goal]];
+      document.getElementById('currentProfile').innerHTML=fields.map(([k,v])=>`<span><strong>${safe(k)}:</strong> ${safe(v)}</span>`).join('');
+      renderAll();
+    }
+    // Aprender: acesso somente após conclusão do diagnóstico, fora do painel principal.
+    const learnWindow=document.getElementById('learnWindow');
+    const learnNav=document.getElementById('learnNav');
+    let learnTrigger=null;
+    function openLearn(e){
+      if(!validAnswers(answers) || document.getElementById('analysisMain').hidden || !bot.hidden) return;
+      learnTrigger=e?.currentTarget || document.activeElement;
+      learnWindow.hidden=false;
+      document.body.classList.add('learn-open');
+      renderLearnCalendar(farms[activeFarm]);
+      learnWindow.scrollTop=0;
+      document.getElementById('closeLearn').focus();
+    }
+    function closeLearn(){
+      if(learnWindow.hidden) return;
+      learnWindow.hidden=true;
+      document.body.classList.remove('learn-open');
+      if(learnTrigger && learnTrigger.isConnected) learnTrigger.focus();
+    }
+    document.getElementById('learnFromPlan').addEventListener('click',openLearn);
+    learnNav.addEventListener('click',openLearn);
+    document.getElementById('closeLearn').addEventListener('click',closeLearn);
+    document.addEventListener('keydown',e=>{
+      if(learnWindow.hidden) return;
+      if(e.key==='Escape'){e.preventDefault();closeLearn();}
+      if(e.key==='Tab'){
+        const focusable=[...learnWindow.querySelectorAll('button:not([disabled]),[tabindex="0"]')].filter(x=>x.offsetParent!==null);
+        if(!focusable.length)return;
+        const first=focusable[0],last=focusable[focusable.length-1];
+        if(e.shiftKey && document.activeElement===first){e.preventDefault();last.focus();}
+        else if(!e.shiftKey && document.activeElement===last){e.preventDefault();first.focus();}
+      }
+    });
+    startBtn.onclick=()=>startBot(false);
+    resumeBtn.onclick=()=>{answers=loadSaved();showDashboard();document.getElementById('analysisMain').scrollIntoView({behavior:'smooth'})};
+    editBtn.onclick=()=>startBot(true);
+    document.getElementById('closeBot').onclick=closeBot;
+    document.getElementById('backStep').onclick=()=>{if(currentStep>0){currentStep--;renderBot();}};
+    showResume();
+    // Não inicializar o dashboard antes do diagnóstico — ele permanece fora do DOM renderizado.
+
+  </script>
+</body>
+</html>
