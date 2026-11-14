@@ -1,10 +1,11 @@
-"""IMERG V07 daily Final GIS ZIP => spatial mean for 12.5-km cells.
+"""IMERG V07 daily Final GIS ZIP => spatial mean for Cacoal 5-km cells.
 PPS authorization is required. Uses day-by-day directory listing (no guessed filename).
 """
 from datetime import date
 from html.parser import HTMLParser
 from urllib.parse import urljoin
 from pathlib import Path
+from math import floor, ceil
 import zipfile
 import requests
 import numpy as np
@@ -12,7 +13,7 @@ import rasterio
 from rasterio.mask import mask
 from rasterio.features import geometry_mask
 from rasterio.warp import transform_geom
-from rasterio.windows import from_bounds, transform as window_transform
+from rasterio.windows import from_bounds, Window
 from shapely.geometry import mapping
 from agro.config import env,data_dir
 from agro.grid import subcells
@@ -116,8 +117,14 @@ def cell_means(tif_path):
             from shapely.geometry import shape
             polygon=shape(geo)
             bounds=polygon.bounds
-            win=from_bounds(*bounds,transform=ds.transform).round_offsets().round_lengths()
-            win=win.intersection(rasterio.windows.Window(0,0,ds.width,ds.height))
+            raw=from_bounds(*bounds,transform=ds.transform)
+            win=Window(floor(raw.col_off),floor(raw.row_off),
+                       ceil(raw.col_off+raw.width)-floor(raw.col_off),
+                       ceil(raw.row_off+raw.height)-floor(raw.row_off))
+            try:
+                win=win.intersection(Window(0,0,ds.width,ds.height))
+            except rasterio.errors.WindowError:
+                continue
             if win.width<=0 or win.height<=0: continue
             values=ds.read(1,window=win,masked=True)
             inside=geometry_mask([geo],out_shape=values.shape,transform=ds.window_transform(win),invert=True,all_touched=True)

@@ -23,7 +23,8 @@ def migrate():
             print(f'Applied migration {path.name}')
 
 def run_start(conn, command, source=None, start=None, end=None):
-    row=conn.execute('INSERT INTO agro.etl_runs(command,source_id,period_start,period_end) VALUES(%s,%s,%s,%s) RETURNING run_id',(command,source,start,end)).fetchone()
+    from agro.grid import REGION_ID
+    row=conn.execute('INSERT INTO agro.etl_runs(command,source_id,period_start,period_end,region_id) VALUES(%s,%s,%s,%s,%s) RETURNING run_id',(command,source,start,end,REGION_ID)).fetchone()
     conn.commit()
     return row['run_id']
 

@@ -51,11 +51,13 @@ def inspect(day):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--start', type=date.fromisoformat, default=date(2020, 1, 1))
+    parser.add_argument('--start', type=date.fromisoformat, default=date(2000, 6, 1))
     parser.add_argument('--end', type=date.fromisoformat, required=True)
     parser.add_argument('--workers', type=int, default=8)
     parser.add_argument('--retry-errors', action='store_true',
                         help='Reuse existing output and recheck only request errors')
+    parser.add_argument('--seed', type=Path,
+                        help='Reuse dates already checked in another manifest')
     parser.add_argument('--output', type=Path, default=Path('/app/data/imerg_availability.csv'))
     args = parser.parse_args()
     if args.start > args.end or not 1 <= args.workers <= 16:
@@ -67,10 +69,14 @@ def main():
         current += timedelta(days=1)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     previous = {}
+    if args.seed:
+        with args.seed.open(newline='', encoding='utf-8') as file:
+            previous.update({row['date']: (row['date'], row['status'], row['filename'])
+                             for row in csv.DictReader(file)})
     if args.retry_errors and args.output.exists():
         with args.output.open(newline='', encoding='utf-8') as file:
-            previous = {row['date']: (row['date'], row['status'], row['filename'])
-                        for row in csv.DictReader(file)}
+            previous.update({row['date']: (row['date'], row['status'], row['filename'])
+                             for row in csv.DictReader(file)})
     remaining = [day for day in days if day.isoformat() not in previous
                  or previous[day.isoformat()][1] == 'error']
     with ThreadPoolExecutor(max_workers=args.workers) as pool:

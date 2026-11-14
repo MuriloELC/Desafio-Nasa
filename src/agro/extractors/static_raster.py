@@ -3,11 +3,12 @@ No fabricated download URL or silent unit conversion. Specify multiplier explici
 """
 from datetime import datetime
 from pathlib import Path
+from math import floor, ceil
 import rasterio
 import numpy as np
 from rasterio.features import geometry_mask
 from rasterio.warp import transform_geom
-from rasterio.windows import from_bounds
+from rasterio.windows import from_bounds, Window
 from shapely.geometry import mapping,shape
 from agro.grid import subcells
 from agro.storage import store
@@ -24,8 +25,11 @@ def means(path):
             geo=transform_geom('EPSG:32720',ds.crs.to_string(),mapping(cell))
             bounds=shape(geo).bounds
             try:
-                win=from_bounds(*bounds,transform=ds.transform).round_offsets().round_lengths()
-                win=win.intersection(rasterio.windows.Window(0,0,ds.width,ds.height))
+                raw=from_bounds(*bounds,transform=ds.transform)
+                win=Window(floor(raw.col_off),floor(raw.row_off),
+                           ceil(raw.col_off+raw.width)-floor(raw.col_off),
+                           ceil(raw.row_off+raw.height)-floor(raw.row_off))
+                win=win.intersection(Window(0,0,ds.width,ds.height))
             except rasterio.errors.WindowError:
                 continue
             if win.width<=0 or win.height<=0: continue

@@ -5,12 +5,12 @@ from agro.db import connect,migrate
 def valid_date(s): return date.fromisoformat(s)
 
 def main():
-    parser=argparse.ArgumentParser(description='Agro ETL — Rondônia 250 × 250 km')
+    parser=argparse.ArgumentParser(description='Agro ETL — Cacoal, raio de 20 km')
     sub=parser.add_subparsers(dest='cmd',required=True)
     sub.add_parser('migrate');sub.add_parser('init-grid');sub.add_parser('validate')
     p=sub.add_parser('power');p.add_argument('--start',type=valid_date,required=True);p.add_argument('--end',type=valid_date,required=True)
     p=sub.add_parser('imerg');p.add_argument('--date',type=valid_date,required=True)
-    p=sub.add_parser('backfill');p.add_argument('--start',type=valid_date,default=date(2020,1,1));p.add_argument('--end',type=valid_date,required=True);p.add_argument('--source',choices=['power','imerg'],default='power')
+    p=sub.add_parser('backfill');p.add_argument('--start',type=valid_date,default=date(2000,1,1));p.add_argument('--end',type=valid_date,required=True);p.add_argument('--source',choices=['power','imerg'],default='power')
     p=sub.add_parser('daily');p.add_argument('--date',type=valid_date,required=True);p.add_argument('--source',choices=['power','imerg','both'],default='both')
     p=sub.add_parser('static-raster');p.add_argument('--file',required=True);p.add_argument('--source',choices=['SOILGRIDS','SRTM','FAO_HWSD'],required=True);p.add_argument('--metric',required=True);p.add_argument('--unit',required=True);p.add_argument('--scale',type=float,default=1.0);p.add_argument('--depth-top',type=int,default=0);p.add_argument('--depth-bottom',type=int,default=0)
     args=parser.parse_args()
@@ -24,7 +24,8 @@ def main():
         return
     with connect() as conn:
         if args.cmd=='validate':
-            rows=conn.execute('SELECT level,count(*) AS n,round((sum(extensions.ST_Area(geom))/1e6)::numeric,2) AS km2 FROM agro.grid_cells GROUP BY level ORDER BY level').fetchall()
+            from agro.grid import REGION_ID
+            rows=conn.execute('SELECT level,count(*) AS n,round((sum(extensions.ST_Area(geom))/1e6)::numeric,2) AS km2 FROM agro.grid_cells WHERE region_id=%s GROUP BY level ORDER BY level',(REGION_ID,)).fetchall()
             for row in rows: print(row)
         elif args.cmd=='power':
             from agro.extractors.power import load

@@ -8,6 +8,7 @@ import requests
 
 from agro.config import env
 from agro.db import connect
+from agro.grid import REGION_ID
 from agro.extractors.imerg import load, extract_total_tif_remote
 
 
@@ -40,7 +41,8 @@ def main():
     with connect() as conn:
         done = {row['period_start'] for row in conn.execute('''
             SELECT DISTINCT period_start FROM agro.etl_runs
-            WHERE command='imerg_daily' AND status='succeeded' ''').fetchall()}
+            WHERE command='imerg_daily' AND status='succeeded' AND region_id=%s ''',
+            (REGION_ID,)).fetchall()}
         pending = [(day, filename) for day, filename in available if day not in done]
         if args.limit:
             pending = pending[:args.limit]

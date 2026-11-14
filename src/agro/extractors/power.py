@@ -3,7 +3,7 @@ import datetime as dt
 import time
 import requests
 from agro.config import env
-from agro.grid import register_power_samples
+from agro.grid import register_power_samples, REGION_ID
 
 PARAMETERS = ['T2M','T2M_MIN','T2M_MAX','RH2M','WS2M','ALLSKY_SFC_SW_DWN','PRECTOTCORR']
 METRICS = {
@@ -54,7 +54,12 @@ def load(conn,start,end):
     run_id=run_start(conn,'power_daily','POWER',start,end)
     count=0
     try:
-        records=conn.execute("SELECT sample_id,lon,lat FROM agro.source_samples WHERE source_id='POWER' ORDER BY sample_id").fetchall()
+        records=conn.execute("""SELECT DISTINCT s.sample_id,s.lon,s.lat
+            FROM agro.source_samples s
+            JOIN agro.cell_sample_map m ON m.sample_id=s.sample_id
+            JOIN agro.grid_cells c ON c.cell_id=m.cell_id
+            WHERE s.source_id='POWER' AND c.region_id=%s
+            ORDER BY s.sample_id""", (REGION_ID,)).fetchall()
         with requests.Session() as session:
             for rec in records:
                 data=fetch_point(session,rec['lon'],rec['lat'],start,end)

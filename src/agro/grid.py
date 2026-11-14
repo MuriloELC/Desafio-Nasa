@@ -1,18 +1,31 @@
+"""Cacoal study area: a 20 km circle partitioned into clipped 5 km cells."""
 from pyproj import Transformer
-from shapely.geometry import box
+from shapely.geometry import box, Point
 from shapely.ops import transform
-CENTER_LAT = -(12+22/60+45.8/3600)
-CENTER_LON = -(60+57/60+38.2/3600)
+
+REGION_ID = 'CACOAL_R20'
+# Municipal seat on the IBGE 2022 municipal statistical map (rounded coordinates).
+CENTER_LAT = -11.44
+CENTER_LON = -61.45
 UTM = 32720
-E,N = Transformer.from_crs(4326,UTM,always_xy=True).transform(CENTER_LON,CENTER_LAT)
-TO_WGS = Transformer.from_crs(UTM,4326,always_xy=True).transform
+RADIUS_M = 20_000
+CELL_M = 5_000
+E, N = Transformer.from_crs(4326, UTM, always_xy=True).transform(CENTER_LON, CENTER_LAT)
+TO_WGS = Transformer.from_crs(UTM, 4326, always_xy=True).transform
+
+def region_polygon():
+    return Point(E, N).buffer(RADIUS_M, quad_segs=64)
+
 
 def subcells():
-    for row in range(20):
-        for col in range(20):
-            x0=E-125000+col*12500
-            y0=N-125000+row*12500
-            yield f'S_{row:02d}_{col:02d}',box(x0,y0,x0+12500,y0+12500)
+    circle = region_polygon()
+    for row in range(8):
+        for col in range(8):
+            x0 = E - RADIUS_M + col * CELL_M
+            y0 = N - RADIUS_M + row * CELL_M
+            geom = box(x0, y0, x0 + CELL_M, y0 + CELL_M).intersection(circle)
+            if geom.area > 0:
+                yield f'CAC_S_{row:02d}_{col:02d}', geom
 
 def sample_map():
     """Deduplicate approximate 0.5-degree POWER cells by centroid.

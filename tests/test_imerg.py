@@ -41,23 +41,23 @@ def test_download_replaces_corrupt_cached_zip(tmp_path, monkeypatch):
 
 def test_cell_means_scales_daily_accumulation(tmp_path):
     path=tmp_path/'daily.total.accum.tif'
-    with rasterio.open(path,'w',driver='GTiff',height=20,width=20,count=1,
+    with rasterio.open(path,'w',driver='GTiff',height=8,width=8,count=1,
                        dtype='uint16',crs='EPSG:32720',
-                       transform=from_origin(E-125000,N+125000,12500,12500)) as ds:
-        ds.write(np.full((20,20),10,dtype='uint16'),1)
+                       transform=from_origin(E-20000,N+20000,5000,5000)) as ds:
+        ds.write(np.full((8,8),10,dtype='uint16'),1)
     rows=list(imerg.cell_means(path))
-    assert len(rows)==400
+    assert len(rows)==60
     assert all(value==1.0 and fraction==1.0 for _,value,fraction in rows)
 
 
 def test_cell_means_excludes_pps_missing_value(tmp_path):
     path=tmp_path/'missing.total.accum.tif'
-    values=np.full((20,20),10,dtype='uint16')
-    values[10,10]=29999
-    with rasterio.open(path,'w',driver='GTiff',height=20,width=20,count=1,
+    values=np.full((8,8),10,dtype='uint16')
+    values[4,4]=29999
+    with rasterio.open(path,'w',driver='GTiff',height=8,width=8,count=1,
                        dtype='uint16',crs='EPSG:32720',
-                       transform=from_origin(E-125000,N+125000,12500,12500)) as ds:
+                       transform=from_origin(E-20000,N+20000,5000,5000)) as ds:
         ds.write(values,1)
     rows=list(imerg.cell_means(path))
-    assert len(rows)==399
+    assert len(rows)==59
     assert all(value==1.0 for _,value,_ in rows)
