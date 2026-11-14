@@ -84,7 +84,7 @@ def main():
                     if consecutive_failures >= 10:
                         print('Stopping after 10 consecutive failures', flush=True)
                         break
-    output = args.manifest.with_name('imerg_backfill_failures.csv')
+    output = Path('/app/data/imerg_backfill_failures.csv')
     with output.open('w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerow(('date', 'error_type', 'message'))
