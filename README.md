@@ -14,6 +14,8 @@ Pipeline geoespacial para PostgreSQL/Supabase com PostGIS. Centro `12°22'45.8"S
 
 Não há dados de P, K, Ca, Mg, drenagem de campo ou déficit hídrico calculado por este MVP; não inferir fertilidade ou déficit simplesmente de P−ET sem modelo do balanço hídrico.
 
+O [rascunho CEREJÁ](CEREJA_MVP_COBERTURAS_FINAL.html) usa valores demonstrativos. A matriz de dados necessários e a pesquisa inicial das espécies estão em [critérios de recomendação](docs/criterios_recomendacao.md). As sugestões para uma propriedade só poderão usar dados reais quando também houver informação local suficiente sobre solo e manejo.
+
 ## Preparação
 
 1. Criar banco Supabase PostgreSQL com uma role que possa executar as migrações e escrever no schema `agro`.
@@ -22,6 +24,8 @@ Não há dados de P, K, Ca, Mg, drenagem de campo ou déficit hídrico calculado
 4. `cp .env.example .env`, preencher `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`. Para GPM Final também configurar credenciais PPS ou acesso já autorizado.
 5. `docker compose build` e `docker compose run --rm etl init-grid`.
 6. Conferir `docker compose run --rm etl validate` (níveis 1 e 2: 100/400 células, 62.500 km² em ambos).
+
+Para o pooler de sessão do Supabase (`*.pooler.supabase.com:5432`), o usuário em `DATABASE_URL` deve ser `postgres.PROJECT_REF`. A senha é a senha **do banco**, diferente da chave `SUPABASE_SERVICE_ROLE_KEY`. Confira a [documentação de conexão do Supabase](https://supabase.com/docs/guides/database/connecting-to-postgres) se receber `ENOIDENTIFIER` ou falha de autenticação.
 
 ## Carga de teste de 01/11/2026
 
