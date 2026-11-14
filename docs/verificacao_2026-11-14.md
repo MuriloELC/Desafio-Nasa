@@ -1,5 +1,7 @@
 # Verificação de ingestão — 14/11/2026
 
+> Registro histórico da antiga área de 250 × 250 km. As observações, a malha e o ZIP piloto aqui descritos foram removidos na migração `004_cacoal.sql` para o recorte de Cacoal. Este relatório não descreve o estado atual do banco.
+
 Projeto Supabase: `desafio nasa` (`mzjdsbubxyrxcgnbylgs`).
 
 - Migrações `001_schema`, `002_grid` e `003_views` aplicadas. O ETL também executou `migrate` pelo pooler de sessão com sucesso.

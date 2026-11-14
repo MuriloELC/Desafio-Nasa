@@ -4,8 +4,8 @@ O [protótipo CEREJÁ](../CEREJA_MVP_COBERTURAS_FINAL.html) ainda usa perfis fic
 
 | Indicador | Fonte prevista | Estado atual |
 |---|---|---|
-| Temperatura média, mínima e máxima | NASA POWER diário | Histórico desde 2020 carregado; valores mais recentes disponíveis em 12/11/2026 |
-| Chuva acumulada e distribuição | IMERG Final diário; POWER como comparação | Carga piloto IMERG de 01/01/2024 e POWER de 01–02/11/2025; não fundir produtos como se fossem uma série única |
+| Temperatura média, mínima e máxima | NASA POWER diário | Histórico de Cacoal desde 01/01/2000 carregado até o último dado disponível, 12/11/2026 |
+| Chuva acumulada e distribuição | IMERG Final diário; POWER como comparação | IMERG Final começa em junho de 2000; 9.253 dias mapeados e carga de Cacoal em andamento. Não fundir produtos como se fossem uma série única |
 | Umidade volumétrica do solo | SMAP L4 ou medição local | Não ingerida |
 | Déficit hídrico | Balanço hídrico com capacidade de armazenamento do solo e evapotranspiração | Não calculado; chuva menos evapotranspiração isolada não basta |
 | pH, P, K, Ca, Mg, matéria orgânica | Análise de solo da propriedade | Não disponível em raster com precisão suficiente para decisão individual |

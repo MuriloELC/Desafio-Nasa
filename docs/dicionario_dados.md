@@ -1,28 +1,28 @@
 # Dicionário de dados — Agro Data Pipeline
 
-**Referência:** 14/11/2026. **Banco:** Supabase `desafio nasa` (`mzjdsbubxyrxcgnbylgs`). **Schema:** `agro` (PostGIS instalado em `extensions`). Este documento descreve as migrações e extratores deste repositório e distingue dados já gravados de fontes apenas cadastradas. As contagens abaixo são um retrato: a carga histórica IMERG pode alterá-las.
+**Referência:** migração de Cacoal em 14/11/2026. **Banco:** Supabase `desafio nasa` (`mzjdsbubxyrxcgnbylgs`). **Schema:** `agro` (PostGIS instalado em `extensions`). O histórico antigo da área `RO_250` foi removido na migração `004_cacoal.sql`; as cargas de Cacoal começam em 2000 e suas contagens variam durante o processamento.
 
 ## Convenções e granularidade
 
-- A região `RO_250` é um quadrado de 250 × 250 km, centrado em longitude -60,960611111 e latitude -12,379388889. Geometrias do banco usam UTM **EPSG:32720**; longitude/latitude de `source_samples` estão em graus WGS84.
-- A malha tem **100 células de nível 1** (25 × 25 km, IDs `M_rr_cc`) e **400 de nível 2** (12,5 × 12,5 km, IDs `S_rr_cc`). As séries e as propriedades importadas referem-se às células de nível 2. O tamanho da célula não melhora a resolução da fonte.
+- A região `CACOAL_R20` é um círculo de 20 km de raio a partir da sede de Cacoal, longitude -61,45 e latitude -11,44 aproximadas conforme [mapa do IBGE de 2022](https://geoftp.ibge.gov.br/cartas_e_mapas/mapas_para_fins_de_levantamentos_estatisticos/censo_demografico_2022/mapas_municipais_estatisticos/RO/cacoal_1100049/cacoal_1100049_mme_a0.pdf). Não é o limite administrativo municipal. Geometrias do banco usam UTM **EPSG:32720**; longitude/latitude de `source_samples` estão em graus WGS84.
+- A malha tem **16 células de nível 1** (10 km, IDs `CAC_M_rr_cc`) e **60 de nível 2** (5 km, IDs `CAC_S_rr_cc`), todas recortadas no círculo. A área total por nível é aproximadamente 1.256,5 km². As séries e as propriedades importadas referem-se às células de nível 2. O tamanho da célula não melhora a resolução da fonte.
 - `observed_on` é a data do produto diário; as requisições POWER usam padrão temporal UTC. `month` é o primeiro dia do mês. Timestamps de auditoria são `timestamptz`.
 - `value` é sempre numérico (`double precision`); seu significado depende de `metric`, `unit`, `source_id` e, para solo, da profundidade. Chaves compostas permitem reprocessamento por `ON CONFLICT DO UPDATE`.
 - `quality = estimated` é o valor escrito pelos extratores atuais. **Não** equivale a uma nota de precisão validada em campo. `NULL` em campos opcionais significa ausência de informação, não zero.
 
 ## Fontes cadastradas
 
-| `source_id` | Provedor / produto | Resolução declarada no catálogo | Destino e estado em 14/11/2026 | Cuidados de interpretação |
+| `source_id` | Provedor / produto | Resolução declarada no catálogo | Destino e estado após a migração | Cuidados de interpretação |
 |---|---|---|---|---|
-| `POWER` | NASA [POWER Daily AG](https://power.larc.nasa.gov/docs/services/api/temporal/daily/) | ~0,5° meteorológica | `source_samples`, `sample_daily`, mapeamento a `v_cell_daily`; **524.490 observações** de 01/01/2020 a 12/11/2026 (as métricas têm datas finais diferentes) | 30 coordenadas representativas atendem 400 subcélulas. O agrupamento em bins de 0,5° é aproximação local; confirmar coordenadas/grade retornadas pelo provedor para uso científico rigoroso. |
-| `IMERG_FINAL` | NASA GPM [IMERG PPS Final Run GIS](https://gpm.nasa.gov/data/directory/imerg-final-run-pps-research-gis) | 0,1° | `cell_daily`; **6.000 linhas** observadas na consulta deste documento, com carga histórica em andamento. Um ZIP piloto em `raster_assets` / Storage | Produto Final GIS V07 (arquivos V07B); requer acesso PPS. Cada valor é média dos pixels válidos que tocam a célula, não média ponderada por área. O inventário PPS identificou 2.100 dias entre 2020 e 30/09/2025; não encontrou GIS Final de 01/10/2025 a 14/11/2026. |
+| `POWER` | NASA [POWER Daily AG](https://power.larc.nasa.gov/docs/services/api/temporal/daily/) | ~0,5° meteorológica | `source_samples`, `sample_daily`, mapeamento a `v_cell_daily`; 274.472 observações carregadas desde 01/01/2000 | 4 coordenadas representativas atendem 60 subcélulas. O agrupamento em bins de 0,5° é aproximação local; confirmar coordenadas/grade retornadas pelo provedor para uso científico rigoroso. |
+| `IMERG_FINAL` | NASA GPM [IMERG PPS Final Run GIS](https://gpm.nasa.gov/data/directory/imerg-final-run-pps-research-gis) | 0,1° | `cell_daily`; carga histórica de Cacoal em andamento | Produto Final GIS V07 (arquivos V07B); 9.253 dias disponíveis de junho de 2000 a setembro de 2025 no inventário. Cada valor é média dos pixels válidos que tocam a célula, não média ponderada por área. |
 | `SOILGRIDS` | ISRIC [SoilGrids](https://files.isric.org/soilgrids/latest/data/) | 250 m | Importador GeoTIFF para `static_properties` implementado; **0 linhas** | Arquivo, banda, profundidade, unidade e fator de escala são informados pelo operador. Valores regionais não substituem análise de solo da propriedade. |
 | `SRTM` | NASA/USGS SRTM elevation | ~30 m | Importador GeoTIFF para `static_properties` implementado; **0 linhas** | O importador calcula média de elevação se essa métrica for escolhida. Não calcula declividade. |
 | `FAO_HWSD` | FAO Harmonized World Soil Database | Varia | Cadastrada e aceita pelo importador estático; **0 linhas** | É preciso escolher e validar campo, unidade, raster e escala antes da carga. |
 | `SMAP_L4` | NASA SMAP SPL4SMGP 007 | 9 km | Cadastrada; sem extrator ou dados | Umidade do solo ainda não é medida pelo pipeline. |
 | `GLDAS` | NASA GLDAS Noah 0.25 v2.1 | 0,25° | Cadastrada; sem extrator ou dados | Evapotranspiração e déficit hídrico ainda não são calculados. |
 
-O inventário diário de disponibilidade IMERG está em [imerg_availability_2020_2026-11-14.csv](imerg_availability_2020_2026-11-14.csv). O estado de carga é verificável por `agro.etl_runs` e pela contagem das tabelas; **disponível no PPS** não significa **já gravado no banco**. A precipitação POWER e a IMERG têm procedência e métodos distintos e permanecem em séries separadas por `source_id` e `metric`.
+O [inventário 2000–2026](imerg_availability_2000_2026-11-14.csv) contém os 9.253 dias disponíveis e 410 diretórios ausentes. O estado de carga é verificável por `agro.etl_runs` (com `region_id = 'CACOAL_R20'`) e pela contagem das tabelas; **disponível no PPS** não significa **já gravado no banco**. A precipitação POWER e a IMERG têm procedência e métodos distintos e permanecem em séries separadas por `source_id` e `metric`.
 
 ## Dicionário das métricas implementadas
 
@@ -76,7 +76,7 @@ As tabelas abaixo pertencem ao schema `agro`. `PK` = chave primária, `FK` = cha
 
 | Campo | Tipo / regra | Significado |
 |---|---|---|
-| `region_id` | `text`, PK | Código da região; atual: `RO_250`. |
+| `region_id` | `text`, PK | Código da região; atual: `CACOAL_R20`. |
 | `description` | `text`, NN | Descrição textual da região. |
 | `center` | `geometry(Point,32720)`, NN | Centro em metros UTM. |
 | `geom` | `geometry(Polygon,32720)`, NN | Limite da região. |
@@ -121,6 +121,7 @@ As tabelas abaixo pertencem ao schema `agro`. `PK` = chave primária, `FK` = cha
 | `run_id` | `bigint` identity, PK | Identificador da execução. |
 | `command` | `text`, NN | Comando lógico, como `power_daily`, `imerg_daily` ou `static_raster`. |
 | `source_id` | `text`, FK `data_sources` | Fonte processada; opcional para comandos gerais. |
+| `region_id` | `text`, FK `regions` | Área processada. As novas execuções usam `CACOAL_R20`. |
 | `period_start` | `date` | Primeiro dia solicitado, quando aplicável. |
 | `period_end` | `date` | Último dia solicitado, quando aplicável. |
 | `status` | `text`, NN, padrão `running`; `running`, `succeeded`, `failed` | Resultado da execução. |
@@ -131,7 +132,7 @@ As tabelas abaixo pertencem ao schema `agro`. `PK` = chave primária, `FK` = cha
 
 ### `source_samples` — pontos consultados na fonte
 
-**Grão/chave:** uma linha por `sample_id`; `UNIQUE(source_id, native_key)`. Há 30 amostras POWER cadastradas.
+**Grão/chave:** uma linha por `sample_id`; `UNIQUE(source_id, native_key)`. Há 4 amostras POWER cadastradas para Cacoal.
 
 | Campo | Tipo / regra | Significado |
 |---|---|---|
@@ -143,7 +144,7 @@ As tabelas abaixo pertencem ao schema `agro`. `PK` = chave primária, `FK` = cha
 
 ### `cell_sample_map` — amostra associada à subcélula
 
-**Grão/chave:** par (`cell_id`, `sample_id`). Atualmente, cada uma das 400 subcélulas aponta a uma amostra POWER com peso 1.
+**Grão/chave:** par (`cell_id`, `sample_id`). Atualmente, cada uma das 60 subcélulas aponta a uma amostra POWER com peso 1.
 
 | Campo | Tipo / regra | Significado |
 |---|---|---|
@@ -153,7 +154,7 @@ As tabelas abaixo pertencem ao schema `agro`. `PK` = chave primária, `FK` = cha
 
 ### `sample_daily` — observação diária por ponto
 
-**Grão/chave:** (`sample_id`, `observed_on`, `metric`). Atualmente recebe POWER; 524.490 linhas no retrato de 14/11/2026.
+**Grão/chave:** (`sample_id`, `observed_on`, `metric`). Atualmente recebe POWER; 274.472 linhas a partir de 01/01/2000 na verificação de 14/11/2026.
 
 | Campo | Tipo / regra | Significado |
 |---|---|---|
@@ -167,7 +168,7 @@ As tabelas abaixo pertencem ao schema `agro`. `PK` = chave primária, `FK` = cha
 
 ### `cell_daily` — observação diária espacializada
 
-**Grão/chave:** (`cell_id`, `source_id`, `observed_on`, `metric`). Atualmente recebe IMERG; 6.000 linhas no retrato de 14/11/2026. Índice em (`observed_on`, `metric`).
+**Grão/chave:** (`cell_id`, `source_id`, `observed_on`, `metric`). Recebe IMERG quando carregado; índice em (`observed_on`, `metric`).
 
 | Campo | Tipo / regra | Significado |
 |---|---|---|
@@ -183,7 +184,7 @@ As tabelas abaixo pertencem ao schema `agro`. `PK` = chave primária, `FK` = cha
 
 ### `static_properties` — atributos de solo e relevo
 
-**Grão/chave:** (`cell_id`, `source_id`, `metric`, `depth_top_cm`, `depth_bottom_cm`). **Sem linhas** no retrato de 14/11/2026.
+**Grão/chave:** (`cell_id`, `source_id`, `metric`, `depth_top_cm`, `depth_bottom_cm`). Sem propriedades estáticas importadas para Cacoal.
 
 | Campo | Tipo / regra | Significado |
 |---|---|---|
@@ -201,7 +202,7 @@ O schema não restringe métricas, profundidades ou unidades. Portanto, uma impo
 
 ### `raster_assets` — arquivos no Storage
 
-**Grão/chave:** uma linha por `asset_id`; `object_key` único. Há um ZIP IMERG piloto arquivado; o backfill padrão não arquiva cada ZIP bruto.
+**Grão/chave:** uma linha por `asset_id`; `object_key` único. O ZIP piloto antigo foi removido; o piloto novo de 01/06/2000 foi arquivado. O backfill padrão não arquiva cada ZIP bruto.
 
 | Campo | Tipo / regra | Significado |
 |---|---|---|
@@ -261,6 +262,6 @@ Para usar precipitação como **total mensal**, compare `days_available` com os 
 
 ## Estado da ingestão e lacunas
 
-O retrato consultado em 14/11/2026 mostrou 500 células (100 + 400), 30 pontos POWER, 524.490 linhas em `sample_daily`, 6.000 em `cell_daily`, zero em `static_properties` e um arquivo em `raster_assets`. O maior `observed_on` de `sample_daily` era 12/11/2026; algumas métricas podem terminar antes. As 6.000 linhas IMERG iam de 01/01/2020 a 03/01/2024, **sem implicar cobertura contínua** entre essas datas. Use a verificação de histórico, não apenas `MIN`/`MAX`, para auditar lacunas.
+Após a migração, a região antiga e suas observações foram removidas. A nova malha foi conferida no banco: 16 células principais, 60 subcélulas e 4 amostras POWER. POWER concluiu 274.472 observações; IMERG continua em carga. Use a verificação de histórico, não apenas `MIN`/`MAX`, para auditar lacunas.
 
 No estado atual, nenhuma tabela armazena medidas de uma propriedade ou talhão específico (análise química de solo, textura medida, manejo, irrigação). A malha regional e os produtos remotos servem como contexto para recomendações, sujeitos à resolução e à cobertura de cada fonte. Consulte também [critérios de recomendação](criterios_recomendacao.md) e o [relatório de verificação](verificacao_2026-11-14.md).
