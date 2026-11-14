@@ -6,8 +6,8 @@ Pipeline geoespacial para PostgreSQL/Supabase com PostGIS. Centro `12°22'45.8"S
 
 | Fonte | Estado no repositório | Observação |
 |---|---|---|
-| NASA POWER | Extrator funcional implementado; precisa teste de rede com credenciais do projeto | Consulta por pontos representativos, agrupa subcélulas por amostra |
-| GPM IMERG Final V07 | Extrator implementado; requer cadastro PPS e teste de rede | ZIP diário GIS, banda `total.accum.tif` escalada por 0.1 mm; agregação de pixels |
+| NASA POWER | Extrator validado com carga real no Supabase | Consulta por pontos representativos, agrupa subcélulas por amostra |
+| GPM IMERG Final V07 | Extrator validado com um dia histórico; requer acesso PPS para novas cargas | ZIP diário GIS, banda `total.accum.tif` escalada por 0.1 mm; agregação de pixels |
 | SoilGrids | Importador GeoTIFF implementado | Arquivo precisa ser obtido/recortado pelo operador; conversão de unidades explícita |
 | SRTM | Importador GeoTIFF implementado | Arquivo precisa ser obtido/recortado pelo operador |
 | GLDAS, SMAP, FAO HWSD | Catalogadas, **não extraídas automaticamente nesta versão** | Requer adaptação de produto e validação de variáveis, sem dados simulados |
