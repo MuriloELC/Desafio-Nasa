@@ -5,14 +5,15 @@ import math
 
 from agro.cereja_data import PHASES, SEASON_MONTHS, UF, WATER, local_today
 
-METHOD_VERSION = "cereja-regras-1"
+METHOD_VERSION = "cereja-regras-5"
+MANDATORY_METRICS = ("air_temperature_c", "soil_ph", "recent_rain_mm", "seasonal_rain_mm")
 FIELD_NAMES = {
     "age_years": "idade do café", "phase": "fase do café", "spacing_m": "espaçamento entre linhas",
     "water": "regime hídrico", "soil_ph": "pH medido em análise de solo",
-    "nematodes": "histórico de nematoides", "can_manage": "capacidade de manejar a cobertura",
-    "soil_assessed": "avaliação da fertilidade do solo", "moisture_checked": "verificação da umidade em campo",
+    "can_manage": "capacidade de manejar a cobertura", "goal": "objetivo do manejo",
 }
 STRATEGIES = ("convencional", "permanente", "rotacao")
+GOALS = ("conservar_agua", "reduzir_erosao", "produzir_biomassa", "simplificar_manejo")
 
 
 def number(value, low, high):
@@ -58,10 +59,11 @@ def assessment_inputs(payload):
         raise ValueError("A data de referência deve estar entre 2000 e hoje.")
     fields = {"phase": option(raw.get("phase"), PHASES, "fase"),
               "water": option(raw.get("water"), WATER, "regime hídrico"),
-              "strategy": option(raw.get("strategy"), STRATEGIES, "estratégia de entrelinha")}
+              "strategy": option(raw.get("strategy"), STRATEGIES, "estratégia de entrelinha"),
+              "goal": option(raw.get("goal"), GOALS, "objetivo do manejo")}
     for key, lo, hi in (("age_years", 0, 100), ("spacing_m", .01, 30), ("soil_ph", 0, 14)):
         fields[key] = None if raw.get(key) in (None, "") else number(raw[key], lo, hi)
-    for key in ("nematodes", "can_manage", "soil_assessed", "moisture_checked"):
+    for key in ("can_manage",):
         value = raw.get(key)
         if value is not None and not isinstance(value, bool):
             raise ValueError(f"Informe sim, não ou desconhecido: {FIELD_NAMES[key]}.")
@@ -160,9 +162,11 @@ def _out_of_band(value, band):
             (band["maximum"] is not None and value > band["maximum"]))
 
 
-def evaluate(data, climate, fields, reference, municipality=None):
+def evaluate(data, climate, fields, reference, municipality=None, regional_soil_ph=None):
     measurements = summarize_climate(climate)
-    observed = {metric: item["value"] for metric, item in measurements.items()} | {"soil_ph": fields["soil_ph"]}
+    soil_ph = fields["soil_ph"] if fields["soil_ph"] is not None else regional_soil_ph
+    effective_fields = fields | {"soil_ph": soil_ph}
+    observed = {metric: item["value"] for metric, item in measurements.items()} | {"soil_ph": soil_ph}
     rules = applicable(data["rules"], phase=fields["phase"], water=fields["water"], municipality=municipality)
     candidates = []
     strategy = fields.get("strategy")
@@ -178,11 +182,9 @@ def evaluate(data, climate, fields, reference, municipality=None):
         if strategy == "convencional":
             continue
         selected = [rule for rule in rules if rule["culture_id"] == cid]
-        missing = [label for key, label in FIELD_NAMES.items() if fields[key] is None or (
-            key in ("soil_assessed", "moisture_checked") and not fields[key]
-        )]
+        missing = [label for key, label in FIELD_NAMES.items() if effective_fields.get(key) is None]
         reasons, sources = [], {}
-        blocked, caution = False, False
+        blocked, caution, failed_restrictions, warning_failures, evaluated_restrictions = False, False, 0, 0, 0
         for rule in selected:
             source = {**rule["source"], "detail": rule["source_detail"], "rule_id": rule["rule_id"], "rule_version": rule["version"]}
             sources[(source["url"], source["detail"], rule["rule_id"])] = source
@@ -194,24 +196,26 @@ def evaluate(data, climate, fields, reference, municipality=None):
                 reasons.append("O mês de referência está fora das janelas técnicas de plantio aplicáveis.")
             for check in rule["checks"]:
                 key = check.get("field")
-                if key not in FIELD_NAMES or fields[key] is None:
+                if key not in FIELD_NAMES or fields.get(key) is None:
                     continue
+                evaluated_restrictions += 1
                 failed = (("equals" in check and fields[key] != check["equals"]) or
+                          ("one_of" in check and fields[key] not in check["one_of"]) or
                           ("minimum" in check and fields[key] < check["minimum"]) or
                           ("maximum" in check and fields[key] > check["maximum"]))
                 if failed:
-                    blocked |= check.get("severity") == "desfavoravel"
+                    is_blocking = check.get("severity") == "desfavoravel"
+                    blocked |= is_blocking
+                    failed_restrictions += int(is_blocking)
+                    warning_failures += int(not is_blocking)
                     caution = True
                     reasons.append(check["reason"])
         if fields["can_manage"] is False:
             caution = True
             reasons.append("Não foi informada capacidade de manejar a cobertura regularmente.")
-        if fields["nematodes"] is True:
-            caution = True
-            reasons.append("Confirme com assistência técnica a identificação do nematoide e a compatibilidade da espécie.")
-        for key, label in (("recent_rain_mm", "chuva dos últimos 30 dias em série completa"),
+        for key, label in (("recent_rain_mm", "chuva recente"),
                            ("seasonal_rain_mm", "histórico com mês sazonal completo"),
-                           ("air_temperature_c", "temperatura dos últimos 30 dias em série completa")):
+                           ("air_temperature_c", "temperatura recente")):
             if key not in observed:
                 missing.append(label)
         bands = {}
@@ -219,33 +223,110 @@ def evaluate(data, climate, fields, reference, municipality=None):
             # Annual rain is contextual, never treated as a gate or a substitute for seasonal data.
             if band["culture_id"] == cid and band["metric"] != "annual_rain_mm":
                 bands.setdefault((band["metric"], band["band"]), band)
+        within_optimal = within_tolerated = outside_tolerated = evaluated_bands = 0
         for (metric, group), band in bands.items():
-            val = observed.get(metric)
-            if val is None:
-                continue
             detail = band["source_detail"]
             sources[(band["source"]["url"], detail, metric, group)] = {
                 **band["source"], "detail": detail, "requirement_version": band["version"]}
+            val = observed.get(metric)
+            if val is None:
+                continue
+            evaluated_bands += 1
             if _out_of_band(val, band):
                 blocked |= group == "tolerated"
+                outside_tolerated += int(group == "tolerated")
                 caution = True
                 labels = {"soil_ph": "pH", "recent_rain_mm": "chuva recente",
                           "seasonal_rain_mm": "chuva sazonal", "air_temperature_c": "temperatura"}
                 reasons.append(f"{labels[metric].capitalize()} fora da faixa {'tolerada' if group == 'tolerated' else 'ótima'} revisada.")
-        missing_bands = {"soil_ph", "recent_rain_mm", "seasonal_rain_mm", "air_temperature_c"} - {metric for metric, _ in bands}
+            elif group == "optimal":
+                within_optimal += 1
+            elif group == "tolerated":
+                within_tolerated += 1
+        missing_bands = set(MANDATORY_METRICS) - {metric for metric, group in bands if group == "optimal"}
         if missing_bands:
             missing.append("faixas agronômicas revisadas para a espécie")
         if not selected:
             missing.append("regra técnica revisada para esta fase e regime hídrico")
-        state = ("desfavoravel" if blocked else "atencao" if caution else
-                 "sem_dados" if missing else "favoravel")
+        failed_restrictions += outside_tolerated
+        eligible = bool(selected) and not missing_bands
+        # Sem a evidência mínima, nem mesmo um critério parcial pode criar posição distinta.
+        # Entre espécies elegíveis, impedimentos documentados têm precedência.
+        state = ("sem_dados" if not eligible else "desfavoravel" if blocked else "sem_dados" if missing else
+                 "atencao" if caution else "favoravel")
         if not reasons:
-            reasons.append("Faltam dados ou critérios revisados para concluir a avaliação." if missing
-                           else "Os critérios de campo e os indicadores avaliados estão dentro das faixas revisadas.")
+            reasons.append("A avaliação usou os dados disponíveis; confira os itens pendentes abaixo." if missing
+                           else "Os critérios de campo e os indicadores avaliados estão dentro das faixas publicadas.")
+        coverage_required = len(FIELD_NAMES) + 3
+        coverage_available = sum(effective_fields.get(key) is not None for key in FIELD_NAMES) + sum(key in observed for key in (
+            "recent_rain_mm", "seasonal_rain_mm", "air_temperature_c"
+        ))
+        confidence = ("insuficiente" if not eligible else "alta" if coverage_available == coverage_required
+                      else "media" if coverage_available >= math.ceil(coverage_required * .7) else "baixa")
+        components = {
+            "eligibility": {"applicable_rule": bool(selected),
+                            "mandatory_bands_reviewed": len(MANDATORY_METRICS) - len(missing_bands),
+                            "mandatory_bands_required": len(MANDATORY_METRICS)},
+            "blocking_restrictions": {"failed": failed_restrictions, "warnings_failed": warning_failures,
+                                      "evaluated": evaluated_restrictions},
+            "range_adequacy": {"within_optimal": within_optimal, "within_tolerated": within_tolerated,
+                               "outside_tolerated": outside_tolerated, "evaluated": evaluated_bands},
+            "data_coverage": {"available": coverage_available, "required": coverage_required},
+            "secondary": {"applicable_rules": len(selected), "documented_sources": len(sources)},
+        }
+        checked_fields = {check.get("field") for rule in selected for check in rule["checks"]}
+        used_fields = {"phase", "water", "strategy", "can_manage"} | checked_fields
+        if any(metric == "soil_ph" for metric, _ in bands):
+            used_fields.add("soil_ph")
+        data_used = [
+            {"criterion": key, "value": value, "origin": "produtor"}
+            for key, value in fields.items() if value is not None and key in used_fields
+        ] + [
+            {"criterion": key, "value": value, "origin": measurements[key]["source_id"]}
+            for key, value in observed.items()
+            if key != "soil_ph" and key in measurements and any(metric == key for metric, _ in bands)
+        ]
+        if fields["soil_ph"] is None and soil_ph is not None and any(metric == "soil_ph" for metric, _ in bands):
+            data_used.append({"criterion": "soil_ph", "value": soil_ph, "origin": "SOILGRIDS"})
         candidates.append({"culture_id": cid, "name": culture["name"], "state": state, "missing": missing,
-                           "reasons": list(dict.fromkeys(reasons)), "sources": list(sources.values())})
-    ranking = {"favoravel": 0, "atencao": 1, "sem_dados": 2, "desfavoravel": 3}
-    ordered = sorted(candidates, key=lambda item: (ranking[item["state"]], item["name"].casefold()))
+                           "reasons": list(dict.fromkeys(reasons)), "sources": list(sources.values()),
+                           "rules_used": [{"rule_id": rule["rule_id"], "version": rule["version"]}
+                                          for rule in selected],
+                           "data_used": data_used, "score_components": components, "confidence": confidence,
+                           "_eligible": eligible,
+                           "_blocked": blocked})
+
+    def ranking_key(item):
+        # Restrições impeditivas precedem adequação, cobertura e critérios secundários.
+        # Sem a evidência mínima, componentes parciais não criam uma ordem artificial.
+        if not item["_eligible"]:
+            return (1,)
+        if item["_blocked"]:
+            return (2,)
+        score = item["score_components"]
+        return (0, -score["range_adequacy"]["within_optimal"],
+                -score["range_adequacy"]["within_tolerated"],
+                score["range_adequacy"]["outside_tolerated"],
+                score["blocking_restrictions"]["warnings_failed"],
+                -score["data_coverage"]["available"],
+                -score["secondary"]["applicable_rules"],
+                -score["secondary"]["documented_sources"])
+
+    ordered = sorted(candidates, key=lambda item: (ranking_key(item), item["name"].casefold()))
+    groups = {}
+    for item in ordered:
+        groups.setdefault(ranking_key(item), []).append(item)
+    dense_ranks = {key: rank for rank, key in enumerate(sorted(groups), 1)}
+    for item in ordered:
+        key = ranking_key(item)
+        item["rank"] = dense_ranks[key]
+        item["tie"] = len(groups[key]) > 1
+        del item["_eligible"], item["_blocked"]
+    ranking_available = len(groups) > 1 and any(
+        item["score_components"]["eligibility"]["applicable_rule"] and
+        item["score_components"]["eligibility"]["mandatory_bands_reviewed"] == len(MANDATORY_METRICS)
+        for item in ordered
+    )
     return {"method_version": METHOD_VERSION, "reference_date": reference, "strategy": strategy,
             "measurements": measurements, "coverage": climate,
-            "candidates": ordered[:3]}
+            "ranking_available": ranking_available, "candidates": ordered}

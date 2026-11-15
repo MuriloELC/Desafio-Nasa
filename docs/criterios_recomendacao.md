@@ -9,7 +9,7 @@ A localização marcada é um ponto, não o polígono da lavoura. Nenhuma espéc
 | Déficit hídrico | Balanço hídrico com capacidade de armazenamento do solo e evapotranspiração | Não calculado; chuva menos evapotranspiração isolada não basta |
 | pH, P, K, Ca, Mg, matéria orgânica | Análise de solo da propriedade | Não disponível em raster com precisão suficiente para decisão individual |
 | Argila, silte e areia | SoilGrids, mais análise local quando possível | Importação manual disponível; resolução e incerteza precisam aparecer no resultado |
-| Idade do café, espaçamento, cobertura atual, nematoides, irrigação | Produtor e assistência técnica | Apenas alguns campos simulados no protótipo |
+| Idade do café, espaçamento, cobertura atual, capacidade de manejo e irrigação | Produtor e assistência técnica | Coletados no onboarding; nematoides ficaram fora do levantamento inicial |
 
 ## Evidência agronômica inicial
 

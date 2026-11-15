@@ -7,7 +7,7 @@ O motor `cereja-regras-1` é deliberadamente conservador. Ele avalia as dez esp�
 Um desempate numérico sem essas evidências criaria precisão falsa. Para produzir uma ordem agronômica defensável, é necessário:
 
 1. **Revisar requisitos por espécie:** temperatura, pH local, chuva recente e sazonal, fase do café, regime hídrico e espaçamento, sempre com fonte, página, versão e responsável pela revisão.
-2. **Publicar regras específicas:** implantação, manutenção, roçada/corte, competição hídrica, faixa livre junto ao cafeeiro e restrições por nematoide.
+2. **Publicar regras específicas:** implantação, manutenção, roçada/corte, competição hídrica e faixa livre junto ao cafeeiro. Nematoides ficaram fora do levantamento inicial.
 3. **Transformar respostas do produtor em critérios:** objetivo do manejo, cobertura atual, capacidade de intervenção e análise local precisam afetar cada espécie de maneira explícita.
 4. **Definir o desempate:** primeiro restrições impeditivas; depois adequação às faixas revisadas; depois cobertura dos dados; por fim critérios secundários documentados. Ordem alfabética deve ser usada apenas para empate real.
 5. **Validar com especialistas e casos de campo:** montar casos esperados para formação, produção e recepa, em sequeiro e irrigado, e registrar a decisão esperada de um agrônomo.

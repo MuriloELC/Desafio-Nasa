@@ -169,16 +169,23 @@ SELECT to_jsonb(summary) FROM (
 """
 
 CLIMATE = """
-WITH periods AS (
-  SELECT 'recent' AS kind, %(reference)s::date - 29 AS start_on, %(reference)s::date AS end_on
+WITH mapped AS (
+  SELECT m.sample_id,m.weight FROM agro.cell_sample_map m
+  JOIN agro.source_samples s ON s.sample_id=m.sample_id AND s.source_id='POWER'
+  WHERE m.cell_id=%(cell)s ORDER BY m.weight DESC,m.sample_id LIMIT 1
+), latest AS (
+  SELECT min(last_on) AS end_on FROM (
+    SELECT d.metric,max(d.observed_on) AS last_on
+    FROM mapped m JOIN agro.sample_daily d ON d.sample_id=m.sample_id
+    WHERE d.metric IN ('precip_power_mm','temp_mean_c') AND d.observed_on <= %(reference)s::date
+    GROUP BY d.metric
+  ) available
+), periods AS (
+  SELECT 'recent' AS kind,end_on - 29 AS start_on,end_on FROM latest WHERE end_on IS NOT NULL
   UNION ALL
   SELECT 'seasonal', start_on, (start_on + interval '1 month - 1 day')::date
   FROM (SELECT (date_trunc('month', %(reference)s::date) - n * interval '1 year')::date AS start_on
         FROM generate_series(1,5) n) history
-), mapped AS (
-  SELECT m.sample_id,m.weight FROM agro.cell_sample_map m
-  JOIN agro.source_samples s ON s.sample_id=m.sample_id AND s.source_id='POWER'
-  WHERE m.cell_id=%(cell)s ORDER BY m.weight DESC,m.sample_id LIMIT 1
 )
 SELECT p.*, p.end_on-p.start_on+1 AS days_expected, ms.source_id, ms.metric,
   s.product,s.native_resolution,s.url,v.days_available,
@@ -286,3 +293,12 @@ class Repository:
             rows = conn.execute(CLIMATE, {"cell": cell, "reference": reference}).fetchall()
         self.climate_cache.put(key, rows)
         return rows
+
+    def regional_soil_ph(self, cell):
+        with self.connection("ph_regional") as conn:
+            row = conn.execute("""
+              SELECT value FROM agro.static_properties
+              WHERE cell_id=%s AND source_id='SOILGRIDS' AND metric='soil_ph'
+              ORDER BY depth_top_cm NULLS LAST,depth_bottom_cm NULLS LAST LIMIT 1
+            """, (cell,)).fetchone()
+        return row["value"] if row else None

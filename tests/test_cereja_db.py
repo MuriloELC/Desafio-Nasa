@@ -58,7 +58,7 @@ def test_private_farm_lifecycle_and_rls(repo):
         a.update_task(str(task),{"state":"realizada","done_on":"2024-08-06"})
         saved = Service(repo).recommendation({"lat":-11.4386,"lon":-61.4472,"reference_date":str(local_today())})
         evaluation = a.add_assessment(plot, saved)["id"]
-        assert a.assessment(str(evaluation))["method_version"] == "cereja-regras-1"
+        assert a.assessment(str(evaluation))["method_version"] == "cereja-regras-5"
         assert a.list()["tasks"][0]["done_on"] == "2024-08-06"
         assert b.list() == {"plots":[],"cycles":[],"tasks":[],"assessments":[]}
         with pytest.raises(NotFound):

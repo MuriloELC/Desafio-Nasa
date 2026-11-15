@@ -47,7 +47,9 @@ class Service:
         data = self.repo.reference_data(for_engine=True, municipality=municipality)
         if not any(row["catalog_species"] for row in data["cultures"]):
             raise Unavailable("O catálogo ainda não foi importado.")
-        result = evaluate(data, self.repo.climate(cell, reference), fields, reference, municipality)
+        regional_soil_ph = self.repo.regional_soil_ph(cell) if fields["soil_ph"] is None else None
+        result = evaluate(data, self.repo.climate(cell, reference), fields, reference, municipality,
+                          regional_soil_ph=regional_soil_ph)
         return {**result, "inside": True, "cell_id": cell, "cell_grid_km": 5, "municipality": municipality}
 
     def dispatch(self, method, path, query, body, auth_header):

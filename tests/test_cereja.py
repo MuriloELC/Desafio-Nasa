@@ -28,7 +28,7 @@ def test_catalog_only_contains_actual_draft_evidence(tmp_path):
     assert len(cultures) == len({c["culture_id"] for c in cultures}) == 10
     assert len(bands) == 30 and {b["band"] for b in bands} == {"optimal"}
     assert {b["unit"] for b in bands} == {"C", "pH", "mm"}
-    assert next(c for c in cultures if c["culture_id"] == "guandu-anao")["scientific_name"] is None
+    assert next(c for c in cultures if c["culture_id"] == "guandu-anao")["scientific_name"] == "Cajanus cajan"
 
     bad = tmp_path/"bad.csv"
     rows = list(csv.reader(StringIO(CSV_PATH.read_text(encoding="utf-8-sig")), delimiter=";"))
@@ -88,8 +88,8 @@ def test_incomplete_series_are_visible_but_not_merged():
 
 
 def test_recommendation_gates_positive_result_and_prioritizes_field_restrictions():
-    fields = {"phase":"formacao","water":"sequeiro","soil_ph":6,"age_years":1,"spacing_m":3,
-              "nematodes":False,"can_manage":True,"soil_assessed":True,"moisture_checked":True}
+    fields = {"phase":"formacao","water":"sequeiro","goal":"produzir_biomassa","soil_ph":6,"age_years":1,"spacing_m":3,
+              "can_manage":True}
     climate = [observation("POWER","precip_power_mm","recent",60),observation("POWER","precip_power_mm","seasonal",100),
                observation("POWER","temp_mean_c","recent",25)]
     req = [{"culture_id":"milheto","metric":m,"band":"optimal","minimum":lo,"maximum":hi,
@@ -99,18 +99,86 @@ def test_recommendation_gates_positive_result_and_prioritizes_field_restrictions
     selected = rule(checks=[{"field":"spacing_m", "minimum":2, "severity":"desfavoravel", "reason":"Espaçamento incompatível."}])
     data = {"cultures":[CULTURE],"requirements":req,"rules":[selected]}
     ref = date(2020,11,30)
-    assert evaluate(data,climate,fields,ref)["candidates"][0]["state"] == "favoravel"
+    favorable = evaluate(data,climate,fields,ref)
+    assert favorable["method_version"] == "cereja-regras-5"
+    assert favorable["candidates"][0]["state"] == "favoravel"
+    assert favorable["candidates"][0]["rank"] == 1
+    assert favorable["candidates"][0]["confidence"] == "alta"
+    assert favorable["candidates"][0]["score_components"]["range_adequacy"]["within_optimal"] == 4
+    assert favorable["candidates"][0]["rules_used"] == [{"rule_id":"sazonal","version":1}]
+    assert {item["criterion"] for item in favorable["candidates"][0]["data_used"]} >= {
+        "soil_ph", "recent_rain_mm", "seasonal_rain_mm", "air_temperature_c"}
     missing = evaluate(data,climate,fields | {"soil_ph":None},ref)["candidates"][0]
     assert missing["state"] == "sem_dados" and "pH medido em análise de solo" in missing["missing"]
+    regional = evaluate(data,climate,fields | {"soil_ph":None},ref,regional_soil_ph=5.8)["candidates"][0]
+    assert regional["state"] == "favoravel" and not regional["missing"]
+    assert {"criterion":"soil_ph","value":5.8,"origin":"SOILGRIDS"} in regional["data_used"]
     blocked = evaluate(data,[],fields | {"spacing_m":1},ref)["candidates"][0]
     assert blocked["state"] == "desfavoravel" and "Espaçamento incompatível." in blocked["reasons"]
     assert evaluate(data,climate,fields,date(2021,8,31))["candidates"][0]["state"] == "atencao"
     assert evaluate(data | {"requirements":[]},climate,fields,ref)["candidates"][0]["state"] == "sem_dados"
 
 
+def test_unreviewed_candidates_remain_an_explicit_real_tie():
+    fields = {"phase":"formacao","water":"sequeiro","goal":"produzir_biomassa","soil_ph":6,"age_years":1,"spacing_m":3,
+              "can_manage":False}
+    cultures = [CULTURE, CULTURE | {"culture_id":"amendoim", "name":"Amendoim"},
+                CULTURE | {"culture_id":"guandu", "name":"Guandu"}]
+    result = evaluate({"cultures":cultures,"requirements":[],"rules":[]}, [], fields, date(2020,11,30))
+    assert not result["ranking_available"]
+    assert [item["name"] for item in result["candidates"]] == ["Amendoim", "Guandu", "Milheto"]
+    assert {item["state"] for item in result["candidates"]} == {"sem_dados"}
+    assert {item["rank"] for item in result["candidates"]} == {1}
+    assert all(item["tie"] and item["confidence"] == "insuficiente" for item in result["candidates"])
+    partial_rule = rule(checks=[{"field":"spacing_m", "minimum":4, "severity":"desfavoravel",
+                                "reason":"Espaçamento incompatível."}])
+    partial = evaluate({"cultures":cultures,"requirements":[],"rules":[partial_rule]}, [], fields,
+                       date(2020,11,30))
+    assert {item["state"] for item in partial["candidates"]} == {"sem_dados"}
+    assert {item["rank"] for item in partial["candidates"]} == {1}
+
+
+def test_ranking_only_differentiates_species_with_minimum_evidence():
+    fields = {"phase":"formacao","water":"sequeiro","goal":"produzir_biomassa","soil_ph":6,"age_years":1,"spacing_m":3,
+              "can_manage":True}
+    climate = [observation("POWER","precip_power_mm","recent",60),
+               observation("POWER","precip_power_mm","seasonal",100),
+               observation("POWER","temp_mean_c","recent",25)]
+    req = [{"culture_id":"milheto","metric":metric,"band":"optimal","minimum":minimum,"maximum":maximum,
+            "source_detail":"p. 3","source":{"url":"https://example.org/"},"version":"reviewed-test"}
+           for metric,minimum,maximum in (("air_temperature_c",20,30),("soil_ph",5,7),
+                                          ("recent_rain_mm",50,70),("seasonal_rain_mm",80,120))]
+    cultures = [CULTURE, CULTURE | {"culture_id":"guandu", "name":"Guandu"}]
+    result = evaluate({"cultures":cultures,"requirements":req,"rules":[rule()]}, climate, fields, date(2020,11,30))
+    assert result["ranking_available"]
+    assert [(item["culture_id"],item["rank"],item["tie"]) for item in result["candidates"]] == [
+        ("milheto",1,False),("guandu",2,False)]
+
+
+def test_management_goal_changes_secondary_ranking():
+    fields = {"phase":"formacao","water":"sequeiro","goal":"produzir_biomassa","soil_ph":6,
+              "age_years":1,"spacing_m":3,"can_manage":True}
+    climate = [observation("POWER","precip_power_mm","recent",60),
+               observation("POWER","precip_power_mm","seasonal",100),
+               observation("POWER","temp_mean_c","recent",25)]
+    cultures = [CULTURE, CULTURE | {"culture_id":"guandu", "name":"Guandu"}]
+    req = [{"culture_id":cid,"metric":metric,"band":"optimal","minimum":minimum,"maximum":maximum,
+            "source_detail":"p. 3","source":{"url":"https://example.org/"},"version":"reviewed-test"}
+           for cid in ("milheto","guandu")
+           for metric,minimum,maximum in (("air_temperature_c",20,30),("soil_ph",5,7),
+                                          ("recent_rain_mm",50,70),("seasonal_rain_mm",80,120))]
+    biomass = {"field":"goal","one_of":["produzir_biomassa"],"severity":"atencao","reason":"Objetivo diferente."}
+    water = {"field":"goal","one_of":["conservar_agua"],"severity":"atencao","reason":"Objetivo diferente."}
+    rules = [rule(checks=[biomass]), rule("guandu-rule",culture_id="guandu",checks=[water])]
+    result = evaluate({"cultures":cultures,"requirements":req,"rules":rules},climate,fields,date(2020,11,30))
+    assert [(item["culture_id"],item["rank"]) for item in result["candidates"]] == [("milheto",1),("guandu",2)]
+
+
 def test_invalid_inputs_and_coordinates_outside():
     with pytest.raises(ValueError):
         assessment_inputs({"field":{"can_manage":"false"}})
+    _, legacy = assessment_inputs({"field":{"nematodes":True}})
+    assert "nematodes" not in legacy
     with pytest.raises(ValueError):
         Service(None).recommendation({"lat":"NaN","lon":-61.4})
 

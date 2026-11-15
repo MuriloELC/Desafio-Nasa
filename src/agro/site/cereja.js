@@ -98,11 +98,16 @@
       tr.insertCell().textContent = item.days_available+'/'+item.days_expected+(item.value == null ? ' · incompleto' : '');
     }
     scroll.append(table); coverage.append(scroll);
+    const ranking = node('p', result.ranking_available
+      ? 'As três primeiras têm diferença de evidência documentada.'
+      : 'Sem ordem técnica: a sequência visual é alfabética e representa empate real.');
     const grid = node('ul', null, 'candidate-grid');
-    for (const candidate of result.candidates) {
+    const candidates = result.ranking_available ? result.candidates.slice(0, 3) : result.candidates;
+    for (const candidate of candidates) {
       const card = node('li');
       card.append(node('strong', candidate.name),
         node('span', stateNames[candidate.state], 'state-pill state-'+candidate.state),
+        node('small', 'Posição '+candidate.rank+(candidate.tie ? ' (empate)' : '')+' · confiança '+candidate.confidence),
         node('p', candidate.reasons.join(' ')));
       if (candidate.missing.length) {
         const missing = node('details');
@@ -116,7 +121,7 @@
       }
       grid.append(card);
     }
-    output.replaceChildren(intro, values, coverage, grid);
+    output.replaceChildren(intro, values, coverage, ranking, grid);
   }
   document.querySelectorAll('.field-inputs').forEach(el => el.append($('#fieldInputs').content.cloneNode(true)));
   window.Cereja = {api, node, failure, fields, fieldPayload, dateText, renderRecommendation};

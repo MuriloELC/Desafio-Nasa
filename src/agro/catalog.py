@@ -7,14 +7,14 @@ import math
 from pathlib import Path
 
 CSV_PATH = Path(__file__).resolve().parents[2] / "docs/cultivo-entrelinha/catalogo_entrelinhas_cafe_limpo.csv"
-VERSION = "catalogo-limpo-2026-11-14"
+VERSION = "catalogo-evidencia-inicial-2026-11-15"
 IDENTITIES = {
     "Amendoim-forrageiro": ("amendoim-forrageiro", "Arachis pintoi"),
-    "Mucuna-anã": ("mucuna-ana", None),
+    "Mucuna-anã": ("mucuna-ana", "Mucuna pruriens var. utilis"),
     "Crotalária-spectabilis": ("crot-spectabilis", "Crotalaria spectabilis"),
     "Feijão-de-porco": ("feijao-de-porco", "Canavalia ensiformis"),
     "Crotalária-júncea": ("crot-juncea", "Crotalaria juncea"),
-    "Guandu-anão": ("guandu-anao", None),
+    "Guandu-anão": ("guandu-anao", "Cajanus cajan"),
     "Milheto": ("milheto", "Cenchrus americanus"),
     "Braquiária-ruziziensis": ("braquiaria-ruziziensis", "Urochloa ruziziensis"),
     "Lablab": ("lablab", "Lablab purpureus"),

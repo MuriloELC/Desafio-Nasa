@@ -80,9 +80,35 @@ export type Candidate = {
     title: string;
     url: string;
     detail?: string;
+    rule_id?: string;
     rule_version?: number;
     requirement_version?: number;
   }>;
+  rules_used: Array<{ rule_id: string; version: number }>;
+  data_used: Array<{
+    criterion: string;
+    value: string | number | boolean;
+    origin: string;
+  }>;
+  score_components: {
+    eligibility: {
+      applicable_rule: boolean;
+      mandatory_bands_reviewed: number;
+      mandatory_bands_required: number;
+    };
+    blocking_restrictions: { failed: number; warnings_failed: number; evaluated: number };
+    range_adequacy: {
+      within_optimal: number;
+      within_tolerated: number;
+      outside_tolerated: number;
+      evaluated: number;
+    };
+    data_coverage: { available: number; required: number };
+    secondary: { applicable_rules: number; documented_sources: number };
+  };
+  rank: number;
+  confidence: "insuficiente" | "baixa" | "media" | "alta";
+  tie: boolean;
 };
 
 export type Assessment = {
@@ -95,6 +121,7 @@ export type Assessment = {
   strategy?: FieldInput["strategy"];
   measurements?: Record<string, { value: number; source_id: string; period_count: number }>;
   coverage?: Coverage[];
+  ranking_available?: boolean;
   candidates: Candidate[];
 };
 
@@ -126,15 +153,13 @@ export type Calendar = {
 
 export type FieldInput = {
   strategy?: "convencional" | "permanente" | "rotacao" | null;
+  goal: "conservar_agua" | "reduzir_erosao" | "produzir_biomassa" | "simplificar_manejo" | null;
   phase: "implantacao" | "formacao" | "producao" | "recepa" | null;
   water: "sequeiro" | "irrigado" | null;
   age_years: number | null;
   spacing_m: number | null;
   soil_ph: number | null;
-  nematodes: boolean | null;
   can_manage: boolean | null;
-  soil_assessed: boolean | null;
-  moisture_checked: boolean | null;
 };
 
 export type AssessmentRequest = { lat: number; lon: number; field: FieldInput };
