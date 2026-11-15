@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, MapPin, RotateCcw, Send, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SatelliteMapCanvas } from "@/components/territory-map";
-import cerejaLogo from "@/assets/cereja-logo-v2.png";
 import bean from "@/assets/cut-4-bean.png";
 import { ANSWERS_STORAGE_KEY } from "@/lib/storage";
 import { ANSWER_LABELS, quickReplies } from "@/lib/onboarding-ui";
@@ -127,11 +126,10 @@ function ChatPage() {
   const replies = quickReplies(step);
 
   return (
-    <div className="min-h-svh bg-background">
-      <header className="sticky top-0 z-30 border-b border-border bg-paper/95 backdrop-blur">
+    <div className="onboarding-page">
+      <header className="onb-top">
         <div className="mx-auto flex max-w-[1120px] items-center justify-between px-4 py-3 sm:px-6">
-          <Link to="/" className="flex items-center gap-2">
-            <img src={cerejaLogo} alt="" className="size-10 object-contain" />
+          <Link to="/" className="onb-brand">
             <span className="brand text-xl">Cerejá</span>
           </Link>
           <div className="flex items-center gap-3">
@@ -147,8 +145,8 @@ function ChatPage() {
           />
         </div>
       </header>
-      <main className="mx-auto grid max-w-[1120px] gap-10 px-4 py-8 sm:px-6 lg:grid-cols-[300px_1fr] lg:py-12">
-        <aside className="hidden self-start lg:sticky lg:top-28 lg:block">
+      <main className="onb-grid">
+        <aside className="onb-intro">
           <p className="eyebrow">Sua lavoura, do seu jeito</p>
           <h1 className="display-soft mt-4 text-5xl">Sua história encontra o seu território.</h1>
           <img
@@ -161,8 +159,12 @@ function ChatPage() {
             regras que explicam a avaliação.
           </p>
         </aside>
-        <section aria-label="Conversa sobre a lavoura" className="min-w-0">
-          <div role="log" aria-live="polite" className="space-y-4">
+        <section aria-label="Conversa sobre a lavoura" className="onb-chat">
+          <div className="onb-chat-head">
+            <div className="bot-info"><span className="bot-dot">✳</span><div><strong>Cerejá · Assistente</strong><small>Conversa sobre a sua terra</small></div></div>
+            <span className="ui-label">Online</span>
+          </div>
+          <div role="log" aria-live="polite" className="onb-chat-content">
             <BotMessage>
               Oi! Eu sou o Cerejá. Vamos entender seu cafezal e marcar um ponto na área piloto.
             </BotMessage>
@@ -328,6 +330,7 @@ function ChatPage() {
             </div>
           )}
           <div ref={end} />
+          <footer className="onb-foot"><span>Suas respostas ficam salvas neste navegador.</span><span>Dados reais · área piloto</span></footer>
         </section>
       </main>
     </div>
@@ -425,11 +428,6 @@ function TerritoryPicker({
 
 function BotMessage({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-3">
-      <img src={cerejaLogo} alt="" className="mt-1 size-9 shrink-0 object-contain" />
-      <p className="max-w-[90%] rounded-3xl rounded-tl-md bg-paper px-5 py-3 leading-relaxed">
-        {children}
-      </p>
-    </div>
+    <p className="bot-bubble">{children}</p>
   );
 }

@@ -90,7 +90,7 @@ function MetricCard({
   const reading = item ? metricReading(item) : null;
   const Icon = meta.icon;
   return (
-    <article className="rounded-[1.75rem] border border-border bg-paper p-5 shadow-sm">
+    <article className="app-stat ui-card">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="eyebrow">{meta.label}</p>
@@ -201,7 +201,7 @@ export function RealDecisionPage() {
 
   return (
     <AppPage>
-      <header className="border-b border-border pb-8">
+      <header className="app-section-intro">
         <p className="eyebrow">Minha Terra · Cacoal, RO</p>
         <h1 className="display-soft mt-3 text-5xl sm:text-7xl">Seu território, em contexto.</h1>
         <p className="mt-4 max-w-3xl text-lg text-muted-foreground">
@@ -229,7 +229,7 @@ export function RealDecisionPage() {
       ) : null}
       {diagnostic?.inside ? (
         <>
-          <section className="grid gap-5 py-8 lg:grid-cols-[1.45fr_0.75fr]">
+          <section id="visao-geral" className="grid gap-5 py-8 lg:grid-cols-[1.45fr_0.75fr]">
             <TerritoryMap latitude={diagnostic.latitude} longitude={diagnostic.longitude} />
             <div className="grid gap-4">
               <MetricCard metric="precip_30d_mm" item={metric("precip_30d_mm")} />
@@ -241,7 +241,7 @@ export function RealDecisionPage() {
             Ponto {diagnostic.latitude.toFixed(5)}, {diagnostic.longitude.toFixed(5)} · célula{" "}
             {diagnostic.cell_id} · malha de {diagnostic.cell_grid_km} km.
           </p>
-          <section className="border-t border-border py-8">
+          <section id="estrategias" className="border-t border-border py-8">
             <p className="eyebrow">Estratégia de entrelinha</p>
             <h2 className="display-soft mt-2 text-4xl">Três maneiras de cuidar das entrelinhas.</h2>
             <p className="mt-3 max-w-3xl text-muted-foreground">
@@ -268,7 +268,7 @@ export function RealDecisionPage() {
               ))}
             </div>
           </section>
-          <section className="border-t border-border py-8">
+          <section id="dados" className="decision-panel border-t border-border py-8">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
                 <p className="eyebrow">Informações da terra</p>
@@ -285,7 +285,7 @@ export function RealDecisionPage() {
               Ajuste os campos abaixo. O pH informado deve vir de análise local; o SoilGrids acima é
               apenas contexto regional.
             </p>
-            <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="decision-field-grid mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <FieldSelect
                 label="Fase do café"
                 value={field?.phase}
@@ -361,7 +361,7 @@ export function RealDecisionPage() {
         </>
       ) : null}
       {result?.inside ? (
-        <section className="border-t border-border py-8">
+        <section id="impacto" className="border-t border-border py-8">
           <h2 className="display-soft text-4xl">
             {result.candidates.length
               ? "3 sugestões para estudar"
@@ -383,7 +383,7 @@ export function RealDecisionPage() {
                 key={item.culture_id}
                 onClick={() => setSelected(item.culture_id)}
                 aria-pressed={selected === item.culture_id}
-                className={`rounded-3xl border p-5 text-left ${selected === item.culture_id ? "border-cherry bg-card" : "border-border bg-paper"}`}
+                className={`candidate-card ${selected === item.culture_id ? "selected" : ""}`}
               >
                 <span className="eyebrow">{STATES[item.state]}</span>
                 <strong className="mt-2 block text-xl">{item.name}</strong>
@@ -392,7 +392,7 @@ export function RealDecisionPage() {
             ))}
           </div>
           {active ? (
-            <article className="mt-5 rounded-3xl border border-border bg-paper p-6">
+            <article id="plano" className="plan-sheet mt-5">
               <h3 className="text-2xl font-semibold">{active.name}: leitura atual</h3>
               <ul className="mt-3 list-disc space-y-2 pl-5">
                 {active.reasons.map((reason) => (
@@ -427,7 +427,7 @@ function FieldSelect({
     <label className="font-semibold">
       {label}
       <select
-        className="mt-2 block w-full rounded-xl border border-border bg-paper p-3"
+        className="onb-input mt-2 block w-full rounded-xl border border-border bg-paper p-3"
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value || null)}
       >
@@ -464,7 +464,7 @@ function NumberField({
         min={min}
         max={max}
         step={step}
-        className="mt-2 block w-full rounded-xl border border-border bg-paper p-3"
+        className="onb-input mt-2 block w-full rounded-xl border border-border bg-paper p-3"
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))}
       />
@@ -484,7 +484,7 @@ function BooleanField({
     <label className="font-semibold">
       {label}
       <select
-        className="mt-2 block w-full rounded-xl border border-border bg-paper p-3"
+        className="onb-input mt-2 block w-full rounded-xl border border-border bg-paper p-3"
         value={value == null ? "" : String(value)}
         onChange={(e) => onChange(e.target.value === "" ? null : e.target.value === "true")}
       >

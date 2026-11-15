@@ -57,7 +57,7 @@ function LearnPage() {
   const active = strategies[selected];
   return (
     <AppPage>
-      <header className="learn-hero rounded-[2.5rem] px-6 py-12 sm:px-10 sm:py-16">
+      <header className="learn-hero app-hero rounded-[2.5rem] px-6 py-12 sm:px-10 sm:py-16">
         <p className="eyebrow text-white/70">Aprender com o território</p>
         <h1 className="display-soft mt-3 max-w-4xl text-5xl text-white sm:text-7xl">
           O que acontece no clima é sentido no solo.
@@ -74,7 +74,7 @@ function LearnPage() {
         </Link>
       </header>
 
-      <section className="py-12">
+      <section className="app-section-intro py-12">
         <p className="eyebrow">Por que proteger</p>
         <h2 className="display-soft mt-2 text-4xl sm:text-5xl">
           Três relações que orientam a decisão
@@ -98,7 +98,7 @@ function LearnPage() {
         </div>
       </section>
 
-      <section className="border-t border-border py-12">
+      <section id="estrategias" className="border-t border-border py-12">
         <p className="eyebrow">Estratégias de entrelinha</p>
         <h2 className="display-soft mt-2 text-4xl sm:text-5xl">
           Não existe uma única cobertura certa.
@@ -114,7 +114,7 @@ function LearnPage() {
               type="button"
               aria-pressed={selected === key}
               onClick={() => setSelected(key as keyof typeof strategies)}
-              className={`rounded-3xl border p-5 text-left transition ${selected === key ? "border-cherry bg-card shadow-sm" : "border-border bg-paper"}`}
+              className={`strategy-choice rounded-3xl border p-5 text-left transition ${selected === key ? "selected" : ""}`}
             >
               <span className="eyebrow">
                 {item.number} · {item.tag}
@@ -140,7 +140,7 @@ function LearnPage() {
         </article>
       </section>
 
-      <section className="border-t border-border py-12">
+      <section id="impacto" className="border-t border-border py-12">
         <p className="eyebrow">Como ler o painel</p>
         <h2 className="display-soft mt-2 text-4xl sm:text-5xl">O número precisa de contexto.</h2>
         <div className="mt-7 grid gap-4 md:grid-cols-3">
@@ -162,7 +162,7 @@ function LearnPage() {
         </div>
       </section>
 
-      <section className="border-t border-border py-12">
+      <section id="plano" className="border-t border-border py-12">
         <div className="grid gap-8 md:grid-cols-[0.8fr_1.2fr]">
           <div>
             <RefreshCcw className="size-10 text-cherry" />
@@ -204,7 +204,7 @@ function LearnCard({
   text: string;
 }) {
   return (
-    <article className="rounded-3xl border border-border bg-paper p-6">
+            <article className="ui-card rounded-3xl border border-border bg-paper p-6">
       <Icon className="size-7 text-cherry" />
       <h3 className="mt-5 text-xl font-semibold">{title}</h3>
       <p className="mt-3 text-muted-foreground">{text}</p>
