@@ -46,14 +46,25 @@ export function AppPage({ children }: { children: React.ReactNode }) {
             {nav.map(({ to, label, icon: Icon }) => {
               const active = pathname === to;
               return (
-                <Link key={to} to={to} aria-current={active ? "page" : undefined} className="app-tab">
+                <Link
+                  key={to}
+                  to={to}
+                  aria-current={active ? "page" : undefined}
+                  className="app-tab"
+                >
                   <Icon className="size-4" /> {label === "Minha Terra" ? "Visão geral" : label}
                 </Link>
               );
             })}
-            <a href="#estrategias" className="app-tab"><span className="emoji">🌱</span> Estratégias</a>
-            <a href="#impacto" className="app-tab"><span className="emoji">↗</span> Impacto</a>
-            <a href="#plano" className="app-tab"><span className="emoji">▣</span> Meu plano</a>
+            <a href="#estrategias" className="app-tab">
+              <span className="emoji">🌱</span> Estratégias
+            </a>
+            <a href="#impacto" className="app-tab">
+              <span className="emoji">↗</span> Impacto
+            </a>
+            <a href="#plano" className="app-tab">
+              <span className="emoji">▣</span> Meu plano
+            </a>
           </nav>
         </aside>
         <main className="app-main">

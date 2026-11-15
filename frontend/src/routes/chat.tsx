@@ -161,7 +161,13 @@ function ChatPage() {
         </aside>
         <section aria-label="Conversa sobre a lavoura" className="onb-chat">
           <div className="onb-chat-head">
-            <div className="bot-info"><span className="bot-dot">✳</span><div><strong>Cerejá · Assistente</strong><small>Conversa sobre a sua terra</small></div></div>
+            <div className="bot-info">
+              <span className="bot-dot">✳</span>
+              <div>
+                <strong>Cerejá · Assistente</strong>
+                <small>Conversa sobre a sua terra</small>
+              </div>
+            </div>
             <span className="ui-label">Online</span>
           </div>
           <div role="log" aria-live="polite" className="onb-chat-content">
@@ -330,7 +336,10 @@ function ChatPage() {
             </div>
           )}
           <div ref={end} />
-          <footer className="onb-foot"><span>Suas respostas ficam salvas neste navegador.</span><span>Dados reais · área piloto</span></footer>
+          <footer className="onb-foot">
+            <span>Suas respostas ficam salvas neste navegador.</span>
+            <span>Dados reais · área piloto</span>
+          </footer>
         </section>
       </main>
     </div>
@@ -427,7 +436,5 @@ function TerritoryPicker({
 }
 
 function BotMessage({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="bot-bubble">{children}</p>
-  );
+  return <p className="bot-bubble">{children}</p>;
 }

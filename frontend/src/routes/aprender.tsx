@@ -204,7 +204,7 @@ function LearnCard({
   text: string;
 }) {
   return (
-            <article className="ui-card rounded-3xl border border-border bg-paper p-6">
+    <article className="ui-card rounded-3xl border border-border bg-paper p-6">
       <Icon className="size-7 text-cherry" />
       <h3 className="mt-5 text-xl font-semibold">{title}</h3>
       <p className="mt-3 text-muted-foreground">{text}</p>

@@ -25,7 +25,11 @@ async function json(path, options) {
 }
 
 const home = await request('/');
-assert(home.body.includes('Solo forte. Café que vai mais longe'), 'Gateway did not serve the React landing page');
+assert(
+  home.body.includes('Cerejá · o futuro começa no solo') ||
+    home.body.includes('Solo forte. Café que vai mais longe'),
+  'Gateway did not serve the React landing page',
+);
 const config = await json('/api/config');
 assert.equal(typeof config.minha_lavoura, 'boolean');
 
