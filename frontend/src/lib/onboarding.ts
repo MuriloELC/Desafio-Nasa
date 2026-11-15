@@ -16,9 +16,6 @@ export type Answers = {
   managementCapacity: string;
   phase: string;
   soilPh: string;
-  nematodes: string;
-  soilAssessed: string;
-  moistureChecked: string;
 };
 
 export const EMPTY_ANSWERS: Answers = {
@@ -37,9 +34,6 @@ export const EMPTY_ANSWERS: Answers = {
   managementCapacity: "",
   phase: "",
   soilPh: "",
-  nematodes: "",
-  soilAssessed: "",
-  moistureChecked: "",
 };
 
 export const CITIES = ["Cacoal · RO"];
@@ -57,10 +51,7 @@ export const QUESTIONS = [
   "O que você mais quer melhorar agora?",
   "Com que frequência você consegue manejar a cobertura?",
   "Em que fase está o café?",
-  "Qual foi o pH medido em análise local do talhão? Se não tiver análise, escolha Não tenho análise.",
-  "Há histórico de nematoides no talhão?",
-  "A fertilidade do solo foi avaliada no talhão?",
-  "Você verificou a umidade do solo em campo recentemente?",
+  "Qual foi o pH medido em análise local do talhão? Se não tiver análise, usaremos a estimativa regional do SoilGrids.",
 ] as const;
 
 export const TOTAL_QUESTIONS = QUESTIONS.length;
@@ -81,12 +72,6 @@ export function parseSpacingM(value: string): number | null {
   return match?.[1] ? parseFieldNumber(match[1], 0.01, 30) : null;
 }
 
-function booleanAnswer(value: string): boolean | null {
-  if (/^sim$/i.test(value)) return true;
-  if (/^não$/i.test(value)) return false;
-  return null;
-}
-
 export function assessmentField(answers: Answers): FieldInput {
   const phase =
     (
@@ -99,6 +84,15 @@ export function assessmentField(answers: Answers): FieldInput {
     )[answers.phase] ?? null;
   return {
     strategy: null,
+    goal:
+      (
+        {
+          "Conservar água": "conservar_agua",
+          "Reduzir erosão": "reduzir_erosao",
+          "Produzir biomassa": "produzir_biomassa",
+          "Simplificar o manejo": "simplificar_manejo",
+        } as Record<string, FieldInput["goal"]>
+      )[answers.goal] ?? null,
     phase,
     water: /não possui|não tenho/i.test(answers.irrigation)
       ? "sequeiro"
@@ -108,14 +102,11 @@ export function assessmentField(answers: Answers): FieldInput {
     age_years: parseFieldNumber(answers.age, 0, 100),
     spacing_m: parseSpacingM(answers.rowSpacing),
     soil_ph: parseFieldNumber(answers.soilPh, 0, 14),
-    nematodes: booleanAnswer(answers.nematodes),
     can_manage: /frequente|mensal|2[–-]3 meses/i.test(answers.managementCapacity)
       ? true
       : /pouca/i.test(answers.managementCapacity)
         ? false
         : null,
-    soil_assessed: booleanAnswer(answers.soilAssessed),
-    moisture_checked: booleanAnswer(answers.moistureChecked),
   };
 }
 
@@ -143,9 +134,6 @@ export function answerText(step: number, answers: Answers) {
       answers.managementCapacity,
       answers.phase,
       answers.soilPh,
-      answers.nematodes,
-      answers.soilAssessed,
-      answers.moistureChecked,
     ][step] ?? ""
   );
 }
@@ -164,9 +152,6 @@ export function updateAnswer(answers: Answers, step: number, value: string): Ans
   if (step === 10) next.managementCapacity = value;
   if (step === 11) next.phase = value;
   if (step === 12) next.soilPh = value;
-  if (step === 13) next.nematodes = value;
-  if (step === 14) next.soilAssessed = value;
-  if (step === 15) next.moistureChecked = value;
   return next;
 }
 
@@ -199,9 +184,6 @@ export function isStoredAnswers(value: unknown): value is Answers {
       "managementCapacity",
       "phase",
       "soilPh",
-      "nematodes",
-      "soilAssessed",
-      "moistureChecked",
     ].every((key) => typeof candidate[key as keyof Answers] === "string") &&
     Array.isArray(candidate.territoryPolygon) &&
     (candidate.latitude === null ||

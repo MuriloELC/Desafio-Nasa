@@ -12,9 +12,6 @@ export const ANSWER_LABELS = [
   "Rotina de manejo",
   "Fase do café",
   "pH da análise local",
-  "Nematoides",
-  "Fertilidade avaliada",
-  "Umidade verificada",
 ] as const;
 
 export function quickReplies(step: number): string[] {
@@ -30,6 +27,5 @@ export function quickReplies(step: number): string[] {
   if (step === 10) return ["Pouca disponibilidade", "A cada 2–3 meses", "Manejo frequente"];
   if (step === 11) return ["Implantação", "Formação", "Produção", "Recepa", "Não sei"];
   if (step === 12) return ["Não tenho análise"];
-  if (step >= 13 && step <= 15) return ["Sim", "Não", "Não sei"];
   return [];
 }

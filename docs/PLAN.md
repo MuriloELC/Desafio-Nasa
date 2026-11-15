@@ -22,7 +22,7 @@ O IMERG permanecerá inalterado: sem modificações no extrator, backfill, agreg
   - respostas do produtor: `informado`;
   - regras agronômicas e calendário: `referencia`;
   - dados ausentes ou períodos incompletos: `indisponivel`.
-- Adaptar o onboarding para coletar coordenadas, fase, idade, espaçamento, regime hídrico, pH local opcional, nematoides, capacidade de manejo e verificações de solo/umidade.
+- Adaptar o onboarding para coletar coordenadas, fase, idade, espaçamento, regime hídrico, pH local opcional, capacidade de manejo e verificações de solo/umidade. Nematoides ficam fora do levantamento inicial.
 - Substituir resultados demonstrativos pelo diagnóstico e pelas candidatas retornadas pela API. Nenhum número ambiental permanecerá hardcoded no fluxo principal.
 - Integrar o calendário real, preservando fonte, versão da regra, escopo municipal, janela temporal e orientação.
 - Criar composição Docker com:

@@ -45,14 +45,14 @@ const STRATEGIES = [
   {
     key: "permanente",
     title: "Cobertura permanente",
-    subtitle: "Três espécies de ciclo perene",
+    subtitle: "Espécies de ciclo perene",
     icon: Sprout,
     text: "Prioriza candidatas capazes de permanecer na entrelinha, com manejo recorrente.",
   },
   {
     key: "rotacao",
     title: "Rotação de coberturas",
-    subtitle: "Três opções para compor ciclos",
+    subtitle: "Espécies anuais para compor ciclos",
     icon: RefreshCcw,
     text: "Prioriza espécies anuais para alternar raízes, biomassa e funções ao longo do tempo.",
   },
@@ -196,6 +196,10 @@ export function RealDecisionPage() {
     }
   }
   const active = result?.candidates.find((item) => item.culture_id === selected);
+  const cutoffRank = result?.ranking_available ? result.candidates[2]?.rank : undefined;
+  const visibleCandidates = cutoffRank
+    ? (result?.candidates.filter((item) => item.rank <= cutoffRank) ?? [])
+    : (result?.candidates ?? []);
   const metric = (name: TerritoryMetric["metric"]) =>
     diagnostic?.summary?.find((item) => item.metric === name);
 
@@ -282,8 +286,8 @@ export function RealDecisionPage() {
               </Link>
             </div>
             <p className="mt-3 max-w-3xl text-muted-foreground">
-              Ajuste os campos abaixo. O pH informado deve vir de análise local; o SoilGrids acima é
-              apenas contexto regional.
+              Ajuste os campos abaixo. O pH da análise local tem prioridade; se ficar vazio, o motor
+              usa a estimativa regional do SoilGrids mostrada acima.
             </p>
             <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <FieldSelect
@@ -329,21 +333,11 @@ export function RealDecisionPage() {
                 step={0.1}
                 onChange={(value) => changeField({ soil_ph: value })}
               />
-              {(
-                [
-                  ["nematodes", "Histórico de nematoides"],
-                  ["can_manage", "Consegue manejar regularmente"],
-                  ["soil_assessed", "Fertilidade avaliada"],
-                  ["moisture_checked", "Umidade verificada"],
-                ] as const
-              ).map(([key, label]) => (
-                <BooleanField
-                  key={key}
-                  label={label}
-                  value={field?.[key]}
-                  onChange={(value) => changeField({ [key]: value })}
-                />
-              ))}
+              <BooleanField
+                label="Consegue manejar regularmente"
+                value={field?.can_manage}
+                onChange={(value) => changeField({ can_manage: value })}
+              />
             </div>
             <button
               type="button"
@@ -354,7 +348,7 @@ export function RealDecisionPage() {
               {evaluating
                 ? "Avaliando…"
                 : field?.strategy
-                  ? "Ver 3 sugestões"
+                  ? "Avaliar espécies"
                   : "Escolha uma estratégia"}
             </button>
           </section>
@@ -364,11 +358,15 @@ export function RealDecisionPage() {
         <section className="border-t border-border py-8">
           <h2 className="display-soft text-4xl">
             {result.candidates.length
-              ? "3 sugestões para estudar"
+              ? result.ranking_available
+                ? `${visibleCandidates.length} candidatas melhor posicionadas`
+                : "Candidatas empatadas tecnicamente"
               : "Manejo sem implantação obrigatória"}
           </h2>
           <p className="mt-2 text-muted-foreground">
-            A ordem considera estado e evidências disponíveis; empate técnico não é escondido.
+            {result.ranking_available
+              ? "A ordem considera suas respostas, o objetivo de manejo, as faixas técnicas e as regras publicadas. Empates na última posição são mantidos."
+              : "Com as respostas atuais, essas espécies obtiveram a mesma posição técnica; nenhuma foi favorecida pela ordem alfabética."}
           </p>
           {!result.candidates.length ? (
             <p className="mt-5 rounded-3xl border border-border bg-paper p-6">
@@ -377,7 +375,7 @@ export function RealDecisionPage() {
             </p>
           ) : null}
           <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {result.candidates.map((item) => (
+            {visibleCandidates.map((item) => (
               <button
                 type="button"
                 key={item.culture_id}
@@ -387,6 +385,10 @@ export function RealDecisionPage() {
               >
                 <span className="eyebrow">{STATES[item.state]}</span>
                 <strong className="mt-2 block text-xl">{item.name}</strong>
+                <span className="mt-1 block text-xs text-muted-foreground">
+                  Posição {item.rank}
+                  {item.tie ? " (empate)" : ""} · confiança {item.confidence}
+                </span>
                 <span className="mt-3 block text-sm">{item.reasons.join(" ")}</span>
               </button>
             ))}

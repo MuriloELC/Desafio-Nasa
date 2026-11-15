@@ -69,8 +69,8 @@ for (const rule of calendar.rules) {
 const field = {
   strategy: 'rotacao',
   phase: 'formacao', water: 'sequeiro', age_years: 2, spacing_m: 3,
+  goal: 'produzir_biomassa',
   soil_ph: null, nematodes: null, can_manage: true,
-  soil_assessed: null, moisture_checked: null,
 };
 const recommendation = await json('/api/recomendacoes', {
   method: 'POST',
@@ -84,9 +84,15 @@ assert(Array.isArray(recommendation.coverage));
 for (const candidate of recommendation.candidates) {
   assert(['favoravel', 'atencao', 'sem_dados', 'desfavoravel'].includes(candidate.state));
   assert(Array.isArray(candidate.reasons) && Array.isArray(candidate.missing));
+  assert(Number.isInteger(candidate.rank) && typeof candidate.tie === 'boolean');
+  assert(['insuficiente', 'baixa', 'media', 'alta'].includes(candidate.confidence));
+  assert(candidate.score_components && Array.isArray(candidate.rules_used) && Array.isArray(candidate.data_used));
 }
-assert(recommendation.candidates.some(candidate => candidate.missing.includes('pH medido em análise de solo')),
-  'Regional SoilGrids pH must not replace the missing field soil analysis');
+assert(recommendation.candidates.every(candidate => !candidate.missing.includes('pH medido em análise de solo')),
+  'Regional SoilGrids pH must fill the gap when field soil analysis is absent');
+assert(recommendation.candidates.every(candidate => candidate.data_used.some(item =>
+  item.criterion === 'soil_ph' && item.origin === 'SOILGRIDS')),
+  'Candidates must identify SoilGrids as the origin of regional pH');
 for (const period of recommendation.coverage) {
   if (period.days_available !== period.days_expected) {
     assert.equal(period.value, null, 'Incomplete periods must not carry a value');
@@ -98,10 +104,14 @@ const permanent = await json('/api/recomendacoes', {
   headers: {'Content-Type': 'application/json'},
   body: JSON.stringify({...point, field: {...field, strategy: 'permanente'}}),
 });
-assert.equal(permanent.candidates.length, 3, 'Permanent strategy must return three candidates');
+assert.equal(permanent.candidates.length, 4, 'Permanent strategy must retain all perennial candidates');
 assert(permanent.candidates.every(candidate =>
   ['Amendoim-forrageiro', 'Braquiária-ruziziensis', 'Guandu-anão', 'Lablab'].includes(candidate.name)),
   'Permanent strategy returned a non-perennial candidate');
+assert.equal(permanent.ranking_available, true, 'Accepted operational evidence must enable ranking');
+assert.equal(permanent.method_version, 'cereja-regras-5');
+assert(permanent.candidates.some(candidate => candidate.rank > 1),
+  'Management answers must differentiate at least one permanent candidate');
 
 const conventional = await json('/api/recomendacoes', {
   method: 'POST',

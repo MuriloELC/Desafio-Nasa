@@ -32,22 +32,18 @@ describe("conversa orientada à decisão", () => {
       rowSpacing: "3,5 m",
       irrigation: "Não possui",
       soilPh: "4,8",
-      nematodes: "Não",
       managementCapacity: "A cada 2–3 meses",
-      soilAssessed: "Sim",
-      moistureChecked: "Não sei",
+      goal: "Produzir biomassa",
     });
     expect(field).toEqual({
       strategy: null,
+      goal: "produzir_biomassa",
       phase: "formacao",
       age_years: 2.5,
       spacing_m: 3.5,
       water: "sequeiro",
       soil_ph: 4.8,
-      nematodes: false,
       can_manage: true,
-      soil_assessed: true,
-      moisture_checked: null,
     });
     expect(assessmentField(EMPTY_ANSWERS)).toMatchObject({
       soil_ph: null,
@@ -84,6 +80,7 @@ describe("conversa orientada à decisão", () => {
     expect(QUESTIONS.join(" ")).toMatch(/solo.*descoberto/i);
     expect(QUESTIONS.join(" ")).toMatch(/melhorar/i);
     expect(QUESTIONS.join(" ")).toMatch(/frequência.*manejar/i);
+    expect(QUESTIONS.join(" ")).not.toMatch(/fertilidade.*avaliada|umidade.*verific/i);
     expect(QUESTIONS.join(" ")).not.toMatch(/quantos pés|hectares/i);
   });
 });

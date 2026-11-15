@@ -106,10 +106,11 @@ describe("Minha Terra refinada", () => {
     expect(screen.queryByText(/Calendário técnico/)).not.toBeInTheDocument();
   });
 
-  it("envia a estratégia e apresenta somente três sugestões", async () => {
+  it("envia a estratégia e não chama empate alfabético de recomendação", async () => {
     const recommendation = {
       inside: true,
       strategy: "permanente",
+      ranking_available: false,
       candidates: [
         {
           culture_id: "amendoim",
@@ -145,8 +146,9 @@ describe("Minha Terra refinada", () => {
     render(<RealDecisionPage />);
     await screen.findByText("Cobertura permanente");
     fireEvent.click(screen.getByRole("button", { name: /Cobertura permanente/ }));
-    fireEvent.click(screen.getByRole("button", { name: "Ver 3 sugestões" }));
+    fireEvent.click(screen.getByRole("button", { name: "Avaliar espécies" }));
     await screen.findByText("Amendoim-forrageiro");
+    expect(screen.getByText("Candidatas empatadas tecnicamente")).toBeInTheDocument();
     expect(screen.getByText("Braquiária-ruziziensis")).toBeInTheDocument();
     expect(screen.getByText("Guandu-anão")).toBeInTheDocument();
     const body = JSON.parse(String(fetchMock.mock.calls[1]?.[1]?.body));
@@ -171,7 +173,7 @@ describe("Minha Terra refinada", () => {
     render(<RealDecisionPage />);
     await screen.findByText("Cobertura permanente");
     fireEvent.click(screen.getByRole("button", { name: /Cobertura permanente/ }));
-    expect(screen.getByRole("button", { name: "Ver 3 sugestões" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Avaliar espécies" })).toBeEnabled();
   });
 
   it("não avalia ponto fora da área piloto", async () => {

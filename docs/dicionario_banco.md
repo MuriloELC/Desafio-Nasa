@@ -155,6 +155,9 @@ Para cada observação ambiental, a procedência detalhada é identificada por `
 | `agro.cereja_requirements` | `source_detail` | `text` | Página, seção ou detalhe da evidência na fonte. |
 | `agro.cereja_requirements` | `reviewed` | `boolean` | Indica se o requisito foi revisado e liberado para o motor. |
 | `agro.cereja_requirements` | `reviewed_at` | `timestamp with time zone` | Data e hora da revisão do requisito. |
+| `agro.cereja_requirements` | `reviewed_by` | `text` | Responsável pela revisão que liberou o requisito. |
+| `agro.cereja_requirements` | `evidence_confidence` | `text` | Confiança documental inicial: `baixa`, `media` ou `alta`. |
+| `agro.cereja_requirements` | `derivation` | `text` | Transcrição, consolidação ou aproximação usada para obter a faixa. |
 | `agro.cereja_rules` | `rule_id` | `text` | Identificador lógico da regra agronômica. |
 | `agro.cereja_rules` | `version` | `integer` | Versão numérica da regra. |
 | `agro.cereja_rules` | `culture_id` | `text` | Cultura à qual a regra se aplica. |
@@ -173,6 +176,10 @@ Para cada observação ambiental, a procedência detalhada é identificada por `
 | `agro.cereja_rules` | `source_detail` | `text` | Página ou trecho específico da referência. |
 | `agro.cereja_rules` | `status` | `text` | Situação editorial: `rascunho`, `validada` ou `arquivada`. |
 | `agro.cereja_rules` | `checks` | `jsonb` | Lista de verificações condicionais aplicadas aos dados do talhão. |
+| `agro.cereja_rules` | `validated_by` | `text` | Responsável pela validação da regra. |
+| `agro.cereja_rules` | `validated_at` | `timestamp with time zone` | Data e hora da validação da regra. |
+| `agro.cereja_rules` | `evidence_confidence` | `text` | Confiança documental inicial: `baixa`, `media` ou `alta`. |
+| `agro.cereja_rules` | `derivation` | `text` | Notas sobre extrapolação ou aproximação da regra. |
 
 ## Caderno de campo privado
 

@@ -1,12 +1,22 @@
 {
-  "method_version": "cereja-regras-1",
+  "method_version": "cereja-regras-5",
   "reference_date": "2026-11-15",
   "strategy": "rotacao",
   "measurements": {
+    "recent_rain_mm": {
+      "value": 162.09,
+      "source_id": "POWER",
+      "period_count": 1
+    },
     "seasonal_rain_mm": {
       "value": 152.418,
       "source_id": "POWER",
       "period_count": 5
+    },
+    "air_temperature_c": {
+      "value": 28.6853333333333,
+      "source_id": "POWER",
+      "period_count": 1
     }
   },
   "coverage": [
@@ -72,8 +82,8 @@
       "product": "IMERG PPS Final Run GIS",
       "native_resolution": "0.1°",
       "url": "https://gpm.nasa.gov/data/directory/imerg-final-run-pps-research-gis",
-      "days_available": 16,
-      "value": null
+      "days_available": 30,
+      "value": 84.1
     },
     {
       "kind": "seasonal",
@@ -98,7 +108,7 @@
       "product": "IMERG PPS Final Run GIS",
       "native_resolution": "0.1°",
       "url": "https://gpm.nasa.gov/data/directory/imerg-final-run-pps-research-gis",
-      "days_available": 0,
+      "days_available": 23,
       "value": null
     },
     {
@@ -142,8 +152,8 @@
     },
     {
       "kind": "recent",
-      "start_on": "2026-10-17",
-      "end_on": "2026-11-15",
+      "start_on": "2026-10-14",
+      "end_on": "2026-11-12",
       "days_expected": 30,
       "source_id": "IMERG_FINAL",
       "metric": "precip_mm",
@@ -155,88 +165,1297 @@
     },
     {
       "kind": "recent",
-      "start_on": "2026-10-17",
-      "end_on": "2026-11-15",
+      "start_on": "2026-10-14",
+      "end_on": "2026-11-12",
       "days_expected": 30,
       "source_id": "POWER",
       "metric": "precip_power_mm",
       "product": "POWER daily AG",
       "native_resolution": "~0.5° meteorological",
       "url": "https://power.larc.nasa.gov/",
-      "days_available": 27,
-      "value": null
+      "days_available": 30,
+      "value": 162.09
     },
     {
       "kind": "recent",
-      "start_on": "2026-10-17",
-      "end_on": "2026-11-15",
+      "start_on": "2026-10-14",
+      "end_on": "2026-11-12",
       "days_expected": 30,
       "source_id": "POWER",
       "metric": "temp_mean_c",
       "product": "POWER daily AG",
       "native_resolution": "~0.5° meteorological",
       "url": "https://power.larc.nasa.gov/",
-      "days_available": 27,
-      "value": null
+      "days_available": 30,
+      "value": 28.6853333333333
     }
   ],
+  "ranking_available": true,
   "candidates": [
+    {
+      "culture_id": "feijao-de-porco",
+      "name": "Feijão-de-porco",
+      "state": "favoravel",
+      "missing": [],
+      "reasons": [
+        "Os critérios de campo e os indicadores avaliados estão dentro das faixas publicadas."
+      ],
+      "sources": [
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261; regra geral para anual",
+          "rule_id": "feijao-de-porco-corte-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261; regra geral para anual",
+          "rule_id": "feijao-de-porco-manejo-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261; regra geral para anual",
+          "rule_id": "feijao-de-porco-plantio-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.infoteca.cnptia.embrapa.br/bitstream/doc/746693/1/documento227.pdf",
+          "title": "Indicações técnicas para produção de sementes de plantas recuperadoras de solo",
+          "version": "Embrapa Clima Temperado, Documentos 227, 2008",
+          "detail": "p. 26; faixa superior consolidada do catálogo inicial",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://www.infoteca.cnptia.embrapa.br/bitstream/doc/746693/1/documento227.pdf",
+          "title": "Indicações técnicas para produção de sementes de plantas recuperadoras de solo",
+          "version": "Embrapa Clima Temperado, Documentos 227, 2008",
+          "detail": "p. 26; faixa superior consolidada do catálogo inicial",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://www.infoteca.cnptia.embrapa.br/bitstream/doc/746693/1/documento227.pdf",
+          "title": "Indicações técnicas para produção de sementes de plantas recuperadoras de solo",
+          "version": "Embrapa Clima Temperado, Documentos 227, 2008",
+          "detail": "p. 26; faixa superior consolidada do catálogo inicial",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://www.infoteca.cnptia.embrapa.br/bitstream/doc/746693/1/documento227.pdf",
+          "title": "Indicações técnicas para produção de sementes de plantas recuperadoras de solo",
+          "version": "Embrapa Clima Temperado, Documentos 227, 2008",
+          "detail": "p. 26; faixa superior consolidada do catálogo inicial",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        }
+      ],
+      "rules_used": [
+        {
+          "rule_id": "feijao-de-porco-corte-preliminar-ro",
+          "version": 1
+        },
+        {
+          "rule_id": "feijao-de-porco-manejo-preliminar-ro",
+          "version": 1
+        },
+        {
+          "rule_id": "feijao-de-porco-plantio-preliminar-ro",
+          "version": 1
+        }
+      ],
+      "data_used": [
+        {
+          "criterion": "phase",
+          "value": "formacao",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "water",
+          "value": "sequeiro",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "strategy",
+          "value": "rotacao",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "goal",
+          "value": "produzir_biomassa",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "spacing_m",
+          "value": 3,
+          "origin": "produtor"
+        },
+        {
+          "criterion": "can_manage",
+          "value": true,
+          "origin": "produtor"
+        },
+        {
+          "criterion": "recent_rain_mm",
+          "value": 162.09,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "seasonal_rain_mm",
+          "value": 152.418,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "air_temperature_c",
+          "value": 28.6853333333333,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "soil_ph",
+          "value": 4.69215246636771,
+          "origin": "SOILGRIDS"
+        }
+      ],
+      "score_components": {
+        "eligibility": {
+          "applicable_rule": true,
+          "mandatory_bands_reviewed": 4,
+          "mandatory_bands_required": 4
+        },
+        "blocking_restrictions": {
+          "failed": 0,
+          "warnings_failed": 0,
+          "evaluated": 3
+        },
+        "range_adequacy": {
+          "within_optimal": 4,
+          "within_tolerated": 0,
+          "outside_tolerated": 0,
+          "evaluated": 4
+        },
+        "data_coverage": {
+          "available": 10,
+          "required": 10
+        },
+        "secondary": {
+          "applicable_rules": 3,
+          "documented_sources": 7
+        }
+      },
+      "confidence": "alta",
+      "rank": 1,
+      "tie": false
+    },
     {
       "culture_id": "crot-juncea",
       "name": "Crotalária-júncea",
-      "state": "sem_dados",
-      "missing": [
-        "pH medido em análise de solo",
-        "histórico de nematoides",
-        "avaliação da fertilidade do solo",
-        "verificação da umidade em campo",
-        "chuva dos últimos 30 dias em série completa",
-        "temperatura dos últimos 30 dias em série completa",
-        "faixas agronômicas revisadas para a espécie",
-        "regra técnica revisada para esta fase e regime hídrico"
-      ],
+      "state": "atencao",
+      "missing": [],
       "reasons": [
-        "Faltam dados ou critérios revisados para concluir a avaliação."
+        "Ph fora da faixa ótima revisada."
       ],
-      "sources": []
-    },
-    {
-      "culture_id": "crot-spectabilis",
-      "name": "Crotalária-spectabilis",
-      "state": "sem_dados",
-      "missing": [
-        "pH medido em análise de solo",
-        "histórico de nematoides",
-        "avaliação da fertilidade do solo",
-        "verificação da umidade em campo",
-        "chuva dos últimos 30 dias em série completa",
-        "temperatura dos últimos 30 dias em série completa",
-        "faixas agronômicas revisadas para a espécie",
-        "regra técnica revisada para esta fase e regime hídrico"
+      "sources": [
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261; regra geral para anual",
+          "rule_id": "crot-juncea-corte-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261; regra geral para anual",
+          "rule_id": "crot-juncea-manejo-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261; regra geral para anual",
+          "rule_id": "crot-juncea-plantio-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://tropicalforages.info/pdf/crotalaria_juncea.pdf",
+          "title": "Tropical Forages: Crotalaria juncea",
+          "version": "CSIRO/CIAT/ILRI Tropical Forages, consulta 2026-11-15",
+          "detail": "seções Soil requirements, Moisture e Temperature",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://tropicalforages.info/pdf/crotalaria_juncea.pdf",
+          "title": "Tropical Forages: Crotalaria juncea",
+          "version": "CSIRO/CIAT/ILRI Tropical Forages, consulta 2026-11-15",
+          "detail": "seções Soil requirements, Moisture e Temperature",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://tropicalforages.info/pdf/crotalaria_juncea.pdf",
+          "title": "Tropical Forages: Crotalaria juncea",
+          "version": "CSIRO/CIAT/ILRI Tropical Forages, consulta 2026-11-15",
+          "detail": "seções Soil requirements, Moisture e Temperature",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://tropicalforages.info/pdf/crotalaria_juncea.pdf",
+          "title": "Tropical Forages: Crotalaria juncea",
+          "version": "CSIRO/CIAT/ILRI Tropical Forages, consulta 2026-11-15",
+          "detail": "seções Soil requirements, Moisture e Temperature",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        }
       ],
-      "reasons": [
-        "Faltam dados ou critérios revisados para concluir a avaliação."
+      "rules_used": [
+        {
+          "rule_id": "crot-juncea-corte-preliminar-ro",
+          "version": 1
+        },
+        {
+          "rule_id": "crot-juncea-manejo-preliminar-ro",
+          "version": 1
+        },
+        {
+          "rule_id": "crot-juncea-plantio-preliminar-ro",
+          "version": 1
+        }
       ],
-      "sources": []
+      "data_used": [
+        {
+          "criterion": "phase",
+          "value": "formacao",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "water",
+          "value": "sequeiro",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "strategy",
+          "value": "rotacao",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "goal",
+          "value": "produzir_biomassa",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "spacing_m",
+          "value": 3,
+          "origin": "produtor"
+        },
+        {
+          "criterion": "can_manage",
+          "value": true,
+          "origin": "produtor"
+        },
+        {
+          "criterion": "recent_rain_mm",
+          "value": 162.09,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "seasonal_rain_mm",
+          "value": 152.418,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "air_temperature_c",
+          "value": 28.6853333333333,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "soil_ph",
+          "value": 4.69215246636771,
+          "origin": "SOILGRIDS"
+        }
+      ],
+      "score_components": {
+        "eligibility": {
+          "applicable_rule": true,
+          "mandatory_bands_reviewed": 4,
+          "mandatory_bands_required": 4
+        },
+        "blocking_restrictions": {
+          "failed": 0,
+          "warnings_failed": 0,
+          "evaluated": 3
+        },
+        "range_adequacy": {
+          "within_optimal": 3,
+          "within_tolerated": 0,
+          "outside_tolerated": 0,
+          "evaluated": 4
+        },
+        "data_coverage": {
+          "available": 10,
+          "required": 10
+        },
+        "secondary": {
+          "applicable_rules": 3,
+          "documented_sources": 7
+        }
+      },
+      "confidence": "alta",
+      "rank": 2,
+      "tie": true
     },
     {
       "culture_id": "feijao-caupi",
       "name": "Feijão-caupi",
-      "state": "sem_dados",
-      "missing": [
-        "pH medido em análise de solo",
-        "histórico de nematoides",
-        "avaliação da fertilidade do solo",
-        "verificação da umidade em campo",
-        "chuva dos últimos 30 dias em série completa",
-        "temperatura dos últimos 30 dias em série completa",
-        "faixas agronômicas revisadas para a espécie",
-        "regra técnica revisada para esta fase e regime hídrico"
-      ],
+      "state": "atencao",
+      "missing": [],
       "reasons": [
-        "Faltam dados ou critérios revisados para concluir a avaliação."
+        "Ph fora da faixa ótima revisada."
       ],
-      "sources": []
+      "sources": [
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261; regra geral para anual",
+          "rule_id": "feijao-caupi-corte-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261; regra geral para anual",
+          "rule_id": "feijao-caupi-manejo-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261; regra geral para anual",
+          "rule_id": "feijao-caupi-plantio-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.embrapa.br/web/agencia-de-informacao-tecnologica/cultivos/feijao-caupi/pre-producao/caracteristicas-e-relacoes-com-o-ambiente/clima",
+          "title": "Feijão-caupi: características e relações com o ambiente — clima",
+          "version": "Embrapa Meio-Norte, conteúdo migrado em 2021",
+          "detail": "seções Precipitação e Temperatura; pH consolidado de publicação Embrapa",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://www.embrapa.br/web/agencia-de-informacao-tecnologica/cultivos/feijao-caupi/pre-producao/caracteristicas-e-relacoes-com-o-ambiente/clima",
+          "title": "Feijão-caupi: características e relações com o ambiente — clima",
+          "version": "Embrapa Meio-Norte, conteúdo migrado em 2021",
+          "detail": "seções Precipitação e Temperatura; pH consolidado de publicação Embrapa",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://www.embrapa.br/web/agencia-de-informacao-tecnologica/cultivos/feijao-caupi/pre-producao/caracteristicas-e-relacoes-com-o-ambiente/clima",
+          "title": "Feijão-caupi: características e relações com o ambiente — clima",
+          "version": "Embrapa Meio-Norte, conteúdo migrado em 2021",
+          "detail": "seções Precipitação e Temperatura; pH consolidado de publicação Embrapa",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://www.embrapa.br/web/agencia-de-informacao-tecnologica/cultivos/feijao-caupi/pre-producao/caracteristicas-e-relacoes-com-o-ambiente/clima",
+          "title": "Feijão-caupi: características e relações com o ambiente — clima",
+          "version": "Embrapa Meio-Norte, conteúdo migrado em 2021",
+          "detail": "seções Precipitação e Temperatura; pH consolidado de publicação Embrapa",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        }
+      ],
+      "rules_used": [
+        {
+          "rule_id": "feijao-caupi-corte-preliminar-ro",
+          "version": 1
+        },
+        {
+          "rule_id": "feijao-caupi-manejo-preliminar-ro",
+          "version": 1
+        },
+        {
+          "rule_id": "feijao-caupi-plantio-preliminar-ro",
+          "version": 1
+        }
+      ],
+      "data_used": [
+        {
+          "criterion": "phase",
+          "value": "formacao",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "water",
+          "value": "sequeiro",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "strategy",
+          "value": "rotacao",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "goal",
+          "value": "produzir_biomassa",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "spacing_m",
+          "value": 3,
+          "origin": "produtor"
+        },
+        {
+          "criterion": "can_manage",
+          "value": true,
+          "origin": "produtor"
+        },
+        {
+          "criterion": "recent_rain_mm",
+          "value": 162.09,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "seasonal_rain_mm",
+          "value": 152.418,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "air_temperature_c",
+          "value": 28.6853333333333,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "soil_ph",
+          "value": 4.69215246636771,
+          "origin": "SOILGRIDS"
+        }
+      ],
+      "score_components": {
+        "eligibility": {
+          "applicable_rule": true,
+          "mandatory_bands_reviewed": 4,
+          "mandatory_bands_required": 4
+        },
+        "blocking_restrictions": {
+          "failed": 0,
+          "warnings_failed": 0,
+          "evaluated": 3
+        },
+        "range_adequacy": {
+          "within_optimal": 3,
+          "within_tolerated": 0,
+          "outside_tolerated": 0,
+          "evaluated": 4
+        },
+        "data_coverage": {
+          "available": 10,
+          "required": 10
+        },
+        "secondary": {
+          "applicable_rules": 3,
+          "documented_sources": 7
+        }
+      },
+      "confidence": "alta",
+      "rank": 2,
+      "tie": true
+    },
+    {
+      "culture_id": "guandu-anao",
+      "name": "Guandu-anão",
+      "state": "atencao",
+      "missing": [],
+      "reasons": [
+        "Ph fora da faixa ótima revisada."
+      ],
+      "sources": [
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261",
+          "rule_id": "guandu-anao-corte-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261",
+          "rule_id": "guandu-anao-manejo-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261",
+          "rule_id": "guandu-anao-plantio-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://old.cnpgc.embrapa.br/publicacoes/ct/ct13/02guandu.html",
+          "title": "Guandu (Cajanus cajan)",
+          "version": "Embrapa Gado de Corte, Comunicado Técnico 13",
+          "detail": "seção 2.2 Clima, solo e adubação",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://old.cnpgc.embrapa.br/publicacoes/ct/ct13/02guandu.html",
+          "title": "Guandu (Cajanus cajan)",
+          "version": "Embrapa Gado de Corte, Comunicado Técnico 13",
+          "detail": "seção 2.2 Clima, solo e adubação",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://old.cnpgc.embrapa.br/publicacoes/ct/ct13/02guandu.html",
+          "title": "Guandu (Cajanus cajan)",
+          "version": "Embrapa Gado de Corte, Comunicado Técnico 13",
+          "detail": "seção 2.2 Clima, solo e adubação",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://old.cnpgc.embrapa.br/publicacoes/ct/ct13/02guandu.html",
+          "title": "Guandu (Cajanus cajan)",
+          "version": "Embrapa Gado de Corte, Comunicado Técnico 13",
+          "detail": "seção 2.2 Clima, solo e adubação",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        }
+      ],
+      "rules_used": [
+        {
+          "rule_id": "guandu-anao-corte-preliminar-ro",
+          "version": 1
+        },
+        {
+          "rule_id": "guandu-anao-manejo-preliminar-ro",
+          "version": 1
+        },
+        {
+          "rule_id": "guandu-anao-plantio-preliminar-ro",
+          "version": 1
+        }
+      ],
+      "data_used": [
+        {
+          "criterion": "phase",
+          "value": "formacao",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "water",
+          "value": "sequeiro",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "strategy",
+          "value": "rotacao",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "goal",
+          "value": "produzir_biomassa",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "spacing_m",
+          "value": 3,
+          "origin": "produtor"
+        },
+        {
+          "criterion": "can_manage",
+          "value": true,
+          "origin": "produtor"
+        },
+        {
+          "criterion": "recent_rain_mm",
+          "value": 162.09,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "seasonal_rain_mm",
+          "value": 152.418,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "air_temperature_c",
+          "value": 28.6853333333333,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "soil_ph",
+          "value": 4.69215246636771,
+          "origin": "SOILGRIDS"
+        }
+      ],
+      "score_components": {
+        "eligibility": {
+          "applicable_rule": true,
+          "mandatory_bands_reviewed": 4,
+          "mandatory_bands_required": 4
+        },
+        "blocking_restrictions": {
+          "failed": 0,
+          "warnings_failed": 0,
+          "evaluated": 3
+        },
+        "range_adequacy": {
+          "within_optimal": 3,
+          "within_tolerated": 0,
+          "outside_tolerated": 0,
+          "evaluated": 4
+        },
+        "data_coverage": {
+          "available": 10,
+          "required": 10
+        },
+        "secondary": {
+          "applicable_rules": 3,
+          "documented_sources": 7
+        }
+      },
+      "confidence": "alta",
+      "rank": 2,
+      "tie": true
+    },
+    {
+      "culture_id": "lablab",
+      "name": "Lablab",
+      "state": "atencao",
+      "missing": [],
+      "reasons": [
+        "Ph fora da faixa ótima revisada."
+      ],
+      "sources": [
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261",
+          "rule_id": "lablab-corte-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261",
+          "rule_id": "lablab-manejo-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261",
+          "rule_id": "lablab-plantio-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.fao.org/4/ar816e/ar816e.pdf",
+          "title": "Multipurpose plant species for soil and water conservation: Lablab purpureus",
+          "version": "FAO, ETH/81/003, 1983",
+          "detail": "seção 3.2.2 Lablab — soil and climatic requirement",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://www.fao.org/4/ar816e/ar816e.pdf",
+          "title": "Multipurpose plant species for soil and water conservation: Lablab purpureus",
+          "version": "FAO, ETH/81/003, 1983",
+          "detail": "seção 3.2.2 Lablab — soil and climatic requirement",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://www.fao.org/4/ar816e/ar816e.pdf",
+          "title": "Multipurpose plant species for soil and water conservation: Lablab purpureus",
+          "version": "FAO, ETH/81/003, 1983",
+          "detail": "seção 3.2.2 Lablab — soil and climatic requirement",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://www.fao.org/4/ar816e/ar816e.pdf",
+          "title": "Multipurpose plant species for soil and water conservation: Lablab purpureus",
+          "version": "FAO, ETH/81/003, 1983",
+          "detail": "seção 3.2.2 Lablab — soil and climatic requirement",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        }
+      ],
+      "rules_used": [
+        {
+          "rule_id": "lablab-corte-preliminar-ro",
+          "version": 1
+        },
+        {
+          "rule_id": "lablab-manejo-preliminar-ro",
+          "version": 1
+        },
+        {
+          "rule_id": "lablab-plantio-preliminar-ro",
+          "version": 1
+        }
+      ],
+      "data_used": [
+        {
+          "criterion": "phase",
+          "value": "formacao",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "water",
+          "value": "sequeiro",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "strategy",
+          "value": "rotacao",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "goal",
+          "value": "produzir_biomassa",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "spacing_m",
+          "value": 3,
+          "origin": "produtor"
+        },
+        {
+          "criterion": "can_manage",
+          "value": true,
+          "origin": "produtor"
+        },
+        {
+          "criterion": "recent_rain_mm",
+          "value": 162.09,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "seasonal_rain_mm",
+          "value": 152.418,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "air_temperature_c",
+          "value": 28.6853333333333,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "soil_ph",
+          "value": 4.69215246636771,
+          "origin": "SOILGRIDS"
+        }
+      ],
+      "score_components": {
+        "eligibility": {
+          "applicable_rule": true,
+          "mandatory_bands_reviewed": 4,
+          "mandatory_bands_required": 4
+        },
+        "blocking_restrictions": {
+          "failed": 0,
+          "warnings_failed": 0,
+          "evaluated": 3
+        },
+        "range_adequacy": {
+          "within_optimal": 3,
+          "within_tolerated": 0,
+          "outside_tolerated": 0,
+          "evaluated": 4
+        },
+        "data_coverage": {
+          "available": 10,
+          "required": 10
+        },
+        "secondary": {
+          "applicable_rules": 3,
+          "documented_sources": 7
+        }
+      },
+      "confidence": "alta",
+      "rank": 2,
+      "tie": true
+    },
+    {
+      "culture_id": "milheto",
+      "name": "Milheto",
+      "state": "atencao",
+      "missing": [],
+      "reasons": [
+        "Ph fora da faixa ótima revisada."
+      ],
+      "sources": [
+        {
+          "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/1023762/1/17431.pdf",
+          "title": "Café na Amazônia",
+          "version": "Embrapa, 2015",
+          "detail": "cap. Cultivos intercalares, Figuras 11–12",
+          "rule_id": "milheto-corte-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/1023762/1/17431.pdf",
+          "title": "Café na Amazônia",
+          "version": "Embrapa, 2015",
+          "detail": "cap. Cultivos intercalares, Figuras 11–12",
+          "rule_id": "milheto-manejo-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/1023762/1/17431.pdf",
+          "title": "Café na Amazônia",
+          "version": "Embrapa, 2015",
+          "detail": "cap. Cultivos intercalares, Figuras 11–12",
+          "rule_id": "milheto-plantio-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://ainfo.cnptia.embrapa.br/digital/bitstream/item/27379/1/Clima.pdf",
+          "title": "Cultivo do milheto: clima",
+          "version": "Embrapa Milho e Sorgo, Sistema de Produção 3, 2009",
+          "detail": "seção Clima; pH consolidado do catálogo inicial",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://ainfo.cnptia.embrapa.br/digital/bitstream/item/27379/1/Clima.pdf",
+          "title": "Cultivo do milheto: clima",
+          "version": "Embrapa Milho e Sorgo, Sistema de Produção 3, 2009",
+          "detail": "seção Clima; pH consolidado do catálogo inicial",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://ainfo.cnptia.embrapa.br/digital/bitstream/item/27379/1/Clima.pdf",
+          "title": "Cultivo do milheto: clima",
+          "version": "Embrapa Milho e Sorgo, Sistema de Produção 3, 2009",
+          "detail": "seção Clima; pH consolidado do catálogo inicial",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://ainfo.cnptia.embrapa.br/digital/bitstream/item/27379/1/Clima.pdf",
+          "title": "Cultivo do milheto: clima",
+          "version": "Embrapa Milho e Sorgo, Sistema de Produção 3, 2009",
+          "detail": "seção Clima; pH consolidado do catálogo inicial",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        }
+      ],
+      "rules_used": [
+        {
+          "rule_id": "milheto-corte-preliminar-ro",
+          "version": 1
+        },
+        {
+          "rule_id": "milheto-manejo-preliminar-ro",
+          "version": 1
+        },
+        {
+          "rule_id": "milheto-plantio-preliminar-ro",
+          "version": 1
+        }
+      ],
+      "data_used": [
+        {
+          "criterion": "phase",
+          "value": "formacao",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "water",
+          "value": "sequeiro",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "strategy",
+          "value": "rotacao",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "goal",
+          "value": "produzir_biomassa",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "spacing_m",
+          "value": 3,
+          "origin": "produtor"
+        },
+        {
+          "criterion": "can_manage",
+          "value": true,
+          "origin": "produtor"
+        },
+        {
+          "criterion": "recent_rain_mm",
+          "value": 162.09,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "seasonal_rain_mm",
+          "value": 152.418,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "air_temperature_c",
+          "value": 28.6853333333333,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "soil_ph",
+          "value": 4.69215246636771,
+          "origin": "SOILGRIDS"
+        }
+      ],
+      "score_components": {
+        "eligibility": {
+          "applicable_rule": true,
+          "mandatory_bands_reviewed": 4,
+          "mandatory_bands_required": 4
+        },
+        "blocking_restrictions": {
+          "failed": 0,
+          "warnings_failed": 0,
+          "evaluated": 3
+        },
+        "range_adequacy": {
+          "within_optimal": 3,
+          "within_tolerated": 0,
+          "outside_tolerated": 0,
+          "evaluated": 4
+        },
+        "data_coverage": {
+          "available": 10,
+          "required": 10
+        },
+        "secondary": {
+          "applicable_rules": 3,
+          "documented_sources": 7
+        }
+      },
+      "confidence": "alta",
+      "rank": 2,
+      "tie": true
+    },
+    {
+      "culture_id": "mucuna-ana",
+      "name": "Mucuna-anã",
+      "state": "atencao",
+      "missing": [],
+      "reasons": [
+        "Ph fora da faixa ótima revisada."
+      ],
+      "sources": [
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261",
+          "rule_id": "mucuna-ana-corte-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261",
+          "rule_id": "mucuna-ana-manejo-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261",
+          "rule_id": "mucuna-ana-plantio-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=2350",
+          "title": "EcoCrop data sheet: Mucuna pruriens var. utilis",
+          "version": "FAO EcoCrop, consulta 2026-11-15",
+          "detail": "tabela Ecology — optimal range",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=2350",
+          "title": "EcoCrop data sheet: Mucuna pruriens var. utilis",
+          "version": "FAO EcoCrop, consulta 2026-11-15",
+          "detail": "tabela Ecology — optimal range",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=2350",
+          "title": "EcoCrop data sheet: Mucuna pruriens var. utilis",
+          "version": "FAO EcoCrop, consulta 2026-11-15",
+          "detail": "tabela Ecology — optimal range",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=2350",
+          "title": "EcoCrop data sheet: Mucuna pruriens var. utilis",
+          "version": "FAO EcoCrop, consulta 2026-11-15",
+          "detail": "tabela Ecology — optimal range",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        }
+      ],
+      "rules_used": [
+        {
+          "rule_id": "mucuna-ana-corte-preliminar-ro",
+          "version": 1
+        },
+        {
+          "rule_id": "mucuna-ana-manejo-preliminar-ro",
+          "version": 1
+        },
+        {
+          "rule_id": "mucuna-ana-plantio-preliminar-ro",
+          "version": 1
+        }
+      ],
+      "data_used": [
+        {
+          "criterion": "phase",
+          "value": "formacao",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "water",
+          "value": "sequeiro",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "strategy",
+          "value": "rotacao",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "goal",
+          "value": "produzir_biomassa",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "spacing_m",
+          "value": 3,
+          "origin": "produtor"
+        },
+        {
+          "criterion": "can_manage",
+          "value": true,
+          "origin": "produtor"
+        },
+        {
+          "criterion": "recent_rain_mm",
+          "value": 162.09,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "seasonal_rain_mm",
+          "value": 152.418,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "air_temperature_c",
+          "value": 28.6853333333333,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "soil_ph",
+          "value": 4.69215246636771,
+          "origin": "SOILGRIDS"
+        }
+      ],
+      "score_components": {
+        "eligibility": {
+          "applicable_rule": true,
+          "mandatory_bands_reviewed": 4,
+          "mandatory_bands_required": 4
+        },
+        "blocking_restrictions": {
+          "failed": 0,
+          "warnings_failed": 0,
+          "evaluated": 3
+        },
+        "range_adequacy": {
+          "within_optimal": 3,
+          "within_tolerated": 0,
+          "outside_tolerated": 0,
+          "evaluated": 4
+        },
+        "data_coverage": {
+          "available": 10,
+          "required": 10
+        },
+        "secondary": {
+          "applicable_rules": 3,
+          "documented_sources": 7
+        }
+      },
+      "confidence": "alta",
+      "rank": 2,
+      "tie": true
+    },
+    {
+      "culture_id": "crot-spectabilis",
+      "name": "Crotalária-spectabilis",
+      "state": "atencao",
+      "missing": [],
+      "reasons": [
+        "Temperatura fora da faixa ótima revisada.",
+        "Ph fora da faixa ótima revisada."
+      ],
+      "sources": [
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261",
+          "rule_id": "crot-spectabilis-corte-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261",
+          "rule_id": "crot-spectabilis-manejo-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+          "title": "Adubação verde em cafezais",
+          "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023",
+          "detail": "cap. 19, p. 260–261",
+          "rule_id": "crot-spectabilis-plantio-preliminar-ro",
+          "rule_version": 1
+        },
+        {
+          "url": "https://prosea.prota4u.org/view.aspx?id=3000",
+          "title": "PROSEA: Crotalaria spectabilis Roth",
+          "version": "Plant Resources of South-East Asia, consulta 2026-11-15",
+          "detail": "seção Ecology",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://prosea.prota4u.org/view.aspx?id=3000",
+          "title": "PROSEA: Crotalaria spectabilis Roth",
+          "version": "Plant Resources of South-East Asia, consulta 2026-11-15",
+          "detail": "seção Ecology",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://prosea.prota4u.org/view.aspx?id=3000",
+          "title": "PROSEA: Crotalaria spectabilis Roth",
+          "version": "Plant Resources of South-East Asia, consulta 2026-11-15",
+          "detail": "seção Ecology",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        },
+        {
+          "url": "https://prosea.prota4u.org/view.aspx?id=3000",
+          "title": "PROSEA: Crotalaria spectabilis Roth",
+          "version": "Plant Resources of South-East Asia, consulta 2026-11-15",
+          "detail": "seção Ecology",
+          "requirement_version": "levantamento-inicial-2026-11-15"
+        }
+      ],
+      "rules_used": [
+        {
+          "rule_id": "crot-spectabilis-corte-preliminar-ro",
+          "version": 1
+        },
+        {
+          "rule_id": "crot-spectabilis-manejo-preliminar-ro",
+          "version": 1
+        },
+        {
+          "rule_id": "crot-spectabilis-plantio-preliminar-ro",
+          "version": 1
+        }
+      ],
+      "data_used": [
+        {
+          "criterion": "phase",
+          "value": "formacao",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "water",
+          "value": "sequeiro",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "strategy",
+          "value": "rotacao",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "goal",
+          "value": "produzir_biomassa",
+          "origin": "produtor"
+        },
+        {
+          "criterion": "spacing_m",
+          "value": 3,
+          "origin": "produtor"
+        },
+        {
+          "criterion": "can_manage",
+          "value": true,
+          "origin": "produtor"
+        },
+        {
+          "criterion": "recent_rain_mm",
+          "value": 162.09,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "seasonal_rain_mm",
+          "value": 152.418,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "air_temperature_c",
+          "value": 28.6853333333333,
+          "origin": "POWER"
+        },
+        {
+          "criterion": "soil_ph",
+          "value": 4.69215246636771,
+          "origin": "SOILGRIDS"
+        }
+      ],
+      "score_components": {
+        "eligibility": {
+          "applicable_rule": true,
+          "mandatory_bands_reviewed": 4,
+          "mandatory_bands_required": 4
+        },
+        "blocking_restrictions": {
+          "failed": 0,
+          "warnings_failed": 0,
+          "evaluated": 3
+        },
+        "range_adequacy": {
+          "within_optimal": 2,
+          "within_tolerated": 0,
+          "outside_tolerated": 0,
+          "evaluated": 4
+        },
+        "data_coverage": {
+          "available": 10,
+          "required": 10
+        },
+        "secondary": {
+          "applicable_rules": 3,
+          "documented_sources": 7
+        }
+      },
+      "confidence": "alta",
+      "rank": 3,
+      "tie": false
     }
   ],
   "inside": true,

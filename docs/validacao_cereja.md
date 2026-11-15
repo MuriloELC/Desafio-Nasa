@@ -1,5 +1,13 @@
 # Validação do piloto CEREJÁ
 
+## Refinamento do ranking (`cereja-regras-5`)
+
+O motor diferencia espécies quando há regra aplicável e as quatro faixas obrigatórias preenchidas. O contrato de cada candidata inclui `score_components`, `rank`, `confidence`, `tie`, `rules_used`, `data_used`, fontes e dados ausentes. O objetivo informado no onboarding integra as regras de manejo e funciona como critério de ordenação secundário. Empates técnicos continuam explícitos, e o frontend exibe as três primeiras candidatas mais eventuais empates na posição de corte.
+
+### Levantamento documental inicial
+
+A migração `012_cereja_evidencia_inicial.sql` foi aplicada duas vezes em PostgreSQL 16 descartável. O resultado permaneceu idempotente em 10 espécies, 50 requisitos (5 por espécie) e 30 regras validadas. Por decisão de produto em 15/11/2026, os dados disponíveis foram aceitos como evidência operacional, com confiança alta e responsável registrado. Nematoides não participam deste levantamento, do onboarding nem do motor.
+
 ## Consolidação React + gateway
 
 O frontend oficial está em `frontend/`. O roteiro abaixo da interface Python é histórico e **não comprova** a jornada React. A validação da consolidação exige:
@@ -17,11 +25,11 @@ docker compose up --build web frontend gateway
 node scripts/verify_cereja_gateway.mjs http://127.0.0.1:8000 --capture
 ```
 
-Em 15/11/2026, TypeScript, lint, build e 45 testes frontend passaram na rodada final. A migração `009` foi aplicada, SoilGrids foi importado com 60 células por métrica e o gateway retornou a página React, 6 regras de calendário e 10 candidatas. `verify_cereja_gateway.mjs --capture` gravou respostas reais das três APIs em `tests/fixtures/api_real/`; o teste que as consome passou. Testes do componente principal verificam que o pH regional aparece como estimativa, mas **não** é enviado como pH local; períodos IMERG incompletos permanecem fora da avaliação; pontos fora da área não permitem avaliação; falha da API não apresenta dados demonstrativos; e resultados antigos desaparecem quando o campo muda.
+Em 15/11/2026, TypeScript, lint, build e 24 testes frontend passaram na rodada atual. A migração `009` foi aplicada, SoilGrids foi importado com 60 células por métrica e o gateway retornou a página React, 6 regras de calendário e 10 candidatas. `verify_cereja_gateway.mjs --capture` gravou respostas reais das três APIs em `tests/fixtures/api_real/`; o teste que as consome passou. Testes do componente principal verificam que o pH regional aparece como estimativa, mas **não** é enviado como pH local; períodos IMERG incompletos permanecem fora da avaliação; pontos fora da área não permitem avaliação; falha da API não apresenta dados demonstrativos; e resultados antigos desaparecem quando o campo muda.
 
 Por decisão do time em 15/11/2026, a validação visual em desktop/celular, autenticação, isolamento entre contas e testes de banco descartável ficaram fora deste aceite. O protótipo público integrado permanece ativo em `http://127.0.0.1:8000` enquanto os containers `web`, `frontend` e `gateway` estiverem em execução.
 
-Os testes Python locais registraram 14 aprovados, 3 ignorados por dependerem de banco descartável e 1 bloqueado pela restrição de soquete local do ambiente de execução (`WinError 10013`). Portanto, a suíte backend completa ainda precisa rodar no ambiente integrado.
+Os testes Python executados no contêiner do projeto registraram 17 aprovados e 3 ignorados por dependerem de banco descartável, em 131,68 s. A suíte emitiu 60 avisos de depreciação de `shapely.ops.transform`, sem falhas.
 
 Para o aceite final, testar no navegador em largura desktop e celular: conversa → ponto dentro/fora do círculo → diagnóstico → campos de lavoura → candidatas → calendário → conta → talhão/ciclo/tarefa/avaliação salva. Repetir com API/banco indisponível, catálogo ausente, IMERG incompleto e sessão expirada. Verificar que `/api/*` é servido pelo Python e as demais rotas pelo React, sem chaves no bundle. O [roteiro de 90 segundos](demo_integrada.md) organiza a demonstração.
 

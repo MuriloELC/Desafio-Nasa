@@ -9,14 +9,14 @@
     {
       "url": "https://gpm.nasa.gov/data/directory/imerg-final-run-pps-research-gis",
       "unit": "mm",
-      "value": 8.4,
+      "value": 1.8,
       "method": "zonal_mean",
       "metric": "precip_mm",
       "product": "IMERG PPS Final Run GIS",
       "quality": "estimated",
       "provider": "NASA",
       "source_id": "IMERG_FINAL",
-      "observed_on": "2025-03-19",
+      "observed_on": "2025-09-30",
       "native_resolution": "0.1°"
     },
     {

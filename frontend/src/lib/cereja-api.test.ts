@@ -27,15 +27,13 @@ describe("cliente das APIs públicas", () => {
       lat: -11.44,
       lon: -61.45,
       field: {
+        goal: null,
         phase: null,
         water: null,
         age_years: null,
         spacing_m: null,
         soil_ph: null,
-        nematodes: null,
         can_manage: null,
-        soil_assessed: null,
-        moisture_checked: null,
       },
     });
     expect(mock.mock.calls.map((call) => call[0])).toEqual([
