@@ -38,6 +38,7 @@ describe("conversa orientada à decisão", () => {
       moistureChecked: "Não sei",
     });
     expect(field).toEqual({
+      strategy: null,
       phase: "formacao",
       age_years: 2.5,
       spacing_m: 3.5,

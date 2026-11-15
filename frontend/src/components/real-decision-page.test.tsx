@@ -1,25 +1,18 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { existsSync, readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReactNode } from "react";
 import { EMPTY_ANSWERS } from "@/lib/onboarding";
 import { ANSWERS_STORAGE_KEY } from "@/lib/storage";
 import { RealDecisionPage } from "./real-decision-page";
 
-const fixturePaths = Object.fromEntries(
-  ["diagnosis", "calendar", "recommendation"].map((name) => [
-    name,
-    resolve(process.cwd(), `../tests/fixtures/api_real/${name}.json`),
-  ]),
-);
-const realFixturesReady = Object.values(fixturePaths).every((path) => existsSync(path));
-
 vi.mock("@tanstack/react-router", () => ({
   Link: ({ children }: { children: ReactNode }) => <span>{children}</span>,
 }));
 vi.mock("@/components/cereja-shell", () => ({
   AppPage: ({ children }: { children: ReactNode }) => <main>{children}</main>,
+}));
+vi.mock("@/components/territory-map", () => ({
+  TerritoryMap: () => <div role="img" aria-label="Mapa de satélite" />,
 }));
 
 function json(value: unknown) {
@@ -29,7 +22,57 @@ function json(value: unknown) {
   });
 }
 
-describe("jornada pública com respostas da API", () => {
+const diagnosis = {
+  latitude: -11.44,
+  longitude: -61.45,
+  inside: true,
+  cell_id: "CAC_S_03_04",
+  cell_grid_km: 5,
+  municipality: "1100049",
+  daily: [],
+  static: [],
+  missing: [],
+  summary: [
+    {
+      metric: "precip_30d_mm",
+      source_id: "POWER",
+      unit: "mm",
+      start_on: "2026-10-14",
+      end_on: "2026-11-12",
+      days_available: 30,
+      value: 164,
+      baseline: 151,
+      period_count: 5,
+      spread: null,
+    },
+    {
+      metric: "temp_mean_30d_c",
+      source_id: "POWER",
+      unit: "C",
+      start_on: "2026-10-14",
+      end_on: "2026-11-12",
+      days_available: 30,
+      value: 26.1,
+      baseline: 25.7,
+      period_count: 5,
+      spread: null,
+    },
+    {
+      metric: "soil_ph",
+      source_id: "SOILGRIDS",
+      unit: "pH",
+      start_on: null,
+      end_on: null,
+      days_available: 1,
+      value: 4.7,
+      baseline: 4.8,
+      period_count: 60,
+      spread: 0.15,
+    },
+  ],
+};
+
+describe("Minha Terra refinada", () => {
   beforeEach(() => {
     localStorage.clear();
     localStorage.setItem(
@@ -45,7 +88,6 @@ describe("jornada pública com respostas da API", () => {
           age: "2",
           rowSpacing: "3 m",
           irrigation: "Não possui",
-          soilPh: "Não tenho análise",
         },
         step: 16,
       }),
@@ -53,203 +95,94 @@ describe("jornada pública com respostas da API", () => {
   });
   afterEach(() => vi.unstubAllGlobals());
 
-  it("mostra solo regional sem adotá-lo como pH local e marca IMERG incompleto", async () => {
-    const source = {
-      source_id: "SOILGRIDS",
-      product: "SoilGrids 2.0",
-      native_resolution: "250 m",
-      url: "https://docs.isric.org/globaldata/soilgrids/wcs.html",
-      quality: "estimated",
-      depth_top_cm: 0,
-      depth_bottom_cm: 5,
+  it("mostra mapa e três indicadores territoriais", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValueOnce(json(diagnosis)));
+    render(<RealDecisionPage />);
+    expect(await screen.findByRole("img", { name: "Mapa de satélite" })).toBeInTheDocument();
+    expect(screen.getByText("164")).toBeInTheDocument();
+    expect(screen.getByText("26,1")).toBeInTheDocument();
+    expect(screen.getByText("4,7")).toBeInTheDocument();
+    expect(screen.getAllByText(/Na média/)).toHaveLength(3);
+    expect(screen.queryByText(/Calendário técnico/)).not.toBeInTheDocument();
+  });
+
+  it("envia a estratégia e apresenta somente três sugestões", async () => {
+    const recommendation = {
+      inside: true,
+      strategy: "permanente",
+      candidates: [
+        {
+          culture_id: "amendoim",
+          name: "Amendoim-forrageiro",
+          state: "sem_dados",
+          missing: [],
+          reasons: ["Revisar em campo."],
+          sources: [],
+        },
+        {
+          culture_id: "braquiaria",
+          name: "Braquiária-ruziziensis",
+          state: "sem_dados",
+          missing: [],
+          reasons: ["Revisar em campo."],
+          sources: [],
+        },
+        {
+          culture_id: "guandu",
+          name: "Guandu-anão",
+          state: "sem_dados",
+          missing: [],
+          reasons: ["Revisar em campo."],
+          sources: [],
+        },
+      ],
     };
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(
-        json({
+      .mockResolvedValueOnce(json(diagnosis))
+      .mockResolvedValueOnce(json(recommendation));
+    vi.stubGlobal("fetch", fetchMock);
+    render(<RealDecisionPage />);
+    await screen.findByText("Cobertura permanente");
+    fireEvent.click(screen.getByRole("button", { name: /Cobertura permanente/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Ver 3 sugestões" }));
+    await screen.findByText("Amendoim-forrageiro");
+    expect(screen.getByText("Braquiária-ruziziensis")).toBeInTheDocument();
+    expect(screen.getByText("Guandu-anão")).toBeInTheDocument();
+    const body = JSON.parse(String(fetchMock.mock.calls[1]?.[1]?.body));
+    expect(body.field.strategy).toBe("permanente");
+  });
+
+  it("não bloqueia as sugestões pelo tipo de café informado", async () => {
+    localStorage.setItem(
+      ANSWERS_STORAGE_KEY,
+      JSON.stringify({
+        answers: {
+          ...EMPTY_ANSWERS,
+          city: "Cacoal · RO",
+          coffee: "Arábica",
           latitude: -11.44,
           longitude: -61.45,
-          inside: true,
-          cell_id: "CAC_S_03_04",
-          cell_grid_km: 5,
-          municipality: "1100049",
-          daily: [],
-          static: [{ ...source, metric: "soil_ph", value: 4.5, unit: "pH" }],
-          missing: [],
-        }),
-      )
-      .mockResolvedValueOnce(
-        json({
-          year: 2026,
-          months: [10],
-          today_month: 11,
-          cultures: [{ culture_id: "milheto", name: "Milheto", kind: "entrelinha" }],
-          rules: [],
-        }),
-      )
-      .mockResolvedValueOnce(
-        json({
-          inside: true,
-          method_version: "cereja-regras-1",
-          reference_date: "2026-11-15",
-          candidates: [
-            {
-              culture_id: "milheto",
-              name: "Milheto",
-              state: "sem_dados",
-              missing: ["pH medido em análise de solo"],
-              reasons: ["Falta análise local."],
-              sources: [],
-            },
-          ],
-          coverage: [
-            {
-              source_id: "IMERG_FINAL",
-              metric: "precip_mm",
-              product: "IMERG",
-              native_resolution: "0.1°",
-              url: "https://gpm.nasa.gov",
-              start_on: "2025-10-01",
-              end_on: "2025-10-30",
-              days_available: 20,
-              days_expected: 30,
-              value: null,
-            },
-          ],
-        }),
-      );
-    vi.stubGlobal("fetch", fetchMock);
-    render(<RealDecisionPage />);
-    await screen.findByText(/pH regional do solo/);
-    expect(
-      screen.getByText(/Estimativa regional; não substitui análise do talhão/),
-    ).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Comparar candidatas" }));
-    await screen.findByText(/Antes de agir, verificar/);
-    expect(screen.getAllByText(/Falta análise local/)).toHaveLength(2);
-    const assessmentCall = fetchMock.mock.calls.find(([url]) => url === "/api/recomendacoes");
-    expect(assessmentCall).toBeDefined();
-    expect(JSON.parse(assessmentCall![1].body).field).toMatchObject({
-      soil_ph: null,
-      phase: "formacao",
-      age_years: 2,
-      spacing_m: 3,
-    });
-    fireEvent.click(screen.getByText("Cobertura dos períodos climáticos"));
-    await waitFor(() =>
-      expect(screen.getByText(/20\/30 dias.*incompleto, fora da avaliação/)).toBeInTheDocument(),
-    );
-    fireEvent.change(screen.getByRole("spinbutton", { name: /pH da análise local/ }), {
-      target: { value: "5.2" },
-    });
-    expect(screen.queryByText("Candidatas para estudar")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Comparar candidatas" })).toBeEnabled();
-  });
-
-  it("impede a avaliação quando o ponto está fora do círculo piloto", async () => {
-    const fetchMock = vi.fn().mockResolvedValueOnce(
-      json({
-        latitude: -11.44,
-        longitude: -61.45,
-        inside: false,
-        cell_id: null,
-        cell_grid_km: 5,
-        municipality: null,
-        daily: [],
-        static: [],
-        missing: ["observações climáticas"],
+        },
+        step: 16,
       }),
     );
-    vi.stubGlobal("fetch", fetchMock);
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValueOnce(json(diagnosis)));
     render(<RealDecisionPage />);
-    expect(
-      await screen.findByText(/Diagnóstico indisponível fora da área piloto/),
-    ).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Comparar candidatas" })).not.toBeInTheDocument();
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    await screen.findByText("Cobertura permanente");
+    fireEvent.click(screen.getByRole("button", { name: /Cobertura permanente/ }));
+    expect(screen.getByRole("button", { name: "Ver 3 sugestões" })).toBeEnabled();
   });
 
-  it("descarta uma avaliação pendente quando o produtor muda o campo", async () => {
-    let finish!: (response: Response) => void;
-    const pending = new Promise<Response>((resolve) => {
-      finish = resolve;
-    });
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(
-        json({
-          latitude: -11.44,
-          longitude: -61.45,
-          inside: true,
-          cell_id: "CAC_S_03_04",
-          cell_grid_km: 5,
-          municipality: "1100049",
-          daily: [],
-          static: [],
-          missing: [],
-        }),
-      )
-      .mockResolvedValueOnce(json({ year: 2026, months: [10], rules: [], cultures: [] }))
-      .mockImplementationOnce(() => pending);
-    vi.stubGlobal("fetch", fetchMock);
-    render(<RealDecisionPage />);
-    await screen.findByRole("button", { name: "Comparar candidatas" });
-    fireEvent.click(screen.getByRole("button", { name: "Comparar candidatas" }));
-    await screen.findByRole("button", { name: "Avaliando…" });
-    fireEvent.change(screen.getByRole("spinbutton", { name: /pH da análise local/ }), {
-      target: { value: "5.2" },
-    });
-    finish(
-      json({
-        inside: true,
-        candidates: [
-          {
-            culture_id: "milheto",
-            name: "Milheto",
-            state: "favoravel",
-            reasons: ["Resultado antigo."],
-            missing: [],
-            sources: [],
-          },
-        ],
-      }),
+  it("não avalia ponto fora da área piloto", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValueOnce(json({ ...diagnosis, inside: false, cell_id: null })),
     );
+    render(<RealDecisionPage />);
+    expect(await screen.findByText(/fora da área piloto/)).toBeInTheDocument();
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: "Comparar candidatas" })).toBeEnabled(),
+      expect(screen.queryByRole("button", { name: /sugestões/ })).not.toBeInTheDocument(),
     );
-    expect(screen.queryByText("Candidatas para estudar")).not.toBeInTheDocument();
-    expect(screen.queryByText("Resultado antigo.")).not.toBeInTheDocument();
-  });
-
-  it("informa falha da API sem apresentar observações demonstrativas", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("network failure")));
-    render(<RealDecisionPage />);
-    expect(await screen.findByRole("alert")).toHaveTextContent("A API está indisponível");
-    expect(screen.queryByText("O que foi observado")).not.toBeInTheDocument();
-  });
-
-  it.skipIf(!realFixturesReady)("consome as três respostas capturadas do gateway", async () => {
-    const fixtures = Object.fromEntries(
-      Object.entries(fixturePaths).map(([name, path]) => [
-        name,
-        JSON.parse(readFileSync(path, "utf8")) as unknown,
-      ]),
-    );
-    const fetchMock = vi.fn((url: string, _options?: RequestInit) => {
-      const name = url.startsWith("/api/consulta")
-        ? "diagnosis"
-        : url.startsWith("/api/calendario")
-          ? "calendar"
-          : "recommendation";
-      return Promise.resolve(json(fixtures[name]));
-    });
-    vi.stubGlobal("fetch", fetchMock);
-    render(<RealDecisionPage />);
-    await screen.findByText(/pH regional do solo/);
-    fireEvent.click(screen.getByRole("button", { name: "Comparar candidatas" }));
-    await screen.findByText("Candidatas para estudar");
-    const call = fetchMock.mock.calls.find(([url]) => url === "/api/recomendacoes");
-    expect(call).toBeDefined();
-    expect(JSON.parse(String(call?.[1]?.body)).field.soil_ph).toBeNull();
   });
 });

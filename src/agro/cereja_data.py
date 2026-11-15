@@ -111,6 +111,63 @@ LEFT JOIN LATERAL (
 ) fixed ON true
 """
 
+TERRITORY_SUMMARY = """
+WITH mapped AS (
+  SELECT m.sample_id,m.weight FROM agro.cell_sample_map m
+  JOIN agro.source_samples s ON s.sample_id=m.sample_id AND s.source_id='POWER'
+  WHERE m.cell_id=%(cell)s ORDER BY m.weight DESC,m.sample_id LIMIT 1
+), specs(source_metric,metric,aggregation,unit) AS (VALUES
+  ('precip_power_mm','precip_30d_mm','sum','mm'),
+  ('temp_mean_c','temp_mean_30d_c','mean','C')
+), power AS (
+  SELECT spec.metric,'POWER'::text AS source_id,spec.unit,
+    (latest.end_on - 29) AS start_on,latest.end_on,current.days_available,
+    CASE WHEN current.days_available=30 THEN current.value END AS value,
+    history.baseline,history.period_count,NULL::double precision AS spread
+  FROM specs spec
+  CROSS JOIN LATERAL (
+    SELECT max(d.observed_on) AS end_on FROM mapped m
+    JOIN agro.sample_daily d ON d.sample_id=m.sample_id AND d.metric=spec.source_metric
+  ) latest
+  CROSS JOIN LATERAL (
+    SELECT count(*)::int AS days_available,
+      CASE spec.aggregation WHEN 'sum' THEN sum(d.value*m.weight) ELSE avg(d.value*m.weight) END AS value
+    FROM mapped m JOIN agro.sample_daily d ON d.sample_id=m.sample_id AND d.metric=spec.source_metric
+    WHERE d.observed_on BETWEEN latest.end_on-29 AND latest.end_on
+  ) current
+  LEFT JOIN LATERAL (
+    SELECT avg(period.value) AS baseline,count(*)::int AS period_count
+    FROM generate_series(1,5) years(n)
+    CROSS JOIN LATERAL (
+      SELECT count(*)::int AS days_available,
+        CASE spec.aggregation WHEN 'sum' THEN sum(d.value*m.weight) ELSE avg(d.value*m.weight) END AS value
+      FROM mapped m JOIN agro.sample_daily d ON d.sample_id=m.sample_id AND d.metric=spec.source_metric
+      WHERE d.observed_on BETWEEN
+        ((latest.end_on-29) - make_interval(years=>years.n))::date AND
+        (latest.end_on - make_interval(years=>years.n))::date
+    ) period
+    WHERE period.days_available=30
+  ) history ON true
+), soil AS (
+  SELECT 'soil_ph'::text AS metric,'SOILGRIDS'::text AS source_id,p.unit,
+    NULL::date AS start_on,NULL::date AS end_on,1 AS days_available,p.value,
+    regional.baseline,regional.period_count,regional.spread
+  FROM agro.static_properties p
+  CROSS JOIN LATERAL (
+    SELECT avg(all_p.value) AS baseline,count(*)::int AS period_count,stddev_pop(all_p.value) AS spread
+    FROM agro.static_properties all_p JOIN agro.grid_cells c ON c.cell_id=all_p.cell_id
+    WHERE all_p.source_id='SOILGRIDS' AND all_p.metric='soil_ph'
+      AND all_p.depth_top_cm=p.depth_top_cm AND all_p.depth_bottom_cm=p.depth_bottom_cm
+      AND c.region_id='CACOAL_R20' AND c.level=2
+  ) regional
+  WHERE p.cell_id=%(cell)s AND p.source_id='SOILGRIDS' AND p.metric='soil_ph'
+  ORDER BY p.depth_top_cm LIMIT 1
+)
+SELECT to_jsonb(summary) FROM (
+  SELECT * FROM power UNION ALL SELECT * FROM soil
+) summary ORDER BY metric
+"""
+
 CLIMATE = """
 WITH periods AS (
   SELECT 'recent' AS kind, %(reference)s::date - 29 AS start_on, %(reference)s::date AS end_on
@@ -185,9 +242,14 @@ class Repository:
             if cell:
                 self.cache.put(cell, (daily, static))
         LOG.info("diagnostico cache=%s", "hit" if cell in cached else "miss")
+        summary = []
+        if cell:
+            with self.connection("resumo_territorial") as conn:
+                summary = [row["to_jsonb"] for row in conn.execute(TERRITORY_SUMMARY, {"cell": cell}).fetchall()]
         return {"latitude": lat, "longitude": lon, "radius_km": radius,
                 "distance_km": round(row["meters"] / 1000, 2), "inside": row["inside"],
                 "cell_id": cell, "daily": daily, "static": static, "cell_grid_km": 5, "municipality": row["municipality"],
+                "summary": summary,
                 "missing": [label for key, label in (
                     (daily, "observações climáticas"), (static, "solo e relevo na malha"),
                 ) if not key]}

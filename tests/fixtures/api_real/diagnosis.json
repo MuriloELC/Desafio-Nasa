@@ -9,14 +9,14 @@
     {
       "url": "https://gpm.nasa.gov/data/directory/imerg-final-run-pps-research-gis",
       "unit": "mm",
-      "value": 1.1,
+      "value": 8.4,
       "method": "zonal_mean",
       "metric": "precip_mm",
       "product": "IMERG PPS Final Run GIS",
       "quality": "estimated",
       "provider": "NASA",
       "source_id": "IMERG_FINAL",
-      "observed_on": "2023-02-08",
+      "observed_on": "2025-03-19",
       "native_resolution": "0.1°"
     },
     {
@@ -141,5 +141,43 @@
   ],
   "cell_grid_km": 5,
   "municipality": "1100049",
+  "summary": [
+    {
+      "unit": "mm",
+      "value": 162.09,
+      "end_on": "2026-11-12",
+      "metric": "precip_30d_mm",
+      "spread": null,
+      "baseline": 112.794,
+      "start_on": "2026-10-14",
+      "source_id": "POWER",
+      "period_count": 5,
+      "days_available": 30
+    },
+    {
+      "unit": "pH",
+      "value": 4.69215246636771,
+      "end_on": null,
+      "metric": "soil_ph",
+      "spread": 0.245582606827312,
+      "baseline": 4.84413172978641,
+      "start_on": null,
+      "source_id": "SOILGRIDS",
+      "period_count": 60,
+      "days_available": 1
+    },
+    {
+      "unit": "C",
+      "value": 28.6853333333333,
+      "end_on": "2026-11-12",
+      "metric": "temp_mean_30d_c",
+      "spread": null,
+      "baseline": 29.3958,
+      "start_on": "2026-10-14",
+      "source_id": "POWER",
+      "period_count": 5,
+      "days_available": 30
+    }
+  ],
   "missing": []
 }

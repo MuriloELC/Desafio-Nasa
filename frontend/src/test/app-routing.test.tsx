@@ -15,7 +15,7 @@ describe("App routing", () => {
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
   });
 
-  it.each(["/chat", "/analisando", "/minha-terra", "/calendario", "/aprender", "/lavoura"])(
+  it.each(["/chat", "/analisando", "/minha-terra", "/aprender"])(
     "matches the public route %s",
     (path) => {
       const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });

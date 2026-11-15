@@ -12,7 +12,6 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { FarmProvider } from "@/lib/farm-client";
 
 function NotFoundComponent() {
   return (
@@ -129,9 +128,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <FarmProvider>
-        <Outlet />
-      </FarmProvider>
+      <Outlet />
     </QueryClientProvider>
   );
 }

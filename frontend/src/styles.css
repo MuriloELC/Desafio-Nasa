@@ -2,6 +2,33 @@
 @source "../src";
 @import "tw-animate-css";
 
+.metric-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.metric-status.ok { background: #dcebd5; color: #285536; }
+.metric-status.warn { background: #f9dfcf; color: #8d382b; }
+.metric-status.neutral { background: #ece8df; color: #625f58; }
+.territory-map-radius { position: absolute; width: 150px; height: 150px; border: 3px solid #ff493f; border-radius: 999px; background: rgb(255 73 63 / 18%); transform: translate(-50%, -50%); }
+.territory-map-point { position: absolute; width: 26px; height: 26px; border: 5px solid white; border-radius: 999px; background: #e7362d; box-shadow: 0 2px 12px rgb(0 0 0 / 45%); transform: translate(-50%, -50%); }
+.learn-hero {
+  background:
+    radial-gradient(circle at 82% 12%, rgb(255 255 255 / 16%), transparent 27%),
+    linear-gradient(135deg, #173a2b 0%, #245941 58%, #8f312b 145%);
+}
+.strategy-choice {
+  background: #0d2020;
+  color: #f8f3e8;
+  border-color: #263d3a;
+  transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+}
+.strategy-choice:hover { transform: translateY(-2px); border-color: #5d8f6e; }
+.strategy-choice.selected { border-color: #6db17e; background: #102a25; box-shadow: inset 0 0 0 1px #6db17e; }
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

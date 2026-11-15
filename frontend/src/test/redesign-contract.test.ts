@@ -31,8 +31,9 @@ describe("contratos do Cerejá para o hackathon", () => {
     const land = source("../components/real-decision-page.tsx");
     expect(land).toContain("diagnosis(saved.latitude, saved.longitude");
     expect(land).toContain("assessment({ lat: answers.latitude");
-    expect(land).toContain("days_available");
-    expect(land).toContain("fora da avaliação");
+    expect(land).toContain("TerritoryMap");
+    expect(land).toContain("precip_30d_mm");
+    expect(land).toContain("STRATEGIES");
   });
 
   it("mantém apenas Minha Terra e Aprender na navegação principal", () => {
@@ -40,6 +41,6 @@ describe("contratos do Cerejá para o hackathon", () => {
     expect(shell).toContain('to: "/minha-terra"');
     expect(shell).toContain('label: "Minha Terra"');
     expect(shell).toContain('label: "Aprender"');
-    expect(shell).not.toContain('label: "Análise"');
+    expect(shell).not.toContain('label: "Minha Lavoura"');
   });
 });

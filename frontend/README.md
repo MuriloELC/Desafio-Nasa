@@ -1,6 +1,6 @@
 # Frontend CEREJÁ
 
-Interface React/TanStack do piloto `CACOAL_R20`. O fluxo público consome `/api/consulta`, `/api/recomendacoes` e `/api/calendario`; “Minha Lavoura” usa `/api/auth/*` e `/api/lavoura/*`. O backend Python/Supabase é a única fonte dos valores ambientais e das avaliações. A sessão de Auth fica somente em memória e termina ao recarregar a página.
+Interface React/TanStack do piloto `CACOAL_R20`. O fluxo público consome `/api/consulta` e `/api/recomendacoes`. O backend Python/Supabase é a fonte dos valores ambientais e das avaliações; a imagem de satélite usa o serviço World Imagery da Esri com atribuição no mapa.
 
 ## Execução
 
@@ -14,7 +14,7 @@ npm run lint -- --quiet
 npm run build
 ```
 
-Rotas: `/` (apresentação), `/chat` (contexto e coordenadas), `/minha-terra` (diagnóstico e candidatas), `/calendario` (endereço compatível), `/aprender` (calendário de referência e fontes) e `/lavoura` (caderno autenticado).
+Rotas: `/` (apresentação), `/chat` (contexto e coordenadas), `/minha-terra` (mapa, indicadores, informações editáveis, estratégia e candidatas) e `/aprender` (guia visual e fontes).
 
 O marcador da conversa é uma grade de coordenadas aproximada, não um mapa cadastral. O backend confirma se o ponto pertence ao círculo piloto. SoilGrids é estimativa regional; pH local somente entra na avaliação se o produtor informar uma análise do talhão. Períodos climáticos incompletos aparecem com `days_available` e `days_expected` e não entram como totais completos.
 

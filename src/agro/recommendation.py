@@ -12,6 +12,7 @@ FIELD_NAMES = {
     "nematodes": "histórico de nematoides", "can_manage": "capacidade de manejar a cobertura",
     "soil_assessed": "avaliação da fertilidade do solo", "moisture_checked": "verificação da umidade em campo",
 }
+STRATEGIES = ("convencional", "permanente", "rotacao")
 
 
 def number(value, low, high):
@@ -56,7 +57,8 @@ def assessment_inputs(payload):
     if not date(2000, 1, 1) <= reference <= today:
         raise ValueError("A data de referência deve estar entre 2000 e hoje.")
     fields = {"phase": option(raw.get("phase"), PHASES, "fase"),
-              "water": option(raw.get("water"), WATER, "regime hídrico")}
+              "water": option(raw.get("water"), WATER, "regime hídrico"),
+              "strategy": option(raw.get("strategy"), STRATEGIES, "estratégia de entrelinha")}
     for key, lo, hi in (("age_years", 0, 100), ("spacing_m", .01, 30), ("soil_ph", 0, 14)):
         fields[key] = None if raw.get(key) in (None, "") else number(raw[key], lo, hi)
     for key in ("nematodes", "can_manage", "soil_assessed", "moisture_checked"):
@@ -163,10 +165,18 @@ def evaluate(data, climate, fields, reference, municipality=None):
     observed = {metric: item["value"] for metric, item in measurements.items()} | {"soil_ph": fields["soil_ph"]}
     rules = applicable(data["rules"], phase=fields["phase"], water=fields["water"], municipality=municipality)
     candidates = []
+    strategy = fields.get("strategy")
     for culture in data["cultures"]:
         if not culture.get("catalog_species"):
             continue
         cid = culture["culture_id"]
+        life_cycle = (culture.get("life_cycle") or "").casefold()
+        if strategy == "permanente" and "perene" not in life_cycle:
+            continue
+        if strategy == "rotacao" and "anual" not in life_cycle:
+            continue
+        if strategy == "convencional":
+            continue
         selected = [rule for rule in rules if rule["culture_id"] == cid]
         missing = [label for key, label in FIELD_NAMES.items() if fields[key] is None or (
             key in ("soil_assessed", "moisture_checked") and not fields[key]
@@ -235,6 +245,7 @@ def evaluate(data, climate, fields, reference, municipality=None):
         candidates.append({"culture_id": cid, "name": culture["name"], "state": state, "missing": missing,
                            "reasons": list(dict.fromkeys(reasons)), "sources": list(sources.values())})
     ranking = {"favoravel": 0, "atencao": 1, "sem_dados": 2, "desfavoravel": 3}
-    return {"method_version": METHOD_VERSION, "reference_date": reference,
+    ordered = sorted(candidates, key=lambda item: (ranking[item["state"]], item["name"].casefold()))
+    return {"method_version": METHOD_VERSION, "reference_date": reference, "strategy": strategy,
             "measurements": measurements, "coverage": climate,
-            "candidates": sorted(candidates, key=lambda item: (ranking[item["state"]], item["name"].casefold()))}
+            "candidates": ordered[:3]}

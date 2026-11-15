@@ -40,7 +40,21 @@ export type Diagnosis = {
   municipality: string | null;
   daily: Observation[];
   static: Observation[];
+  summary: TerritoryMetric[];
   missing: string[];
+};
+
+export type TerritoryMetric = {
+  metric: "precip_30d_mm" | "temp_mean_30d_c" | "soil_ph";
+  source_id: "POWER" | "SOILGRIDS";
+  unit: string;
+  start_on: string | null;
+  end_on: string | null;
+  days_available: number;
+  value: number | null;
+  baseline: number | null;
+  period_count: number;
+  spread: number | null;
 };
 
 export type Coverage = {
@@ -78,6 +92,7 @@ export type Assessment = {
   municipality?: string | null;
   reference_date?: string;
   method_version?: string;
+  strategy?: FieldInput["strategy"];
   measurements?: Record<string, { value: number; source_id: string; period_count: number }>;
   coverage?: Coverage[];
   candidates: Candidate[];
@@ -110,6 +125,7 @@ export type Calendar = {
 };
 
 export type FieldInput = {
+  strategy?: "convencional" | "permanente" | "rotacao" | null;
   phase: "implantacao" | "formacao" | "producao" | "recepa" | null;
   water: "sequeiro" | "irrigado" | null;
   age_years: number | null;

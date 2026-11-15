@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, MapPin, RotateCcw, Send, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import cherry from "@/assets/cut-1-cherry.png";
+import { SatelliteMapCanvas } from "@/components/territory-map";
+import cerejaLogo from "@/assets/cereja-logo-v2.png";
 import bean from "@/assets/cut-4-bean.png";
 import { ANSWERS_STORAGE_KEY } from "@/lib/storage";
 import { ANSWER_LABELS, quickReplies } from "@/lib/onboarding-ui";
@@ -130,7 +131,7 @@ function ChatPage() {
       <header className="sticky top-0 z-30 border-b border-border bg-paper/95 backdrop-blur">
         <div className="mx-auto flex max-w-[1120px] items-center justify-between px-4 py-3 sm:px-6">
           <Link to="/" className="flex items-center gap-2">
-            <img src={cherry} alt="" className="size-9" />
+            <img src={cerejaLogo} alt="" className="size-10 object-contain" />
             <span className="brand text-xl">Cerejá</span>
           </Link>
           <div className="flex items-center gap-3">
@@ -372,36 +373,16 @@ function TerritoryPicker({
           <RotateCcw className="size-4" /> Limpar
         </button>
       </div>
-      <svg
-        viewBox="0 0 640 360"
-        role="img"
-        aria-label="Grade geográfica de Cacoal para escolher um ponto da propriedade"
-        onClick={(event) => {
-          const bounds = event.currentTarget.getBoundingClientRect();
-          const px = Math.min(
-            640,
-            Math.max(0, ((event.clientX - bounds.left) / bounds.width) * 640),
-          );
-          const py = Math.min(
-            360,
-            Math.max(0, ((event.clientY - bounds.top) / bounds.height) * 360),
-          );
-          setLat((-11.24 - (py / 360) * 0.4).toFixed(5));
-          setLon((-61.65 + (px / 640) * 0.4).toFixed(5));
+      <SatelliteMapCanvas
+        latitude={valid ? latitude : -11.4386}
+        longitude={valid ? longitude : -61.4472}
+        className="h-[360px]"
+        showRadius={false}
+        onSelect={(point) => {
+          setLat(point.latitude.toFixed(5));
+          setLon(point.longitude.toFixed(5));
         }}
-        className="territory-map block w-full cursor-crosshair"
-      >
-        {[0, 1, 2, 3, 4].map((index) => (
-          <g key={index} stroke="currentColor" opacity="0.2">
-            <line x1={index * 160} y1="0" x2={index * 160} y2="360" />
-            <line x1="0" y1={index * 90} x2="640" y2={index * 90} />
-          </g>
-        ))}
-        <circle cx="320" cy="180" r="4" fill="currentColor" />
-        {valid && x >= 0 && x <= 640 && y >= 0 && y <= 360 ? (
-          <circle cx={x} cy={y} r="10" className="territory-point" />
-        ) : null}
-      </svg>
+      />
       <div className="grid gap-3 px-4 pt-4 sm:grid-cols-2">
         <label className="text-sm font-semibold">
           Latitude
@@ -426,8 +407,8 @@ function TerritoryPicker({
       </div>
       <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-muted-foreground">
-          Grade de coordenadas aproximada. A API confirma se o ponto está no raio de 20 km de
-          Cacoal.
+          Clique na imagem de satélite ou informe as coordenadas. A API confirma se o ponto está no
+          raio de 20 km de Cacoal.
         </p>
         <Button
           type="button"
@@ -445,7 +426,7 @@ function TerritoryPicker({
 function BotMessage({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-start gap-3">
-      <img src={cherry} alt="" className="mt-1 size-8 shrink-0" />
+      <img src={cerejaLogo} alt="" className="mt-1 size-9 shrink-0 object-contain" />
       <p className="max-w-[90%] rounded-3xl rounded-tl-md bg-paper px-5 py-3 leading-relaxed">
         {children}
       </p>

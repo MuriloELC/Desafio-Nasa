@@ -46,55 +46,40 @@ def main():
                  and (args.end is None or date.fromisoformat(row['date']) <= args.end)]
     failures = []
     loaded = 0
-    consecutive_failures = 0
     with connect() as conn:
         done = {row['period_start'] for row in conn.execute('''
             SELECT DISTINCT period_start FROM agro.etl_runs
             WHERE command='imerg_daily' AND status='succeeded' AND region_id=%s ''',
             (REGION_ID,)).fetchall()}
-        pending = [(day, filename) for day, filename in available if day not in done]
-        if args.limit:
-            pending = pending[:args.limit]
+    pending = [(day, filename) for day, filename in available if day not in done]
+    if args.limit:
+        pending = pending[:args.limit]
 
-        def ingest(day, filename, prepared_path=None):
-            nonlocal loaded, consecutive_failures
-            try:
+    def ingest_one(day, filename):
+        """Prepare and ingest one day with a connection owned by this worker."""
+        prepared_path = None
+        try:
+            if not args.archive_raw:
+                prepared_path = prepare(day, filename)
+            with connect() as conn:
                 count = load(conn, day, archive_raw=args.archive_raw,
                              cleanup=True, filename=filename,
                              prepared_path=prepared_path)
-                loaded += 1
-                consecutive_failures = 0
-                print(f'{day}: {count} cells', flush=True)
-            except Exception as error:
-                failures.append((day.isoformat(), type(error).__name__, str(error)[:200]))
-                consecutive_failures += 1
-                print(f'{day}: FAILED {type(error).__name__}: {error}', flush=True)
-            return consecutive_failures < 10
+            return day, count, None
+        except Exception as error:
+            return day, 0, error
 
-        if args.archive_raw:
-            for day, filename in pending:
-                if not ingest(day, filename):
-                    break
-        else:
-            with ThreadPoolExecutor(max_workers=args.workers) as pool:
-                for offset in range(0, len(pending), args.workers * 2):
-                    batch = pending[offset:offset + args.workers * 2]
-                    futures = {pool.submit(prepare, day, filename): (day, filename)
-                               for day, filename in batch}
-                    for future in as_completed(futures):
-                        day, filename = futures[future]
-                        try:
-                            prepared_path = future.result()
-                        except Exception as error:
-                            failures.append((day.isoformat(), type(error).__name__, str(error)[:200]))
-                            consecutive_failures += 1
-                            print(f'{day}: FAILED PREPARE {type(error).__name__}: {error}', flush=True)
-                            continue
-                        if not ingest(day, filename, prepared_path):
-                            break
-                    if consecutive_failures >= 10:
-                        print('Stopping after 10 consecutive failures', flush=True)
-                        break
+    with ThreadPoolExecutor(max_workers=args.workers) as pool:
+        futures = {pool.submit(ingest_one, day, filename): (day, filename)
+                   for day, filename in pending}
+        for future in as_completed(futures):
+            day, count, error = future.result()
+            if error is None:
+                loaded += 1
+                print(f'{day}: {count} cells', flush=True)
+            else:
+                failures.append((day.isoformat(), type(error).__name__, str(error)[:200]))
+                print(f'{day}: FAILED {type(error).__name__}: {error}', flush=True)
     output = args.failures_output
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open('w', newline='', encoding='utf-8') as file:

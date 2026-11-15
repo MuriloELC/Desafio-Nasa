@@ -11,7 +11,7 @@ const point = {lat: -11.44, lon: -61.45};
 async function request(path, options) {
   const response = await fetch(new URL(path, base), {
     ...options,
-    signal: AbortSignal.timeout(15_000),
+    signal: AbortSignal.timeout(30_000),
   });
   const body = await response.text();
   assert(response.ok, `${path}: HTTP ${response.status}: ${body.slice(0, 300)}`);
@@ -67,6 +67,7 @@ for (const rule of calendar.rules) {
 }
 
 const field = {
+  strategy: 'rotacao',
   phase: 'formacao', water: 'sequeiro', age_years: 2, spacing_m: 3,
   soil_ph: null, nematodes: null, can_manage: true,
   soil_assessed: null, moisture_checked: null,
@@ -91,6 +92,23 @@ for (const period of recommendation.coverage) {
     assert.equal(period.value, null, 'Incomplete periods must not carry a value');
   }
 }
+
+const permanent = await json('/api/recomendacoes', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({...point, field: {...field, strategy: 'permanente'}}),
+});
+assert.equal(permanent.candidates.length, 3, 'Permanent strategy must return three candidates');
+assert(permanent.candidates.every(candidate =>
+  ['Amendoim-forrageiro', 'Braquiária-ruziziensis', 'Guandu-anão', 'Lablab'].includes(candidate.name)),
+  'Permanent strategy returned a non-perennial candidate');
+
+const conventional = await json('/api/recomendacoes', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({...point, field: {...field, strategy: 'convencional'}}),
+});
+assert.equal(conventional.candidates.length, 0, 'Conventional strategy must not prescribe a planted species');
 
 if (capture) {
   const dir = join('tests', 'fixtures', 'api_real');

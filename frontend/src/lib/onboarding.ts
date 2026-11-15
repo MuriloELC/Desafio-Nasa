@@ -98,6 +98,7 @@ export function assessmentField(answers: Answers): FieldInput {
       } as Record<string, FieldInput["phase"]>
     )[answers.phase] ?? null;
   return {
+    strategy: null,
     phase,
     water: /não possui|não tenho/i.test(answers.irrigation)
       ? "sequeiro"

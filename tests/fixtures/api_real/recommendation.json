@@ -1,6 +1,7 @@
 {
   "method_version": "cereja-regras-1",
   "reference_date": "2026-11-15",
+  "strategy": "rotacao",
   "measurements": {
     "seasonal_rain_mm": {
       "value": 152.418,
@@ -71,7 +72,7 @@
       "product": "IMERG PPS Final Run GIS",
       "native_resolution": "0.1°",
       "url": "https://gpm.nasa.gov/data/directory/imerg-final-run-pps-research-gis",
-      "days_available": 0,
+      "days_available": 16,
       "value": null
     },
     {
@@ -181,44 +182,6 @@
   ],
   "candidates": [
     {
-      "culture_id": "amendoim-forrageiro",
-      "name": "Amendoim-forrageiro",
-      "state": "sem_dados",
-      "missing": [
-        "pH medido em análise de solo",
-        "histórico de nematoides",
-        "avaliação da fertilidade do solo",
-        "verificação da umidade em campo",
-        "chuva dos últimos 30 dias em série completa",
-        "temperatura dos últimos 30 dias em série completa",
-        "faixas agronômicas revisadas para a espécie",
-        "regra técnica revisada para esta fase e regime hídrico"
-      ],
-      "reasons": [
-        "Faltam dados ou critérios revisados para concluir a avaliação."
-      ],
-      "sources": []
-    },
-    {
-      "culture_id": "braquiaria-ruziziensis",
-      "name": "Braquiária-ruziziensis",
-      "state": "sem_dados",
-      "missing": [
-        "pH medido em análise de solo",
-        "histórico de nematoides",
-        "avaliação da fertilidade do solo",
-        "verificação da umidade em campo",
-        "chuva dos últimos 30 dias em série completa",
-        "temperatura dos últimos 30 dias em série completa",
-        "faixas agronômicas revisadas para a espécie",
-        "regra técnica revisada para esta fase e regime hídrico"
-      ],
-      "reasons": [
-        "Faltam dados ou critérios revisados para concluir a avaliação."
-      ],
-      "sources": []
-    },
-    {
       "culture_id": "crot-juncea",
       "name": "Crotalária-júncea",
       "state": "sem_dados",
@@ -259,101 +222,6 @@
     {
       "culture_id": "feijao-caupi",
       "name": "Feijão-caupi",
-      "state": "sem_dados",
-      "missing": [
-        "pH medido em análise de solo",
-        "histórico de nematoides",
-        "avaliação da fertilidade do solo",
-        "verificação da umidade em campo",
-        "chuva dos últimos 30 dias em série completa",
-        "temperatura dos últimos 30 dias em série completa",
-        "faixas agronômicas revisadas para a espécie",
-        "regra técnica revisada para esta fase e regime hídrico"
-      ],
-      "reasons": [
-        "Faltam dados ou critérios revisados para concluir a avaliação."
-      ],
-      "sources": []
-    },
-    {
-      "culture_id": "feijao-de-porco",
-      "name": "Feijão-de-porco",
-      "state": "sem_dados",
-      "missing": [
-        "pH medido em análise de solo",
-        "histórico de nematoides",
-        "avaliação da fertilidade do solo",
-        "verificação da umidade em campo",
-        "chuva dos últimos 30 dias em série completa",
-        "temperatura dos últimos 30 dias em série completa",
-        "faixas agronômicas revisadas para a espécie",
-        "regra técnica revisada para esta fase e regime hídrico"
-      ],
-      "reasons": [
-        "Faltam dados ou critérios revisados para concluir a avaliação."
-      ],
-      "sources": []
-    },
-    {
-      "culture_id": "guandu-anao",
-      "name": "Guandu-anão",
-      "state": "sem_dados",
-      "missing": [
-        "pH medido em análise de solo",
-        "histórico de nematoides",
-        "avaliação da fertilidade do solo",
-        "verificação da umidade em campo",
-        "chuva dos últimos 30 dias em série completa",
-        "temperatura dos últimos 30 dias em série completa",
-        "faixas agronômicas revisadas para a espécie",
-        "regra técnica revisada para esta fase e regime hídrico"
-      ],
-      "reasons": [
-        "Faltam dados ou critérios revisados para concluir a avaliação."
-      ],
-      "sources": []
-    },
-    {
-      "culture_id": "lablab",
-      "name": "Lablab",
-      "state": "sem_dados",
-      "missing": [
-        "pH medido em análise de solo",
-        "histórico de nematoides",
-        "avaliação da fertilidade do solo",
-        "verificação da umidade em campo",
-        "chuva dos últimos 30 dias em série completa",
-        "temperatura dos últimos 30 dias em série completa",
-        "faixas agronômicas revisadas para a espécie",
-        "regra técnica revisada para esta fase e regime hídrico"
-      ],
-      "reasons": [
-        "Faltam dados ou critérios revisados para concluir a avaliação."
-      ],
-      "sources": []
-    },
-    {
-      "culture_id": "milheto",
-      "name": "Milheto",
-      "state": "sem_dados",
-      "missing": [
-        "pH medido em análise de solo",
-        "histórico de nematoides",
-        "avaliação da fertilidade do solo",
-        "verificação da umidade em campo",
-        "chuva dos últimos 30 dias em série completa",
-        "temperatura dos últimos 30 dias em série completa",
-        "faixas agronômicas revisadas para a espécie",
-        "regra técnica revisada para esta fase e regime hídrico"
-      ],
-      "reasons": [
-        "Faltam dados ou critérios revisados para concluir a avaliação."
-      ],
-      "sources": []
-    },
-    {
-      "culture_id": "mucuna-ana",
-      "name": "Mucuna-anã",
       "state": "sem_dados",
       "missing": [
         "pH medido em análise de solo",

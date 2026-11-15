@@ -21,6 +21,9 @@ services:
       dockerfile: Dockerfile
     expose:
       - "5173"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
     restart: "no"
   gateway:
     image: nginx:1.27-alpine
@@ -32,3 +35,6 @@ services:
     ports:
       - "127.0.0.1:8000:80"
     restart: "no"
+
+volumes:
+  frontend_node_modules:

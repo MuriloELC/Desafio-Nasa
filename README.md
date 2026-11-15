@@ -19,9 +19,11 @@ O [relatório de Cacoal](docs/verificacao_cacoal_2026-11-14.md) registra a migra
 
 O esquema implantado, suas colunas e a origem de cada conjunto estão no [dicionário do banco](docs/dicionario_banco.md). O inventário técnico das métricas e métodos de ingestão permanece no [dicionário do pipeline](docs/dicionario_dados.md).
 
+Os requisitos para transformar o empate conservador das candidatas em um ranking agronômico validado estão documentados em [refinamento do motor de recomendação](docs/refinamento_motor_recomendacao.md).
+
 ## Aplicação CEREJÁ
 
-O frontend React em `frontend/` é a interface do piloto. O usuário informa um ponto no círculo de 20 km de Cacoal, consulta diagnóstico e calendário reais, completa os dados de campo e compara candidatas do backend. A consulta mostra o último valor por fonte e métrica carregado no banco, com data, resolução e lacunas. O calendário e o diagnóstico não exigem conta. “Minha Lavoura” usa Supabase Auth e a API privada existente.
+O frontend React em `frontend/` é a interface do piloto. O usuário informa um ponto no círculo de 20 km de Cacoal e abre “Minha Terra”, com mapa de satélite, precipitação acumulada em 30 dias, temperatura média e pH regional SoilGrids. Depois escolhe manejo convencional, cobertura permanente ou rotação, ajusta as informações da terra e recebe até três candidatas conservadoras do backend.
 
 ```bash
 docker compose build
@@ -32,8 +34,6 @@ docker compose up --build web frontend gateway
 ```
 
 Use primeiro um banco de teste. Em banco novo, execute também `docker compose run --rm etl init-grid` e carregue as séries desejadas. Sem `--apply`, a importação só mostra o diff. Abra **http://localhost:8000**: o gateway envia `/api/*` ao Python e as demais rotas ao React. O Python usa `DATABASE_URL` somente no servidor. A antiga interface Python fica interna como fallback. Para desenvolver sem Docker, rode o backend na porta 8000, o React com `npm run dev` em `frontend/` e configure um proxy `/api` local.
-
-**Minha lavoura:** configure `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY` (ou `SUPABASE_ANON_KEY`) no servidor e habilite login por e-mail no Supabase Auth. Se o projeto exigir confirmação de e-mail, configure o endereço do site permitido no Supabase. O caderno de campo guarda talhões, ciclos, tarefas criadas pelo produtor e avaliações salvas explicitamente. A sessão do navegador é mantida em memória até sair ou fechar/recarregar a página. A conexão web precisa ler os dados CEREJÁ no schema `agro` e poder assumir `authenticated` para executar operações privadas sujeitas às políticas de acesso.
 
 As rotas públicas são `GET /api/consulta?lat=...&lon=...&raio=20`, `GET /api/calendario` e `POST /api/recomendacoes`. O formato, o fluxo de revisão e os testes estão na [documentação do calendário](docs/calendario/plano_codex_calendario.md), no [guia de validação do site](docs/validacao_cereja.md) e no [roteiro da demo integrada](docs/demo_integrada.md).
 
@@ -76,7 +76,7 @@ docker compose run --rm --entrypoint python etl /app/scripts/backfill_imerg.py \
   --manifest /app/data/imerg_availability_2000_2026-11-14.csv --workers 6
 ```
 
-Para reduzir o tempo da primeira carga, o mesmo script aceita `--start` e `--end`; execute faixas de datas sem sobreposição em processos separados. Use `--failures-output` diferente para cada processo. A retomada consulta apenas execuções concluídas da região `CACOAL_R20`.
+Para reduzir o tempo da primeira carga, o mesmo script aceita `--start` e `--end`; execute faixas de datas sem sobreposição em processos separados. Use `--failures-output` diferente para cada processo. A retomada consulta apenas execuções concluídas da região `CACOAL_R20`. Cada worker agora prepara o GeoTIFF e abre sua própria conexão PostgreSQL para gravar em paralelo; não compartilhe uma conexão entre threads.
 
 O inventário encontrou todos os dias de 01/06/2000 a 30/09/2025; de 01/10/2025 a 14/11/2026, os diretórios consultados não tinham GIS Final. Para precipitação recente, o POWER segue como fonte separada. O [manual GIS da NASA](https://gpm.nasa.gov/sites/default/files/2023-12/IMERG_GIS-GeoTIFF_ReadMe_6_27_23.pdf) documenta o valor ausente e a banda de acumulação.
 
@@ -111,7 +111,7 @@ A malha não aumenta a resolução nativa da fonte. A abordagem POWER usa coorde
 ## Segurança e execução
 
 - As tabelas estão em schema `agro` com permissão revogada de `anon` e `authenticated`.
-- O navegador usa a API CEREJÁ. O schema `agro` continua privado e as tabelas de Minha lavoura usam políticas de isolamento por usuário.
+- O navegador usa somente a API CEREJÁ; o schema `agro` continua privado e credenciais de banco não são expostas ao frontend.
 - Banco gerenciado Supabase não fica dentro do Docker Compose; o container executa apenas ETL.
 - Não expor `DATABASE_URL` nem `SUPABASE_SERVICE_ROLE_KEY` no cliente.
 - Evitar executar GPM a cada minuto: o produto Final é liberado com latência; para dados recentes implementar Early/Late com lógica de substituição/versão.

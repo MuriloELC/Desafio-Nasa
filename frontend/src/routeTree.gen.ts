@@ -13,9 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalisandoRouteImport } from './routes/analisando'
 import { Route as AprenderRouteImport } from './routes/aprender'
 import { Route as CadastroRouteImport } from './routes/cadastro'
-import { Route as CalendarioRouteImport } from './routes/calendario'
 import { Route as ChatRouteImport } from './routes/chat'
-import { Route as LavouraRouteImport } from './routes/lavoura'
 import { Route as MinhaTerraRouteImport } from './routes/minha-terra'
 
 const IndexRoute = IndexRouteImport.update({
@@ -38,19 +36,9 @@ const CadastroRoute = CadastroRouteImport.update({
   path: '/cadastro',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CalendarioRoute = CalendarioRouteImport.update({
-  id: '/calendario',
-  path: '/calendario',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ChatRoute = ChatRouteImport.update({
   id: '/chat',
   path: '/chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LavouraRoute = LavouraRouteImport.update({
-  id: '/lavoura',
-  path: '/lavoura',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MinhaTerraRoute = MinhaTerraRouteImport.update({
@@ -64,9 +52,7 @@ export interface FileRoutesByFullPath {
   '/analisando': typeof AnalisandoRoute
   '/aprender': typeof AprenderRoute
   '/cadastro': typeof CadastroRoute
-  '/calendario': typeof CalendarioRoute
   '/chat': typeof ChatRoute
-  '/lavoura': typeof LavouraRoute
   '/minha-terra': typeof MinhaTerraRoute
 }
 export interface FileRoutesByTo {
@@ -74,9 +60,7 @@ export interface FileRoutesByTo {
   '/analisando': typeof AnalisandoRoute
   '/aprender': typeof AprenderRoute
   '/cadastro': typeof CadastroRoute
-  '/calendario': typeof CalendarioRoute
   '/chat': typeof ChatRoute
-  '/lavoura': typeof LavouraRoute
   '/minha-terra': typeof MinhaTerraRoute
 }
 export interface FileRoutesById {
@@ -85,41 +69,22 @@ export interface FileRoutesById {
   '/analisando': typeof AnalisandoRoute
   '/aprender': typeof AprenderRoute
   '/cadastro': typeof CadastroRoute
-  '/calendario': typeof CalendarioRoute
   '/chat': typeof ChatRoute
-  '/lavoura': typeof LavouraRoute
   '/minha-terra': typeof MinhaTerraRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
-    | '/analisando'
-    | '/aprender'
-    | '/cadastro'
-    | '/calendario'
-    | '/chat'
-    | '/lavoura'
-    | '/minha-terra'
+    '/' | '/analisando' | '/aprender' | '/cadastro' | '/chat' | '/minha-terra'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/analisando'
-    | '/aprender'
-    | '/cadastro'
-    | '/calendario'
-    | '/chat'
-    | '/lavoura'
-    | '/minha-terra'
+  to: '/' | '/analisando' | '/aprender' | '/cadastro' | '/chat' | '/minha-terra'
   id:
     | '__root__'
     | '/'
     | '/analisando'
     | '/aprender'
     | '/cadastro'
-    | '/calendario'
     | '/chat'
-    | '/lavoura'
     | '/minha-terra'
   fileRoutesById: FileRoutesById
 }
@@ -128,9 +93,7 @@ export interface RootRouteChildren {
   AnalisandoRoute: typeof AnalisandoRoute
   AprenderRoute: typeof AprenderRoute
   CadastroRoute: typeof CadastroRoute
-  CalendarioRoute: typeof CalendarioRoute
   ChatRoute: typeof ChatRoute
-  LavouraRoute: typeof LavouraRoute
   MinhaTerraRoute: typeof MinhaTerraRoute
 }
 
@@ -164,25 +127,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CadastroRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/calendario': {
-      id: '/calendario'
-      path: '/calendario'
-      fullPath: '/calendario'
-      preLoaderRoute: typeof CalendarioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/chat': {
       id: '/chat'
       path: '/chat'
       fullPath: '/chat'
       preLoaderRoute: typeof ChatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lavoura': {
-      id: '/lavoura'
-      path: '/lavoura'
-      fullPath: '/lavoura'
-      preLoaderRoute: typeof LavouraRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/minha-terra': {
@@ -200,9 +149,7 @@ const rootRouteChildren: RootRouteChildren = {
   AnalisandoRoute: AnalisandoRoute,
   AprenderRoute: AprenderRoute,
   CadastroRoute: CadastroRoute,
-  CalendarioRoute: CalendarioRoute,
   ChatRoute: ChatRoute,
-  LavouraRoute: LavouraRoute,
   MinhaTerraRoute: MinhaTerraRoute,
 }
 export const routeTree = rootRouteImport

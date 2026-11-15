@@ -1,23 +1,16 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { BookOpen, Home, Map, MessageCircle, NotebookTabs } from "lucide-react";
-import cherry from "@/assets/cut-1-cherry.png";
+import { BookOpen, Home, Map, MessageCircle } from "lucide-react";
+import cherry from "@/assets/cereja-logo-v2.png";
 
 const nav = [
   { to: "/minha-terra", label: "Minha Terra", icon: Map },
   { to: "/aprender", label: "Aprender", icon: BookOpen },
-  { to: "/lavoura", label: "Minha Lavoura", icon: NotebookTabs },
 ] as const;
 
 export function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <Link to="/" aria-label="Cerejá — página inicial" className="inline-flex items-center gap-2.5">
-      <img
-        src={cherry}
-        alt=""
-        width={40}
-        height={40}
-        className="size-9 -rotate-12 object-contain"
-      />
+      <img src={cherry} alt="" width={40} height={40} className="size-10 object-contain" />
       <span className={`brand ${compact ? "text-xl" : "text-2xl"}`}>Cerejá</span>
     </Link>
   );
@@ -31,7 +24,7 @@ export function AppNavigation() {
         <Brand />
         <nav className="mt-10 space-y-1" aria-label="Navegação principal">
           {nav.map(({ to, label, icon: Icon }) => {
-            const active = pathname === to || (to === "/minha-terra" && pathname === "/calendario");
+            const active = pathname === to;
             return (
               <Link
                 key={to}
@@ -57,11 +50,11 @@ export function AppNavigation() {
         </div>
       </aside>
       <nav
-        className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-3 border-t border-border bg-paper/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 border-t border-border bg-paper/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
         aria-label="Navegação principal"
       >
         {nav.map(({ to, label, icon: Icon }) => {
-          const active = pathname === to || (to === "/minha-terra" && pathname === "/calendario");
+          const active = pathname === to;
           return (
             <Link
               key={to}
