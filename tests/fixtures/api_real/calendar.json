@@ -1,0 +1,228 @@
+{
+  "year": 2026,
+  "months": [
+    10,
+    11,
+    12,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "today_month": 11,
+  "cultures": [
+    {
+      "culture_id": "amendoim-forrageiro",
+      "name": "Amendoim-forrageiro",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "braquiaria-ruziziensis",
+      "name": "Braquiária-ruziziensis",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "cafe-conilon",
+      "name": "Café Conilon",
+      "kind": "cafe"
+    },
+    {
+      "culture_id": "cafe-robusta",
+      "name": "Café Robusta",
+      "kind": "cafe"
+    },
+    {
+      "culture_id": "crot-juncea",
+      "name": "Crotalária-júncea",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "crot-spectabilis",
+      "name": "Crotalária-spectabilis",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "feijao-caupi",
+      "name": "Feijão-caupi",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "feijao-comum",
+      "name": "Feijão-comum",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "feijao-de-porco",
+      "name": "Feijão-de-porco",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "guandu-anao",
+      "name": "Guandu-anão",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "lablab",
+      "name": "Lablab",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "milheto",
+      "name": "Milheto",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "mucuna-ana",
+      "name": "Mucuna-anã",
+      "kind": "entrelinha"
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "conilon-colheita-ro",
+      "version": 1,
+      "culture_id": "cafe-conilon",
+      "activity": "colheita",
+      "kind": "sazonal",
+      "phase": "producao",
+      "water": "sequeiro",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Referência para lavouras clonais de sequeiro, reunindo clones precoces, médios e tardios. Confirme a maturação.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/999518/1/ct125cafeicultura.pdf",
+        "title": "Gerenciamento anual da produção de Coffea canephora em Rondônia",
+        "version": "Circular Técnica 125"
+      },
+      "source_detail": "p. 1 e 3",
+      "months": [
+        4,
+        5,
+        6
+      ],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "conilon-plantio-ro",
+      "version": 1,
+      "culture_id": "cafe-conilon",
+      "activity": "plantio",
+      "kind": "sazonal",
+      "phase": "implantacao",
+      "water": "sequeiro",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Referência regional para sequeiro. Verifique a regularidade das chuvas e as condições locais antes de implantar.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/999518/1/ct125cafeicultura.pdf",
+        "title": "Gerenciamento anual da produção de Coffea canephora em Rondônia",
+        "version": "Circular Técnica 125"
+      },
+      "source_detail": "p. 1–2",
+      "months": [
+        10,
+        11,
+        12
+      ],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "feijao-comum-plantio-ro-formacao",
+      "version": 1,
+      "culture_id": "feijao-comum",
+      "activity": "plantio",
+      "kind": "condicional",
+      "phase": "formacao",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Avalie umidade, espaço livre e competição com o café. Ajuste a implantação e o manejo às condições locais.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/1023762/1/17431.pdf",
+        "title": "Cultivos intercalares em cafezais",
+        "version": "Café na Amazônia, 2015"
+      },
+      "source_detail": "p. 169–173",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "feijao-comum-plantio-ro-recepa",
+      "version": 1,
+      "culture_id": "feijao-comum",
+      "activity": "plantio",
+      "kind": "condicional",
+      "phase": "recepa",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Avalie umidade, espaço livre e competição com o café. Ajuste a implantação e o manejo às condições locais.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/1023762/1/17431.pdf",
+        "title": "Cultivos intercalares em cafezais",
+        "version": "Café na Amazônia, 2015"
+      },
+      "source_detail": "p. 169–173",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "robusta-colheita-ro",
+      "version": 1,
+      "culture_id": "cafe-robusta",
+      "activity": "colheita",
+      "kind": "sazonal",
+      "phase": "producao",
+      "water": "sequeiro",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Referência para lavouras clonais de sequeiro do grupo Robusta. Confirme a maturação antes de colher.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/999518/1/ct125cafeicultura.pdf",
+        "title": "Gerenciamento anual da produção de Coffea canephora em Rondônia",
+        "version": "Circular Técnica 125"
+      },
+      "source_detail": "p. 1 e 3",
+      "months": [
+        6,
+        7
+      ],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "robusta-plantio-ro",
+      "version": 1,
+      "culture_id": "cafe-robusta",
+      "activity": "plantio",
+      "kind": "sazonal",
+      "phase": "implantacao",
+      "water": "sequeiro",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Referência regional para sequeiro. Verifique a regularidade das chuvas e as condições locais antes de implantar.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/999518/1/ct125cafeicultura.pdf",
+        "title": "Gerenciamento anual da produção de Coffea canephora em Rondônia",
+        "version": "Circular Técnica 125"
+      },
+      "source_detail": "p. 1–2",
+      "months": [
+        10,
+        11,
+        12
+      ],
+      "starts_on": null,
+      "ends_on": null
+    }
+  ]
+}

@@ -1,12 +1,11 @@
 # Dados necessários para recomendar coberturas nas entrelinhas
 
-O [protótipo CEREJÁ](../CEREJA_MVP_COBERTURAS_FINAL.html) ainda usa perfis fictícios. A localização marcada é um ponto, não o polígono da lavoura. Nenhuma espécie deve ser apresentada como recomendação individual antes de cruzar dados observados, análise de solo e condições de manejo informadas pelo produtor.
+A localização marcada é um ponto, não o polígono da lavoura. Nenhuma espécie deve ser apresentada como recomendação individual antes de cruzar dados observados, análise de solo e condições de manejo informadas pelo produtor.
 
 | Indicador | Fonte prevista | Estado atual |
 |---|---|---|
 | Temperatura média, mínima e máxima | NASA POWER diário | Histórico de Cacoal desde 01/01/2000 carregado até o último dado disponível, 12/11/2026 |
 | Chuva acumulada e distribuição | IMERG Final diário; POWER como comparação | IMERG Final começa em junho de 2000; 9.253 dias mapeados e carga de Cacoal em andamento. Não fundir produtos como se fossem uma série única |
-| Umidade volumétrica do solo | SMAP L4 ou medição local | Não ingerida |
 | Déficit hídrico | Balanço hídrico com capacidade de armazenamento do solo e evapotranspiração | Não calculado; chuva menos evapotranspiração isolada não basta |
 | pH, P, K, Ca, Mg, matéria orgânica | Análise de solo da propriedade | Não disponível em raster com precisão suficiente para decisão individual |
 | Argila, silte e areia | SoilGrids, mais análise local quando possível | Importação manual disponível; resolução e incerteza precisam aparecer no resultado |

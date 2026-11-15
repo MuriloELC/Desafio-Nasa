@@ -8,36 +8,34 @@ Pipeline geoespacial para PostgreSQL/Supabase com PostGIS. Centro da sede de Cac
 |---|---|---|
 | NASA POWER | Histórico de Cacoal carregado no Supabase | Quatro pontos representativos atendem 60 subcélulas; 274.472 observações no total desde 01/01/2000 |
 | GPM IMERG Final V07 | Inventário concluído; carga histórica de Cacoal em andamento | 9.253 dias disponíveis entre 01/06/2000 e 30/09/2025; ZIP diário, banda `total.accum.tif` escalada por 0,1 mm |
-| SoilGrids | Importador GeoTIFF implementado | Arquivo precisa ser obtido/recortado pelo operador; conversão de unidades explícita |
-| SRTM | Importador GeoTIFF implementado | Arquivo precisa ser obtido/recortado pelo operador |
-| GLDAS, SMAP, FAO HWSD | Catalogadas, **não extraídas automaticamente nesta versão** | Requer adaptação de produto e validação de variáveis, sem dados simulados |
+| SoilGrids | Recortes pH e argila 0–5 cm importados e validados para 60/60 subcélulas | 120 propriedades estáticas no Supabase; veja [proveniência e comandos](docs/soilgrids_cacoal.md) |
 
 Não há dados de P, K, Ca, Mg, drenagem de campo ou déficit hídrico calculado por este MVP; não inferir fertilidade ou déficit simplesmente de P−ET sem modelo do balanço hídrico.
 
-O [rascunho CEREJÁ](CEREJA_MVP_COBERTURAS_FINAL.html) usa valores demonstrativos. A matriz de dados necessários e a pesquisa inicial das espécies estão em [critérios de recomendação](docs/criterios_recomendacao.md). As sugestões para uma propriedade só poderão usar dados reais quando também houver informação local suficiente sobre solo e manejo.
+A matriz de dados necessários e a pesquisa inicial das espécies estão em [critérios de recomendação](docs/criterios_recomendacao.md). As sugestões para uma propriedade só podem usar dados reais quando também houver informação local suficiente sobre solo e manejo.
 
 O [relatório de verificação anterior](docs/verificacao_2026-11-14.md) registra a antiga área de 250 × 250 km, removida do banco na migração `004_cacoal.sql`.
 O [relatório de Cacoal](docs/verificacao_cacoal_2026-11-14.md) registra a migração e o estado das novas cargas.
 
-O inventário das fontes, métricas, tabelas e views está no [dicionário de dados](docs/dicionario_dados.md).
+O esquema implantado, suas colunas e a origem de cada conjunto estão no [dicionário do banco](docs/dicionario_banco.md). O inventário técnico das métricas e métodos de ingestão permanece no [dicionário do pipeline](docs/dicionario_dados.md).
 
-## Site CEREJÁ
+## Aplicação CEREJÁ
 
-O piloto oferece diagnóstico por coordenadas ou mapa, calendário técnico de outubro a setembro e avaliação de coberturas. A consulta mostra o último valor por fonte e métrica realmente carregado no banco, com data, resolução e lacunas. O calendário e o diagnóstico não exigem conta. O conteúdo de estratégias é educativo.
+O frontend React em `frontend/` é a interface do piloto. O usuário informa um ponto no círculo de 20 km de Cacoal, consulta diagnóstico e calendário reais, completa os dados de campo e compara candidatas do backend. A consulta mostra o último valor por fonte e métrica carregado no banco, com data, resolução e lacunas. O calendário e o diagnóstico não exigem conta. “Minha Lavoura” usa Supabase Auth e a API privada existente.
 
 ```bash
 docker compose build
 docker compose run --rm etl migrate
 docker compose run --rm --entrypoint python etl -m agro.catalog
 docker compose run --rm --entrypoint python etl -m agro.catalog --apply
-docker compose up --build web
+docker compose up --build web frontend gateway
 ```
 
-Use primeiro um banco de teste. Em banco novo, execute também `docker compose run --rm etl init-grid` e carregue as séries desejadas. Sem `--apply`, a importação só mostra o diff. Abra **http://localhost:8000**; o processo web usa `DATABASE_URL` somente no servidor. Sem Docker, instale `psycopg[binary]`, `psycopg-pool`, `python-dotenv` e `requests`, configure `PYTHONPATH=src` e execute `python -m agro.web`.
+Use primeiro um banco de teste. Em banco novo, execute também `docker compose run --rm etl init-grid` e carregue as séries desejadas. Sem `--apply`, a importação só mostra o diff. Abra **http://localhost:8000**: o gateway envia `/api/*` ao Python e as demais rotas ao React. O Python usa `DATABASE_URL` somente no servidor. A antiga interface Python fica interna como fallback. Para desenvolver sem Docker, rode o backend na porta 8000, o React com `npm run dev` em `frontend/` e configure um proxy `/api` local.
 
 **Minha lavoura:** configure `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY` (ou `SUPABASE_ANON_KEY`) no servidor e habilite login por e-mail no Supabase Auth. Se o projeto exigir confirmação de e-mail, configure o endereço do site permitido no Supabase. O caderno de campo guarda talhões, ciclos, tarefas criadas pelo produtor e avaliações salvas explicitamente. A sessão do navegador é mantida em memória até sair ou fechar/recarregar a página. A conexão web precisa ler os dados CEREJÁ no schema `agro` e poder assumir `authenticated` para executar operações privadas sujeitas às políticas de acesso.
 
-As rotas públicas são `GET /api/consulta?lat=...&lon=...&raio=20`, `GET /api/calendario` e `POST /api/recomendacoes`. O formato, o fluxo de revisão e os testes estão na [documentação do calendário](docs/calendario/plano_codex_calendario.md) e no [guia de validação do site](docs/validacao_cereja.md).
+As rotas públicas são `GET /api/consulta?lat=...&lon=...&raio=20`, `GET /api/calendario` e `POST /api/recomendacoes`. O formato, o fluxo de revisão e os testes estão na [documentação do calendário](docs/calendario/plano_codex_calendario.md), no [guia de validação do site](docs/validacao_cereja.md) e no [roteiro da demo integrada](docs/demo_integrada.md).
 
 ## Preparação
 
@@ -94,11 +92,9 @@ Arquivos são obtidos diretamente dos distribuidores oficiais, conforme termos e
 ```bash
 # Exemplo: escala do pH SoilGrids phh2o (valor bruto dividido por 10)
 docker compose run --rm etl static-raster --file /app/data/soil_phh2o_0-5cm.tif --source SOILGRIDS --metric soil_ph --unit pH --scale 0.1 --depth-top 0 --depth-bottom 5
-# Altitude SRTM já em metros
-docker compose run --rm etl static-raster --file /app/data/srtm_clip.tif --source SRTM --metric elevation_m --unit m
 ```
 
-Confirme o fator de escala e o sistema de coordenadas na descrição do produto antes de importar. SoilGrids `clay`, `sand`, `silt` usam unidades nativas que precisam de conversão explícita para `%`, como `--scale 0.1` quando expressos em g/kg. SRTM não fornece declividade neste importador; ela requer processamento adicional do raster de elevação.
+Confirme o fator de escala e o sistema de coordenadas na descrição do produto antes de importar. SoilGrids `clay`, `sand`, `silt` usam unidades nativas que precisam de conversão explícita para `%`, como `--scale 0.1` quando expressos em g/kg.
 
 ## Como ficam os dados
 

@@ -1,5 +1,7 @@
 # Dicionário de dados — Agro Data Pipeline
 
+> Este documento detalha métricas e métodos do pipeline. Para o esquema completo atualmente implantado, incluindo catálogo, caderno de campo, tipos, descrições e fontes, consulte o [dicionário do banco CEREJÁ](dicionario_banco.md).
+
 **Referência:** migração de Cacoal em 14/11/2026. **Banco:** Supabase `desafio nasa` (`mzjdsbubxyrxcgnbylgs`). **Schema:** `agro` (PostGIS instalado em `extensions`). O histórico antigo da área `RO_250` foi removido na migração `004_cacoal.sql`; as cargas de Cacoal começam em 2000 e suas contagens variam durante o processamento.
 
 ## Convenções e granularidade
@@ -16,11 +18,7 @@
 |---|---|---|---|---|
 | `POWER` | NASA [POWER Daily AG](https://power.larc.nasa.gov/docs/services/api/temporal/daily/) | ~0,5° meteorológica | `source_samples`, `sample_daily`, mapeamento a `v_cell_daily`; 274.472 observações carregadas desde 01/01/2000 | 4 coordenadas representativas atendem 60 subcélulas. O agrupamento em bins de 0,5° é aproximação local; confirmar coordenadas/grade retornadas pelo provedor para uso científico rigoroso. |
 | `IMERG_FINAL` | NASA GPM [IMERG PPS Final Run GIS](https://gpm.nasa.gov/data/directory/imerg-final-run-pps-research-gis) | 0,1° | `cell_daily`; carga histórica de Cacoal em andamento | Produto Final GIS V07 (arquivos V07B); 9.253 dias disponíveis de junho de 2000 a setembro de 2025 no inventário. Cada valor é média dos pixels válidos que tocam a célula, não média ponderada por área. |
-| `SOILGRIDS` | ISRIC [SoilGrids](https://files.isric.org/soilgrids/latest/data/) | 250 m | Importador GeoTIFF para `static_properties` implementado; **0 linhas** | Arquivo, banda, profundidade, unidade e fator de escala são informados pelo operador. Valores regionais não substituem análise de solo da propriedade. |
-| `SRTM` | NASA/USGS SRTM elevation | ~30 m | Importador GeoTIFF para `static_properties` implementado; **0 linhas** | O importador calcula média de elevação se essa métrica for escolhida. Não calcula declividade. |
-| `FAO_HWSD` | FAO Harmonized World Soil Database | Varia | Cadastrada e aceita pelo importador estático; **0 linhas** | É preciso escolher e validar campo, unidade, raster e escala antes da carga. |
-| `SMAP_L4` | NASA SMAP SPL4SMGP 007 | 9 km | Cadastrada; sem extrator ou dados | Umidade do solo ainda não é medida pelo pipeline. |
-| `GLDAS` | NASA GLDAS Noah 0.25 v2.1 | 0,25° | Cadastrada; sem extrator ou dados | Evapotranspiração e déficit hídrico ainda não são calculados. |
+| `SOILGRIDS` | ISRIC [SoilGrids](https://files.isric.org/soilgrids/latest/data/) | 250 m | 120 linhas em `static_properties`: 60 de pH e 60 de argila | Camadas médias 0–5 cm importadas em 15/11/2026. Valores regionais não substituem análise de solo da propriedade. |
 
 O [inventário 2000–2026](imerg_availability_2000_2026-11-14.csv) contém os 9.253 dias disponíveis e 410 diretórios ausentes. O estado de carga é verificável por `agro.etl_runs` (com `region_id = 'CACOAL_R20'`) e pela contagem das tabelas; **disponível no PPS** não significa **já gravado no banco**. A precipitação POWER e a IMERG têm procedência e métodos distintos e permanecem em séries separadas por `source_id` e `metric`.
 
@@ -43,8 +41,8 @@ O importador de raster estático aceita `metric` e `unit` livres. Os nomes abaix
 
 | Fonte / banda de exemplo | `metric` | Unidade após escala | Profundidade | Situação |
 |---|---|---|---|---|
-| SoilGrids `phh2o` | `soil_ph` | `pH` | Ex.: 0–5 cm | Exemplo: `--scale 0.1`; não carregado |
-| SRTM elevação | `elevation_m` | `m` | 0–0 cm (não aplicável) | Exemplo: `--scale 1`; não carregado |
+| SoilGrids `phh2o` | `soil_ph` | `pH` | 0–5 cm | Carregado em 60 células com `--scale 0.1` |
+| SoilGrids `clay` | `clay_pct` | `%` | 0–5 cm | Carregado em 60 células com `--scale 0.1` |
 
 Textura (`clay`, `sand`, `silt`) exigiria bandas, unidades e conversão conferidas no produto. Este pipeline não fornece P, K, Ca, Mg em nível de talhão, capacidade de campo, umidade do solo ou balanço hídrico. A recomendação agronômica depende também de medidas e manejo locais.
 
@@ -184,7 +182,7 @@ As tabelas abaixo pertencem ao schema `agro`. `PK` = chave primária, `FK` = cha
 
 ### `static_properties` — atributos de solo e relevo
 
-**Grão/chave:** (`cell_id`, `source_id`, `metric`, `depth_top_cm`, `depth_bottom_cm`). Sem propriedades estáticas importadas para Cacoal.
+**Grão/chave:** (`cell_id`, `source_id`, `metric`, `depth_top_cm`, `depth_bottom_cm`). SoilGrids está importado para Cacoal com pH e argila em 60 células cada.
 
 | Campo | Tipo / regra | Significado |
 |---|---|---|
@@ -264,4 +262,4 @@ Para usar precipitação como **total mensal**, compare `days_available` com os 
 
 Após a migração, a região antiga e suas observações foram removidas. A nova malha foi conferida no banco: 16 células principais, 60 subcélulas e 4 amostras POWER. POWER concluiu 274.472 observações; IMERG continua em carga. Use a verificação de histórico, não apenas `MIN`/`MAX`, para auditar lacunas.
 
-No estado atual, nenhuma tabela armazena medidas de uma propriedade ou talhão específico (análise química de solo, textura medida, manejo, irrigação). A malha regional e os produtos remotos servem como contexto para recomendações, sujeitos à resolução e à cobertura de cada fonte. Consulte também [critérios de recomendação](criterios_recomendacao.md) e o [relatório de verificação](verificacao_2026-11-14.md).
+As tabelas `public.cereja_*` armazenam talhões, ciclos, tarefas e avaliações informados pelo produtor. O banco não transforma SoilGrids em análise química do talhão: a malha regional e os produtos remotos servem como contexto para recomendações, sujeitos à resolução e à cobertura de cada fonte. Consulte também [critérios de recomendação](criterios_recomendacao.md) e o [relatório de verificação](verificacao_2026-11-14.md).

@@ -1,5 +1,34 @@
 # Validação do piloto CEREJÁ
 
+## Consolidação React + gateway
+
+O frontend oficial está em `frontend/`. O roteiro abaixo da interface Python é histórico e **não comprova** a jornada React. A validação da consolidação exige:
+
+```bash
+cd frontend
+npm ci
+npx tsc --noEmit
+npm run lint -- --quiet
+npm test
+npm run build
+cd ..
+docker compose config --quiet
+docker compose up --build web frontend gateway
+node scripts/verify_cereja_gateway.mjs http://127.0.0.1:8000 --capture
+```
+
+Em 15/11/2026, TypeScript, lint, build e 45 testes frontend passaram na rodada final. A migração `009` foi aplicada, SoilGrids foi importado com 60 células por métrica e o gateway retornou a página React, 6 regras de calendário e 10 candidatas. `verify_cereja_gateway.mjs --capture` gravou respostas reais das três APIs em `tests/fixtures/api_real/`; o teste que as consome passou. Testes do componente principal verificam que o pH regional aparece como estimativa, mas **não** é enviado como pH local; períodos IMERG incompletos permanecem fora da avaliação; pontos fora da área não permitem avaliação; falha da API não apresenta dados demonstrativos; e resultados antigos desaparecem quando o campo muda.
+
+Por decisão do time em 15/11/2026, a validação visual em desktop/celular, autenticação, isolamento entre contas e testes de banco descartável ficaram fora deste aceite. O protótipo público integrado permanece ativo em `http://127.0.0.1:8000` enquanto os containers `web`, `frontend` e `gateway` estiverem em execução.
+
+Os testes Python locais registraram 14 aprovados, 3 ignorados por dependerem de banco descartável e 1 bloqueado pela restrição de soquete local do ambiente de execução (`WinError 10013`). Portanto, a suíte backend completa ainda precisa rodar no ambiente integrado.
+
+Para o aceite final, testar no navegador em largura desktop e celular: conversa → ponto dentro/fora do círculo → diagnóstico → campos de lavoura → candidatas → calendário → conta → talhão/ciclo/tarefa/avaliação salva. Repetir com API/banco indisponível, catálogo ausente, IMERG incompleto e sessão expirada. Verificar que `/api/*` é servido pelo Python e as demais rotas pelo React, sem chaves no bundle. O [roteiro de 90 segundos](demo_integrada.md) organiza a demonstração.
+
+`verify_cereja_gateway.mjs` é uma checagem HTTP e captura de contratos; não substitui o smoke no navegador da interface React. O antigo `scripts/smoke_cereja_browser.mjs` abaixo exercita a interface Python histórica.
+
+## Histórico da interface Python
+
 ## Banco e catálogo
 
 - Aplicar as migrações num PostgreSQL/PostGIS descartável com os papéis do Supabase e seu schema `auth` (ou no Supabase local). O ETL existente continua responsável pela malha e pelas séries.

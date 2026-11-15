@@ -1,0 +1,788 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-paper: var(--paper);
+  --color-card: var(--card);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-rule: var(--rule);
+  --color-cherry: var(--cherry);
+  --color-leaf: var(--leaf);
+  --color-leaf-foreground: var(--leaf-foreground);
+  --color-bean: var(--bean);
+  --color-sun: var(--sun);
+  --color-accent: var(--card);
+  --color-accent-foreground: var(--foreground);
+  --color-ring: var(--cherry);
+  --font-sans: "Archivo", system-ui, sans-serif;
+  --font-stamp: "Big Shoulders Stencil Text", "Archivo", sans-serif;
+}
+
+:root {
+  --background: oklch(0.955 0.014 82);
+  --paper: oklch(0.985 0.009 85);
+  --foreground: oklch(0.235 0.032 45);
+  --card: oklch(0.925 0.021 80);
+  --primary: oklch(0.24 0.035 45);
+  --primary-foreground: oklch(0.97 0.012 85);
+  --muted-foreground: oklch(0.48 0.03 55);
+  --border: oklch(0.24 0.035 45 / 14%);
+  --rule: oklch(0.24 0.035 45 / 72%);
+  --cherry: oklch(0.52 0.2 27);
+  --leaf: oklch(0.29 0.055 150);
+  --leaf-foreground: oklch(0.95 0.02 90);
+  --bean: oklch(0.72 0.13 125);
+  --sun: oklch(0.8 0.15 80);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-variation-settings: "wdth" 100;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    line-height: 1.5;
+  }
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+  :focus-visible {
+    outline: 2px solid var(--cherry);
+    outline-offset: 3px;
+  }
+  ::selection {
+    background: var(--cherry);
+    color: var(--paper);
+  }
+}
+
+/* big condensed display, like stencilled sack print */
+@utility display {
+  font-family: var(--font-sans);
+  font-weight: 740;
+  font-variation-settings: "wdth" 72;
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+}
+@utility stamp {
+  font-family: var(--font-stamp);
+  font-weight: 600;
+  letter-spacing: 0.015em;
+}
+@utility wide {
+  font-variation-settings: "wdth" 125;
+}
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+}
+@utility outline-text {
+  color: transparent;
+  -webkit-text-stroke: 1.5px currentColor;
+}
+@utility fruit {
+  filter: drop-shadow(0 30px 30px oklch(0.2 0.04 40 / 0.28))
+    drop-shadow(0 6px 8px oklch(0.2 0.04 40 / 0.2));
+}
+@utility fruit-dark {
+  filter: drop-shadow(0 40px 40px oklch(0 0 0 / 0.45));
+}
+@utility paper-grain {
+  background-image: radial-gradient(oklch(0.24 0.035 45 / 0.05) 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes bob {
+  50% {
+    transform: translateY(-12px) rotate(-3deg);
+  }
+}
+@keyframes ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@utility anim-enter {
+  animation: enter 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@utility anim-bob {
+  animation: bob 6s ease-in-out infinite;
+}
+@utility anim-ticker {
+  animation: ticker 40s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@keyframes detail-in {
+  from {
+    transform: translateY(24px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@utility detail-in {
+  animation: detail-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes check-pop {
+  0% {
+    transform: scale(0) rotate(-20deg);
+  }
+  70% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes orbit {
+  to {
+    transform: rotate(360deg) translateX(48%) rotate(-360deg);
+  }
+}
+@keyframes scan {
+  0%,
+  100% {
+    transform: translateY(-115%);
+    opacity: 0;
+  }
+  15%,
+  85% {
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(115%);
+    opacity: 0.55;
+  }
+}
+@keyframes pulse-soft {
+  50% {
+    transform: scale(1.65);
+    opacity: 0.25;
+  }
+}
+@keyframes plant-enter {
+  from {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+@utility check-pop {
+  animation: check-pop 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.calendar-grid {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent calc(100% / 12 - 1px),
+    var(--border) calc(100% / 12 - 1px),
+    var(--border) calc(100% / 12)
+  );
+}
+.calendar-window-possible {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 6px,
+    color-mix(in oklab, var(--paper) 25%, transparent) 6px 9px
+  );
+}
+.calendar-window-ideal {
+  box-shadow: 2px 2px 0 var(--rule);
+}
+.calendar-panel-shadow {
+  box-shadow: 6px 6px 0 var(--rule);
+}
+.farm-plot {
+  background-image: repeating-linear-gradient(
+    110deg,
+    transparent 0 13px,
+    color-mix(in oklab, var(--foreground) 12%, transparent) 13px 15px
+  );
+}
+
+@utility brand {
+  font-family: var(--font-stamp);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+@utility display-soft {
+  font-family: var(--font-sans);
+  font-weight: 720;
+  font-variation-settings: "wdth" 76;
+  line-height: 0.92;
+  letter-spacing: -0.045em;
+}
+@utility eyebrow {
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cherry);
+}
+
+@layer components {
+  .territory-map,
+  .orbital-scene {
+    background:
+      radial-gradient(circle at 22% 25%, oklch(0.48 0.08 135 / 0.75), transparent 23%),
+      radial-gradient(circle at 72% 68%, oklch(0.44 0.075 125 / 0.8), transparent 27%),
+      repeating-linear-gradient(110deg, oklch(0.3 0.055 120) 0 22px, oklch(0.34 0.06 128) 22px 45px);
+  }
+  .orbital-scene {
+    position: relative;
+    aspect-ratio: 1.15;
+    overflow: hidden;
+    border: 1px solid oklch(1 0 0 / 15%);
+    border-radius: 2rem;
+    box-shadow: 0 30px 70px oklch(0.18 0.04 145 / 0.22);
+  }
+  .territory-road {
+    fill: none;
+    stroke: oklch(0.77 0.045 75 / 0.62);
+    stroke-width: 13;
+  }
+  .territory-stream {
+    fill: none;
+    stroke: oklch(0.67 0.1 225 / 0.75);
+    stroke-width: 8;
+  }
+  .territory-polygon {
+    fill: oklch(0.8 0.15 80 / 0.28);
+    stroke: var(--sun);
+    stroke-width: 4;
+    stroke-linejoin: round;
+  }
+  .territory-polygon-scan {
+    filter: drop-shadow(0 0 15px oklch(0.8 0.15 80 / 0.55));
+  }
+  .territory-point {
+    fill: var(--cherry);
+    stroke: var(--paper);
+    stroke-width: 3;
+  }
+  .territory-number {
+    fill: var(--paper);
+    font-size: 9px;
+    font-weight: 800;
+    pointer-events: none;
+  }
+  .orbital-scan {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    height: 46%;
+    background: linear-gradient(transparent, oklch(0.85 0.12 150 / 0.38), transparent);
+    animation: scan 3.4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .satellite-orbit {
+    position: absolute;
+    z-index: 4;
+    inset: 7%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    color: var(--paper);
+    animation: orbit 8s linear infinite;
+    pointer-events: none;
+  }
+  .orbital-badge {
+    display: grid;
+    min-height: 22rem;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--paper);
+    background: radial-gradient(circle at 35% 30%, var(--bean), var(--leaf) 60%);
+    box-shadow:
+      inset -30px -25px 60px oklch(0.12 0.04 145 / 0.3),
+      0 30px 60px oklch(0.2 0.04 145 / 0.2);
+  }
+  .analysis-stage {
+    display: flex;
+    min-height: 3.75rem;
+    align-items: center;
+    gap: 0.8rem;
+    border: 1px solid oklch(1 0 0 / 10%);
+    border-radius: 1rem;
+    padding: 0.65rem 0.85rem;
+    opacity: 0.46;
+    transition: 300ms ease;
+  }
+  .analysis-stage-active {
+    background: oklch(1 0 0 / 8%);
+    opacity: 1;
+    transform: translateX(8px);
+  }
+  .analysis-pulse {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--sun);
+    animation: pulse-soft 1.2s ease-in-out infinite;
+  }
+  .soil-scene {
+    position: relative;
+    height: 16rem;
+    overflow: hidden;
+    background: oklch(0.82 0.06 210);
+  }
+  .soil-sky {
+    position: absolute;
+    inset: 0 0 58%;
+    background: linear-gradient(oklch(0.83 0.06 215), oklch(0.91 0.035 190));
+  }
+  .soil-layer {
+    position: absolute;
+    inset-inline: 0;
+  }
+  .soil-top {
+    bottom: 25%;
+    height: 34%;
+    background: repeating-linear-gradient(
+      20deg,
+      oklch(0.38 0.08 65) 0 7px,
+      oklch(0.42 0.075 70) 7px 14px
+    );
+  }
+  .soil-deep {
+    bottom: 0;
+    height: 27%;
+    background: repeating-radial-gradient(
+      circle at 20% 20%,
+      oklch(0.46 0.09 65) 0 3px,
+      oklch(0.34 0.07 60) 4px 14px
+    );
+  }
+  .soil-cover {
+    position: absolute;
+    z-index: 3;
+    inset: 36% 0 auto;
+    height: 25%;
+    background: linear-gradient(transparent 45%, oklch(0.38 0.1 140) 47% 63%, transparent 65%);
+  }
+  .soil-cover span {
+    position: absolute;
+    bottom: 42%;
+    width: 0.42rem;
+    height: 2.7rem;
+    border-radius: 100% 0;
+    background: var(--bean);
+    transform-origin: bottom center;
+  }
+  .soil-roots {
+    position: absolute;
+    z-index: 2;
+    inset: 57% 0 0;
+  }
+  .soil-roots i {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    border-radius: 99px;
+    background: oklch(0.78 0.08 82 / 0.8);
+    transform: rotate(8deg);
+  }
+  .decision-hero {
+    display: grid;
+    gap: 1.5rem;
+    align-items: center;
+    border-radius: 2rem;
+    background: var(--paper);
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+    box-shadow: 0 18px 55px oklch(0.24 0.035 45 / 0.06);
+  }
+  @media (min-width: 900px) {
+    .decision-hero {
+      grid-template-columns: 1.08fr 0.92fr;
+    }
+  }
+  .decision-strategy {
+    min-height: 18rem;
+    border: 1px solid var(--border);
+    border-radius: 1.75rem;
+    background: var(--paper);
+    padding: 1.4rem;
+    text-align: left;
+    transition:
+      transform 180ms ease,
+      border-color 180ms ease,
+      box-shadow 180ms ease;
+  }
+  .decision-strategy:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in oklab, var(--leaf) 45%, var(--border));
+  }
+  .decision-strategy-active {
+    border-color: var(--leaf);
+    box-shadow: 0 16px 45px oklch(0.29 0.055 150 / 0.15);
+    outline: 3px solid color-mix(in oklab, var(--leaf) 12%, transparent);
+  }
+  .decision-soil {
+    position: relative;
+    height: 24rem;
+    overflow: hidden;
+    background: oklch(0.86 0.04 210);
+  }
+  .decision-sky {
+    position: absolute;
+    inset: 0 0 48%;
+    background: linear-gradient(oklch(0.82 0.06 215), oklch(0.93 0.025 190));
+  }
+  .decision-earth {
+    position: absolute;
+    inset: 55% 0 0;
+    background:
+      radial-gradient(circle at 18% 18%, oklch(0.56 0.08 70 / 0.55) 0 3px, transparent 4px),
+      repeating-linear-gradient(15deg, oklch(0.38 0.075 62) 0 12px, oklch(0.42 0.08 68) 12px 25px);
+  }
+  .decision-cover {
+    position: absolute;
+    z-index: 3;
+    left: 0;
+    bottom: 43%;
+    width: var(--cover-density);
+    height: 1.2rem;
+    border-radius: 0 999px 999px 0;
+    background: linear-gradient(90deg, var(--leaf), var(--bean));
+    box-shadow: 0 -5px 12px oklch(0.25 0.08 140 / 0.15);
+    transition: width 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .decision-plant {
+    position: absolute;
+    z-index: 4;
+    bottom: 45%;
+    width: 0.35rem;
+    border-radius: 999px 999px 0 0;
+    background: var(--leaf);
+    transform-origin: bottom;
+    animation: plant-enter 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .decision-plant::before,
+  .decision-plant::after {
+    content: "";
+    position: absolute;
+    top: 20%;
+    width: 1.15rem;
+    height: 0.6rem;
+    border-radius: 100% 0 100% 0;
+    background: var(--bean);
+  }
+  .decision-plant::before {
+    right: 0.15rem;
+    transform: rotate(20deg);
+  }
+  .decision-plant::after {
+    left: 0.15rem;
+    top: 43%;
+    transform: scaleX(-1) rotate(20deg);
+  }
+  .decision-roots {
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    bottom: 0;
+    width: var(--cover-density);
+    height: 44%;
+    opacity: 0.72;
+    background: repeating-linear-gradient(
+      78deg,
+      transparent 0 17px,
+      oklch(0.8 0.08 85 / 0.8) 18px 20px,
+      transparent 21px 35px
+    );
+    clip-path: polygon(0 0, 100% 0, 88% 100%, 8% 100%);
+  }
+  .decision-roots-shallow {
+    height: 25%;
+  }
+  .decision-roots-deep {
+    height: 44%;
+  }
+  .decision-roots-mixed {
+    height: 35%;
+  }
+  .nav-link {
+    display: flex;
+    min-height: 2.9rem;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: 0.9rem;
+    padding: 0.65rem 0.8rem;
+    color: var(--muted-foreground);
+    font-size: 0.95rem;
+    font-weight: 650;
+    transition: 180ms ease;
+  }
+  .nav-link:hover {
+    background: var(--card);
+    color: var(--foreground);
+  }
+  .nav-link svg {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+  .nav-link-active {
+    background: var(--leaf);
+    color: var(--leaf-foreground);
+  }
+  .nav-link-active:hover {
+    background: var(--leaf);
+    color: var(--leaf-foreground);
+  }
+  .info-trigger {
+    display: inline-flex;
+    min-height: 2rem;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 999px;
+    padding: 0.25rem 0.55rem;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: 160ms ease;
+  }
+  .info-trigger:hover {
+    background: var(--card);
+    color: var(--foreground);
+  }
+  .strategy-card {
+    display: flex;
+    min-height: 6.5rem;
+    align-items: center;
+    gap: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 1.25rem;
+    background: var(--paper);
+    padding: 1rem 1.1rem;
+    text-align: left;
+    transition:
+      transform 180ms ease,
+      border-color 180ms ease,
+      box-shadow 180ms ease;
+  }
+  .strategy-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--leaf) 45%, var(--border));
+  }
+  .strategy-card-active {
+    border-color: var(--leaf);
+    background: var(--leaf);
+    color: var(--leaf-foreground);
+    box-shadow: 0 14px 35px oklch(0.29 0.055 150 / 0.16);
+  }
+  .strategy-card-active .info-trigger {
+    color: inherit;
+  }
+  .metric-card {
+    min-height: 11rem;
+    border: 1px solid var(--border);
+    border-radius: 1.5rem;
+    background: var(--paper);
+    padding: 1.25rem;
+    box-shadow: 0 10px 30px oklch(0.24 0.035 45 / 0.035);
+  }
+  .calendar-bar {
+    position: absolute;
+    display: flex;
+    height: 1.7rem;
+    min-width: 1.6rem;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 999px;
+    padding: 0 0.65rem;
+    font-size: 0.7rem;
+    font-weight: 750;
+    box-shadow: 0 5px 14px oklch(0.24 0.035 45 / 0.12);
+  }
+  .calendar-bar-coffee {
+    z-index: 2;
+    height: 2rem;
+    background: var(--cherry);
+    color: var(--primary-foreground);
+    box-shadow: 0 7px 18px color-mix(in oklab, var(--cherry) 28%, transparent);
+  }
+  .calendar-bar-cover {
+    background: var(--bean);
+    color: var(--foreground);
+  }
+  .calendar-bar-intercrop {
+    background: var(--sun);
+    color: var(--foreground);
+  }
+  .flashcard {
+    display: flex;
+    min-height: 20rem;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    border-radius: 2rem;
+    background: var(--leaf);
+    padding: clamp(1.5rem, 5vw, 3.5rem);
+    text-align: left;
+    color: var(--leaf-foreground);
+    box-shadow: 0 16px 44px oklch(0.29 0.055 150 / 0.14);
+    transition:
+      transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+      background 280ms ease;
+  }
+  .flashcard:hover {
+    transform: translateY(-3px) rotate(-0.3deg);
+  }
+  .flashcard-flipped {
+    background: var(--cherry);
+    transform: rotate(0.3deg);
+  }
+  .signal-spots {
+    background:
+      radial-gradient(circle at 30% 35%, var(--cherry) 0 5%, transparent 5.5%),
+      radial-gradient(circle at 65% 58%, var(--sun) 0 8%, transparent 8.5%),
+      linear-gradient(135deg, var(--bean), var(--card));
+  }
+  .signal-fruit {
+    background:
+      radial-gradient(circle at 40% 50%, var(--cherry) 0 15%, transparent 15.5%),
+      radial-gradient(circle at 65% 38%, var(--cherry) 0 12%, transparent 12.5%),
+      linear-gradient(145deg, var(--leaf), var(--bean));
+  }
+  .signal-branch {
+    background:
+      linear-gradient(65deg, transparent 45%, var(--foreground) 46% 50%, transparent 51%),
+      radial-gradient(ellipse at 25% 40%, var(--bean) 0 10%, transparent 11%),
+      radial-gradient(ellipse at 72% 62%, var(--sun) 0 12%, transparent 13%), var(--card);
+  }
+
+  .coffee-plant {
+    position: absolute;
+    inset: 5.5rem 1rem 5rem;
+  }
+  .coffee-trunk {
+    position: absolute;
+    bottom: 0;
+    left: 49%;
+    width: 0.8rem;
+    height: 68%;
+    border-radius: 999px 999px 0 0;
+    background: linear-gradient(90deg, oklch(0.34 0.06 60), oklch(0.48 0.08 68));
+    transform: translateX(-50%);
+  }
+  .coffee-branch {
+    position: absolute;
+    left: 50%;
+    top: 43%;
+    width: 38%;
+    height: 0.4rem;
+    border-radius: 999px;
+    background: oklch(0.43 0.07 66);
+    transform-origin: left center;
+  }
+  .coffee-branch-left {
+    rotate: 202deg;
+  }
+  .coffee-branch-right {
+    rotate: -22deg;
+  }
+  .coffee-leaf {
+    position: absolute;
+    width: 4.6rem;
+    height: 2.1rem;
+    border-radius: 100% 0 100% 0;
+    background: linear-gradient(145deg, var(--bean), oklch(0.52 0.12 145));
+    box-shadow: inset -8px -5px 12px oklch(0.2 0.04 145 / 0.18);
+  }
+  .coffee-leaf::after {
+    content: "";
+    position: absolute;
+    inset: 50% 8% auto;
+    height: 1px;
+    background: oklch(0.25 0.05 145 / 0.35);
+  }
+  .coffee-cherry {
+    position: absolute;
+    width: 1.55rem;
+    height: 1.55rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, oklch(0.72 0.18 35), var(--cherry) 58%);
+    box-shadow: 0 5px 10px oklch(0.1 0.02 30 / 0.25);
+  }
+  .coffee-cherry-ripening {
+    background: radial-gradient(circle at 32% 28%, oklch(0.88 0.16 90), var(--sun) 58%);
+  }
+}
+
+@media (max-width: 640px) {
+  .flashcard {
+    min-height: 18rem;
+  }
+  .coffee-leaf {
+    width: 3.6rem;
+    height: 1.7rem;
+  }
+}
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  body {
+    background: white;
+    color: #241d18;
+    print-color-adjust: exact;
+  }
+  aside,
+  nav,
+  header a,
+  button,
+  .orbital-scan,
+  .info-trigger {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+  section,
+  article,
+  details {
+    break-inside: avoid;
+  }
+  details > div {
+    display: block !important;
+  }
+}

@@ -12,7 +12,7 @@ def main():
     p=sub.add_parser('imerg');p.add_argument('--date',type=valid_date,required=True)
     p=sub.add_parser('backfill');p.add_argument('--start',type=valid_date,default=date(2000,1,1));p.add_argument('--end',type=valid_date,required=True);p.add_argument('--source',choices=['power','imerg'],default='power')
     p=sub.add_parser('daily');p.add_argument('--date',type=valid_date,required=True);p.add_argument('--source',choices=['power','imerg','both'],default='both')
-    p=sub.add_parser('static-raster');p.add_argument('--file',required=True);p.add_argument('--source',choices=['SOILGRIDS','SRTM','FAO_HWSD'],required=True);p.add_argument('--metric',required=True);p.add_argument('--unit',required=True);p.add_argument('--scale',type=float,default=1.0);p.add_argument('--depth-top',type=int,default=0);p.add_argument('--depth-bottom',type=int,default=0)
+    p=sub.add_parser('static-raster');p.add_argument('--file',required=True);p.add_argument('--source',choices=['SOILGRIDS'],required=True);p.add_argument('--metric',required=True);p.add_argument('--unit',required=True);p.add_argument('--scale',type=float,default=1.0);p.add_argument('--depth-top',type=int,default=0);p.add_argument('--depth-bottom',type=int,default=0)
     args=parser.parse_args()
     if args.cmd in ('migrate','init-grid'):
         migrate()

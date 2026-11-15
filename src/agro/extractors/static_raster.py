@@ -1,4 +1,4 @@
-"""Import locally obtained SRTM and ISRIC SoilGrids GeoTIFFs.
+"""Import locally obtained ISRIC SoilGrids GeoTIFFs.
 No fabricated download URL or silent unit conversion. Specify multiplier explicitly.
 """
 from datetime import datetime
@@ -40,8 +40,8 @@ def means(path):
 
 def load(conn,path,source,metric,unit,scale=1.0,top=0,bottom=0):
     from agro.db import run_start,run_finish,batch_execute
-    if source not in ('SOILGRIDS','SRTM','FAO_HWSD'):
-        raise ValueError('Source must be a registered static raster product')
+    if source != 'SOILGRIDS':
+        raise ValueError('Source must be SOILGRIDS')
     path=Path(path)
     if not path.is_file(): raise FileNotFoundError(path)
     run_id=run_start(conn,'static_raster',source)

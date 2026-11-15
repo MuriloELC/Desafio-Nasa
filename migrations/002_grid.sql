@@ -29,9 +29,5 @@ ON CONFLICT DO NOTHING;
 INSERT INTO agro.data_sources(source_id,provider,product,version,url,native_resolution,description) VALUES
  ('POWER','NASA','POWER daily AG',NULL,'https://power.larc.nasa.gov/','~0.5° meteorological','Daily point time series'),
  ('IMERG_FINAL','NASA','IMERG PPS Final Run GIS','V07','https://gpm.nasa.gov/data/directory/imerg-final-run-pps-research-gis','0.1°','Final daily total accumulation GeoTIFF'),
- ('SRTM','NASA/USGS','SRTM elevation',NULL,'https://earthexplorer.usgs.gov/','~30m','Static terrain properties'),
- ('SOILGRIDS','ISRIC','SoilGrids',NULL,'https://files.isric.org/soilgrids/latest/data/','250m','Static soil properties by depth'),
- ('SMAP_L4','NASA','SMAP SPL4SMGP','007','https://nsidc.org/data/spl4smgp','9km','Planned: not ingested by this MVP'),
- ('GLDAS','NASA','GLDAS Noah 0.25','2.1','https://ldas.gsfc.nasa.gov/gldas','0.25°','Planned: not ingested by this MVP'),
- ('FAO_HWSD','FAO','Harmonized World Soil Database',NULL,'https://www.fao.org/soils-portal/','varies','Planned: validate classification fields')
+ ('SOILGRIDS','ISRIC','SoilGrids',NULL,'https://files.isric.org/soilgrids/latest/data/','250m','Static soil properties by depth')
 ON CONFLICT(source_id) DO NOTHING;
