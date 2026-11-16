@@ -9,6 +9,32 @@ type ServerEntry = {
 
 let serverEntryPromise: Promise<ServerEntry> | undefined;
 
+async function proxyApi(request: Request): Promise<Response> {
+  const origin = process.env.CEREJA_API_ORIGIN;
+  if (!origin) {
+    return Response.json({ error: "A API do CEREJÁ não está configurada." }, { status: 503 });
+  }
+
+  const source = new URL(request.url);
+  const target = new URL(`${source.pathname}${source.search}`, origin);
+  const headers = new Headers(request.headers);
+  headers.delete("host");
+  headers.delete("content-length");
+  headers.delete("cookie");
+
+  const bypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+  if (bypass) headers.set("x-vercel-protection-bypass", bypass);
+
+  const body =
+    request.method === "GET" || request.method === "HEAD" ? undefined : await request.arrayBuffer();
+  return fetch(target, {
+    method: request.method,
+    headers,
+    body,
+    redirect: "manual",
+  });
+}
+
 async function getServerEntry(): Promise<ServerEntry> {
   if (!serverEntryPromise) {
     serverEntryPromise = import("@tanstack/react-start/server-entry").then(
@@ -50,6 +76,10 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      const pathname = new URL(request.url).pathname;
+      if (pathname === "/api" || pathname.startsWith("/api/")) {
+        return await proxyApi(request);
+      }
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
