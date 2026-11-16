@@ -1,0 +1,858 @@
+{
+  "year": 2026,
+  "months": [
+    10,
+    11,
+    12,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "today_month": 11,
+  "cultures": [
+    {
+      "culture_id": "amendoim-forrageiro",
+      "name": "Amendoim-forrageiro",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "braquiaria-ruziziensis",
+      "name": "Braquiária-ruziziensis",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "cafe-conilon",
+      "name": "Café Conilon",
+      "kind": "cafe"
+    },
+    {
+      "culture_id": "cafe-robusta",
+      "name": "Café Robusta",
+      "kind": "cafe"
+    },
+    {
+      "culture_id": "crot-juncea",
+      "name": "Crotalária-júncea",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "crot-spectabilis",
+      "name": "Crotalária-spectabilis",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "feijao-caupi",
+      "name": "Feijão-caupi",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "feijao-comum",
+      "name": "Feijão-comum",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "feijao-de-porco",
+      "name": "Feijão-de-porco",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "guandu-anao",
+      "name": "Guandu-anão",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "lablab",
+      "name": "Lablab",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "milheto",
+      "name": "Milheto",
+      "kind": "entrelinha"
+    },
+    {
+      "culture_id": "mucuna-ana",
+      "name": "Mucuna-anã",
+      "kind": "entrelinha"
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "amendoim-forrageiro-corte-preliminar-ro",
+      "version": 1,
+      "culture_id": "amendoim-forrageiro",
+      "activity": "corte",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Realizar corte ou roçada no florescimento das anuais ou antes de competição nas perenes; manter a biomassa como cobertura. Manter cobertura baixa, faixa livre e monitoramento de água.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/704118/1/FOL61100001.pdf",
+        "title": "Recomendações técnicas para o cultivo do cafeeiro em Rondônia",
+        "version": "Embrapa Rondônia, RT/08, 1998"
+      },
+      "source_detail": "p. 5, seção Uso de leguminosas",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "amendoim-forrageiro-manejo-preliminar-ro",
+      "version": 1,
+      "culture_id": "amendoim-forrageiro",
+      "activity": "manejo",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Monitorar água, fertilidade, espaço e crescimento; intervir antes de competição hídrica ou sombreamento. Manter cobertura baixa, faixa livre e monitoramento de água.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/704118/1/FOL61100001.pdf",
+        "title": "Recomendações técnicas para o cultivo do cafeeiro em Rondônia",
+        "version": "Embrapa Rondônia, RT/08, 1998"
+      },
+      "source_detail": "p. 5, seção Uso de leguminosas",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "amendoim-forrageiro-plantio-preliminar-ro",
+      "version": 1,
+      "culture_id": "amendoim-forrageiro",
+      "activity": "plantio",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Implantar no início consolidado do período chuvoso ou com irrigação suficiente. Manter aproximadamente 1 m livre junto a cada linha do cafeeiro. Manter cobertura baixa, faixa livre e monitoramento de água.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/704118/1/FOL61100001.pdf",
+        "title": "Recomendações técnicas para o cultivo do cafeeiro em Rondônia",
+        "version": "Embrapa Rondônia, RT/08, 1998"
+      },
+      "source_detail": "p. 5, seção Uso de leguminosas",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "braquiaria-ruziziensis-corte-preliminar-ro",
+      "version": 1,
+      "culture_id": "braquiaria-ruziziensis",
+      "activity": "corte",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Realizar corte ou roçada no florescimento das anuais ou antes de competição nas perenes; manter a biomassa como cobertura. Reservar para cafezal adulto e realizar roçadas regulares.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/1023762/1/17431.pdf",
+        "title": "Café na Amazônia",
+        "version": "Embrapa, 2015"
+      },
+      "source_detail": "cap. Cultivos intercalares, Figuras 11–12",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "braquiaria-ruziziensis-manejo-preliminar-ro",
+      "version": 1,
+      "culture_id": "braquiaria-ruziziensis",
+      "activity": "manejo",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Monitorar água, fertilidade, espaço e crescimento; intervir antes de competição hídrica ou sombreamento. Reservar para cafezal adulto e realizar roçadas regulares.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/1023762/1/17431.pdf",
+        "title": "Café na Amazônia",
+        "version": "Embrapa, 2015"
+      },
+      "source_detail": "cap. Cultivos intercalares, Figuras 11–12",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "braquiaria-ruziziensis-plantio-preliminar-ro",
+      "version": 1,
+      "culture_id": "braquiaria-ruziziensis",
+      "activity": "plantio",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Implantar no início consolidado do período chuvoso ou com irrigação suficiente. Manter aproximadamente 1 m livre junto a cada linha do cafeeiro. Reservar para cafezal adulto e realizar roçadas regulares.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/1023762/1/17431.pdf",
+        "title": "Café na Amazônia",
+        "version": "Embrapa, 2015"
+      },
+      "source_detail": "cap. Cultivos intercalares, Figuras 11–12",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "conilon-colheita-ro",
+      "version": 1,
+      "culture_id": "cafe-conilon",
+      "activity": "colheita",
+      "kind": "sazonal",
+      "phase": "producao",
+      "water": "sequeiro",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Referência para lavouras clonais de sequeiro, reunindo clones precoces, médios e tardios. Confirme a maturação.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/999518/1/ct125cafeicultura.pdf",
+        "title": "Gerenciamento anual da produção de Coffea canephora em Rondônia",
+        "version": "Circular Técnica 125"
+      },
+      "source_detail": "p. 1 e 3",
+      "months": [
+        4,
+        5,
+        6
+      ],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "conilon-plantio-ro",
+      "version": 1,
+      "culture_id": "cafe-conilon",
+      "activity": "plantio",
+      "kind": "sazonal",
+      "phase": "implantacao",
+      "water": "sequeiro",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Referência regional para sequeiro. Verifique a regularidade das chuvas e as condições locais antes de implantar.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/999518/1/ct125cafeicultura.pdf",
+        "title": "Gerenciamento anual da produção de Coffea canephora em Rondônia",
+        "version": "Circular Técnica 125"
+      },
+      "source_detail": "p. 1–2",
+      "months": [
+        10,
+        11,
+        12
+      ],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "crot-juncea-corte-preliminar-ro",
+      "version": 1,
+      "culture_id": "crot-juncea",
+      "activity": "corte",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Realizar corte ou roçada no florescimento das anuais ou antes de competição nas perenes; manter a biomassa como cobertura. Controlar o porte e cortar no florescimento pleno.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261; regra geral para anual",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "crot-juncea-manejo-preliminar-ro",
+      "version": 1,
+      "culture_id": "crot-juncea",
+      "activity": "manejo",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Monitorar água, fertilidade, espaço e crescimento; intervir antes de competição hídrica ou sombreamento. Controlar o porte e cortar no florescimento pleno.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261; regra geral para anual",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "crot-juncea-plantio-preliminar-ro",
+      "version": 1,
+      "culture_id": "crot-juncea",
+      "activity": "plantio",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Implantar no início consolidado do período chuvoso ou com irrigação suficiente. Manter aproximadamente 1 m livre junto a cada linha do cafeeiro. Controlar o porte e cortar no florescimento pleno.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261; regra geral para anual",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "crot-spectabilis-corte-preliminar-ro",
+      "version": 1,
+      "culture_id": "crot-spectabilis",
+      "activity": "corte",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Realizar corte ou roçada no florescimento das anuais ou antes de competição nas perenes; manter a biomassa como cobertura. Implantar somente no espaço livre e cortar no florescimento pleno.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "crot-spectabilis-manejo-preliminar-ro",
+      "version": 1,
+      "culture_id": "crot-spectabilis",
+      "activity": "manejo",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Monitorar água, fertilidade, espaço e crescimento; intervir antes de competição hídrica ou sombreamento. Implantar somente no espaço livre e cortar no florescimento pleno.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "crot-spectabilis-plantio-preliminar-ro",
+      "version": 1,
+      "culture_id": "crot-spectabilis",
+      "activity": "plantio",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Implantar no início consolidado do período chuvoso ou com irrigação suficiente. Manter aproximadamente 1 m livre junto a cada linha do cafeeiro. Implantar somente no espaço livre e cortar no florescimento pleno.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "feijao-caupi-corte-preliminar-ro",
+      "version": 1,
+      "culture_id": "feijao-caupi",
+      "activity": "corte",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Realizar corte ou roçada no florescimento das anuais ou antes de competição nas perenes; manter a biomassa como cobertura. Preferir cultivar ereta ou semiereta e cortar ou colher sem competir com o café.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261; regra geral para anual",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "feijao-caupi-manejo-preliminar-ro",
+      "version": 1,
+      "culture_id": "feijao-caupi",
+      "activity": "manejo",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Monitorar água, fertilidade, espaço e crescimento; intervir antes de competição hídrica ou sombreamento. Preferir cultivar ereta ou semiereta e cortar ou colher sem competir com o café.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261; regra geral para anual",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "feijao-caupi-plantio-preliminar-ro",
+      "version": 1,
+      "culture_id": "feijao-caupi",
+      "activity": "plantio",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Implantar no início consolidado do período chuvoso ou com irrigação suficiente. Manter aproximadamente 1 m livre junto a cada linha do cafeeiro. Preferir cultivar ereta ou semiereta e cortar ou colher sem competir com o café.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261; regra geral para anual",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "feijao-comum-plantio-ro-formacao",
+      "version": 1,
+      "culture_id": "feijao-comum",
+      "activity": "plantio",
+      "kind": "condicional",
+      "phase": "formacao",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Avalie umidade, espaço livre e competição com o café. Ajuste a implantação e o manejo às condições locais.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/1023762/1/17431.pdf",
+        "title": "Cultivos intercalares em cafezais",
+        "version": "Café na Amazônia, 2015"
+      },
+      "source_detail": "p. 169–173",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "feijao-comum-plantio-ro-recepa",
+      "version": 1,
+      "culture_id": "feijao-comum",
+      "activity": "plantio",
+      "kind": "condicional",
+      "phase": "recepa",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Avalie umidade, espaço livre e competição com o café. Ajuste a implantação e o manejo às condições locais.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/1023762/1/17431.pdf",
+        "title": "Cultivos intercalares em cafezais",
+        "version": "Café na Amazônia, 2015"
+      },
+      "source_detail": "p. 169–173",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "feijao-de-porco-corte-preliminar-ro",
+      "version": 1,
+      "culture_id": "feijao-de-porco",
+      "activity": "corte",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Realizar corte ou roçada no florescimento das anuais ou antes de competição nas perenes; manter a biomassa como cobertura. Cortar no florescimento pleno e manter a biomassa na superfície.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261; regra geral para anual",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "feijao-de-porco-manejo-preliminar-ro",
+      "version": 1,
+      "culture_id": "feijao-de-porco",
+      "activity": "manejo",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Monitorar água, fertilidade, espaço e crescimento; intervir antes de competição hídrica ou sombreamento. Cortar no florescimento pleno e manter a biomassa na superfície.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261; regra geral para anual",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "feijao-de-porco-plantio-preliminar-ro",
+      "version": 1,
+      "culture_id": "feijao-de-porco",
+      "activity": "plantio",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Implantar no início consolidado do período chuvoso ou com irrigação suficiente. Manter aproximadamente 1 m livre junto a cada linha do cafeeiro. Cortar no florescimento pleno e manter a biomassa na superfície.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261; regra geral para anual",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "guandu-anao-corte-preliminar-ro",
+      "version": 1,
+      "culture_id": "guandu-anao",
+      "activity": "corte",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Realizar corte ou roçada no florescimento das anuais ou antes de competição nas perenes; manter a biomassa como cobertura. Controlar o porte por poda e não permitir sombreamento do café.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "guandu-anao-manejo-preliminar-ro",
+      "version": 1,
+      "culture_id": "guandu-anao",
+      "activity": "manejo",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Monitorar água, fertilidade, espaço e crescimento; intervir antes de competição hídrica ou sombreamento. Controlar o porte por poda e não permitir sombreamento do café.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "guandu-anao-plantio-preliminar-ro",
+      "version": 1,
+      "culture_id": "guandu-anao",
+      "activity": "plantio",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Implantar no início consolidado do período chuvoso ou com irrigação suficiente. Manter aproximadamente 1 m livre junto a cada linha do cafeeiro. Controlar o porte por poda e não permitir sombreamento do café.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "lablab-corte-preliminar-ro",
+      "version": 1,
+      "culture_id": "lablab",
+      "activity": "corte",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Realizar corte ou roçada no florescimento das anuais ou antes de competição nas perenes; manter a biomassa como cobertura. Podar os ramos laterais antes que atinjam o cafeeiro e cortar no florescimento.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "lablab-manejo-preliminar-ro",
+      "version": 1,
+      "culture_id": "lablab",
+      "activity": "manejo",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Monitorar água, fertilidade, espaço e crescimento; intervir antes de competição hídrica ou sombreamento. Podar os ramos laterais antes que atinjam o cafeeiro e cortar no florescimento.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "lablab-plantio-preliminar-ro",
+      "version": 1,
+      "culture_id": "lablab",
+      "activity": "plantio",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Implantar no início consolidado do período chuvoso ou com irrigação suficiente. Manter aproximadamente 1 m livre junto a cada linha do cafeeiro. Podar os ramos laterais antes que atinjam o cafeeiro e cortar no florescimento.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "milheto-corte-preliminar-ro",
+      "version": 1,
+      "culture_id": "milheto",
+      "activity": "corte",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Realizar corte ou roçada no florescimento das anuais ou antes de competição nas perenes; manter a biomassa como cobertura. Cortar e direcionar a palhada para a linha do cafeeiro.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/1023762/1/17431.pdf",
+        "title": "Café na Amazônia",
+        "version": "Embrapa, 2015"
+      },
+      "source_detail": "cap. Cultivos intercalares, Figuras 11–12",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "milheto-manejo-preliminar-ro",
+      "version": 1,
+      "culture_id": "milheto",
+      "activity": "manejo",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Monitorar água, fertilidade, espaço e crescimento; intervir antes de competição hídrica ou sombreamento. Cortar e direcionar a palhada para a linha do cafeeiro.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/1023762/1/17431.pdf",
+        "title": "Café na Amazônia",
+        "version": "Embrapa, 2015"
+      },
+      "source_detail": "cap. Cultivos intercalares, Figuras 11–12",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "milheto-plantio-preliminar-ro",
+      "version": 1,
+      "culture_id": "milheto",
+      "activity": "plantio",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Implantar no início consolidado do período chuvoso ou com irrigação suficiente. Manter aproximadamente 1 m livre junto a cada linha do cafeeiro. Cortar e direcionar a palhada para a linha do cafeeiro.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/1023762/1/17431.pdf",
+        "title": "Café na Amazônia",
+        "version": "Embrapa, 2015"
+      },
+      "source_detail": "cap. Cultivos intercalares, Figuras 11–12",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "mucuna-ana-corte-preliminar-ro",
+      "version": 1,
+      "culture_id": "mucuna-ana",
+      "activity": "corte",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Realizar corte ou roçada no florescimento das anuais ou antes de competição nas perenes; manter a biomassa como cobertura. Usar porte anão; impedir que ramos alcancem o cafeeiro.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "mucuna-ana-manejo-preliminar-ro",
+      "version": 1,
+      "culture_id": "mucuna-ana",
+      "activity": "manejo",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Monitorar água, fertilidade, espaço e crescimento; intervir antes de competição hídrica ou sombreamento. Usar porte anão; impedir que ramos alcancem o cafeeiro.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "mucuna-ana-plantio-preliminar-ro",
+      "version": 1,
+      "culture_id": "mucuna-ana",
+      "activity": "plantio",
+      "kind": "condicional",
+      "phase": "qualquer",
+      "water": "ambos",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Implantar no início consolidado do período chuvoso ou com irrigação suficiente. Manter aproximadamente 1 m livre junto a cada linha do cafeeiro. Usar porte anão; impedir que ramos alcancem o cafeeiro.",
+      "source": {
+        "url": "https://www.alice.cnptia.embrapa.br/alice/bitstream/doc/1153221/1/ADUBACAO-VERDE-VOL02.pdf",
+        "title": "Adubação verde em cafezais",
+        "version": "Embrapa, Adubação verde: do conceito à prática, v. 2, 2023"
+      },
+      "source_detail": "cap. 19, p. 260–261",
+      "months": [],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "robusta-colheita-ro",
+      "version": 1,
+      "culture_id": "cafe-robusta",
+      "activity": "colheita",
+      "kind": "sazonal",
+      "phase": "producao",
+      "water": "sequeiro",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Referência para lavouras clonais de sequeiro do grupo Robusta. Confirme a maturação antes de colher.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/999518/1/ct125cafeicultura.pdf",
+        "title": "Gerenciamento anual da produção de Coffea canephora em Rondônia",
+        "version": "Circular Técnica 125"
+      },
+      "source_detail": "p. 1 e 3",
+      "months": [
+        6,
+        7
+      ],
+      "starts_on": null,
+      "ends_on": null
+    },
+    {
+      "rule_id": "robusta-plantio-ro",
+      "version": 1,
+      "culture_id": "cafe-robusta",
+      "activity": "plantio",
+      "kind": "sazonal",
+      "phase": "implantacao",
+      "water": "sequeiro",
+      "uf": "RO",
+      "municipality": null,
+      "orientation": "Referência regional para sequeiro. Verifique a regularidade das chuvas e as condições locais antes de implantar.",
+      "source": {
+        "url": "https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/999518/1/ct125cafeicultura.pdf",
+        "title": "Gerenciamento anual da produção de Coffea canephora em Rondônia",
+        "version": "Circular Técnica 125"
+      },
+      "source_detail": "p. 1–2",
+      "months": [
+        10,
+        11,
+        12
+      ],
+      "starts_on": null,
+      "ends_on": null
+    }
+  ]
+}

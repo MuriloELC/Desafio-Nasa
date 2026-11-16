@@ -1,0 +1,13 @@
+.env
+.git
+.pytest_cache
+__pycache__
+*.pyc
+data
+agro-pipeline
+.venv
+frontend/node_modules
+frontend/.output
+frontend/.wrangler
+tmp
+output

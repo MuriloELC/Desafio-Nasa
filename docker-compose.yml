@@ -1,0 +1,40 @@
+services:
+  etl:
+    build: .
+    env_file: .env
+    volumes:
+      - ./data:/app/data
+    restart: "no"
+    # docker compose run --rm etl init-grid
+  web:
+    build: .
+    env_file: .env
+    entrypoint: ["python", "-m", "agro.web"]
+    environment:
+      WEB_HOST: 0.0.0.0
+      WEB_PORT: 8000
+    expose:
+      - "8000"
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    expose:
+      - "5173"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    restart: "no"
+  gateway:
+    image: nginx:1.27-alpine
+    depends_on:
+      - web
+      - frontend
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "127.0.0.1:8000:80"
+    restart: "no"
+
+volumes:
+  frontend_node_modules:
